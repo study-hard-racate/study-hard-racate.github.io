@@ -110,6 +110,37 @@ function generateStepComment(step, renderMode) {
     return "并查集操作";
   }
   
+  /* DP模式 */
+  if (step.dp && (renderMode === "dp01" || renderMode === "dpcomplete")) {
+    const dp = step.dp;
+    const vars = step.vars || {};
+    const phase = dp.phase;
+    const weights = dp.weights || [];
+    const values = dp.values || [];
+    if (phase === 1) {
+      return "初始化：将 dp[0.." + dp.W + "] 全部设为 0";
+    }
+    if (phase === 3) {
+      return "完成！最大价值 = dp[" + dp.W + "] = " + (dp.table[dp.W] || 0);
+    }
+    if (phase === 2 && dp.i !== undefined && dp.j !== undefined) {
+      const wi = weights[dp.i] || 0;
+      const vi = values[dp.i] || 0;
+      if (dp.j < wi) {
+        return "物品 #" + dp.i + " 重量 " + wi + " > 容量 " + dp.j + "，跳过";
+      }
+      const oldVal = dp.table[dp.j] || 0;
+      const depVal = (dp.table[dp.prevW] || 0) + vi;
+      if (depVal > oldVal) {
+        return "选物品 #" + dp.i + "：dp[" + dp.j + "] = max(" + oldVal + ", " + depVal + ") = " + depVal;
+      } else {
+        return "不选物品 #" + dp.i + "：dp[" + dp.j + "] = max(" + oldVal + ", " + depVal + ") = " + oldVal;
+      }
+    }
+    if (msg) return msg;
+    return "动态规划";
+  }
+  
   return msg || "";
 }
 
@@ -151,7 +182,13 @@ function setupDemo(opts) {
       renderGraphCsim(stage, step.graph);
       return;
     }
-    if (step.uf) {
+    if (step.dp) {
+      if (renderMode === "dp01" || renderMode === "dpcomplete") {
+        renderDP(stage, step);
+        return;
+      }
+    }
+    if (step.uf && renderMode === "unionfind") {
       renderUnionFind(stage, step);
       return;
     }

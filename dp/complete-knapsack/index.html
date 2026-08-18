@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-<title>并查集（Union-Find） - 数据结构动画</title>
+<title>完全背包（动态规划） - 数据结构动画</title>
 <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -64,14 +64,14 @@
 <main class="content">
 
 <div class="algo-header">
-  <h1>并查集 / Union-Find</h1>
-  <p>处理不相交集合的合并与查询。find 带路径压缩（子节点直接连根），unionByRank 按秩合并（矮树接到高树下）。</p>
+  <h1>完全背包（动态规划）</h1>
+  <p>经典DP问题：有n个物品，每个物品有重量和价值，背包容量为W，每个物品可以选无限次，求最大价值。</p>
 </div>
 <div class="algo-layout">
   <div class="code-panel" id="code-panel">
   <div class="code-title">
     <button class="code-collapse-btn" id="code-collapse-btn" title="折叠/展开代码面板">◀</button>
-    <span>并查集：find（路径压缩）+ unionByRank（按秩合并） · C 语言代码</span>
+    <span>完全背包：每个物品可以选无限次 · C 语言代码</span>
     <label class="code-follow" title="播放时让当前高亮行保持在视野内（手动滚动代码会暂停跟随）">
       <input type="checkbox" id="code-follow" checked>跟随高亮
     </label>
@@ -100,10 +100,12 @@
 </div>
   <div class="legend">
     
-    <span><span class="dot" style="background:#ffd166"></span>当前访问</span>
-    <span><span class="dot" style="background:#ff6b6b"></span>路径压缩</span>
-    <span><span class="dot" style="background:#3ecf8e"></span>根节点</span>
-    <span><span class="dot" style="background:#4da3ff"></span>普通节点</span>
+    <span><span class="dot" style="background:#ffd166"></span>当前计算</span>
+    <span><span class="dot" style="background:#b98cff"></span>依赖格</span>
+    <span><span class="dot" style="background:#4da3ff"></span>已填好</span>
+    <span><span class="dot" style="background:#3ecf8e"></span>已处理</span>
+    <span><span class="dot" style="background:#f472b6"></span>初始化</span>
+    <span><span class="dot" style="background:#b98cff; border-left:2px dashed #b98cff; width:16px; height:0; display:inline-block; vertical-align:middle"></span>依赖方向</span>
     
   </div>
   <div class="status-line" id="status"></div>
@@ -221,10 +223,10 @@
 <script src="/static/js/tree.js"></script>
 <script src="/static/js/stackqueue.js"></script>
 <script src="/static/js/graph.js"></script>
-<script src="/static/js/unionfind.js"></script>
+<script src="/static/js/dp.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
-setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u5e76\u67e5\u96c6\uff08\u6570\u7ec4\u5b9e\u73b0\uff09\uff1afind \u5e26\u8def\u5f84\u538b\u7f29 + unionByRank \u6309\u79e9\u5408\u5e76 */\nint find(int parent[], int x) {\n    while (parent[x] != x) {\n        parent[x] = parent[parent[x]];\n        x = parent[x];\n    }\n    return x;\n}\n\nvoid unionByRank(int parent[], int rank_[], int x, int y) {\n    int rx = find(parent, x);\n    int ry = find(parent, y);\n    if (rx == ry) return;\n    if (rank_[rx] \u003c rank_[ry]) {\n        parent[rx] = ry;\n    } else if (rank_[rx] \u003e rank_[ry]) {\n        parent[ry] = rx;\n    } else {\n        parent[ry] = rx;\n        rank_[rx]++;\n    }\n}\n\nint main() {\n    int parent[8];\n    int rank_[8];\n    int i;\n    for (i = 0; i \u003c 8; i++) {\n        parent[i] = i;\n        rank_[i] = 0;\n    }\n    unionByRank(parent, rank_, 0, 1);\n    unionByRank(parent, rank_, 2, 3);\n    unionByRank(parent, rank_, 0, 2);\n    unionByRank(parent, rank_, 4, 5);\n    unionByRank(parent, rank_, 6, 7);\n    unionByRank(parent, rank_, 4, 6);\n    unionByRank(parent, rank_, 1, 7);\n    int r = find(parent, 5);\n    int s = find(parent, 3);\n    return 0;\n}\n", renderMode: "unionfind", withRandom: false });
+setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u5b8c\u5168\u80cc\u5305\uff1a\u6bcf\u4e2a\u7269\u54c1\u53ef\u4ee5\u9009\u65e0\u9650\u6b21 */\nint main() {\n    int w[] = { 2, 3, 4, 5 };\n    int v[] = { 3, 4, 5, 6 };\n    int n = 4;\n    int W = 10;\n    int dp[11];\n    int i, j;\n    int phase = 0;\n    int prev_w = -1;\n    \n    /* \u521d\u59cb\u5316dp\u6570\u7ec4 */\n    phase = 1;\n    for (j = 0; j \u003c= W; j++) {\n        dp[j] = 0;\n    }\n    \n    /* \u52a8\u6001\u89c4\u5212\uff1a\u6b63\u5e8f\u904d\u5386\u5bb9\u91cf */\n    phase = 2;\n    for (i = 0; i \u003c n; i++) {\n        for (j = w[i]; j \u003c= W; j++) {\n            prev_w = j - w[i];\n            if (dp[prev_w] + v[i] \u003e dp[j]) {\n                dp[j] = dp[prev_w] + v[i];\n            }\n        }\n    }\n    \n    phase = 3;\n    return 0;\n}\n", renderMode: "dpcomplete", withRandom: false });
 </script>
 
 </body>

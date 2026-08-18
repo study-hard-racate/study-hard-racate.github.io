@@ -869,6 +869,10 @@
       } else if (st.arr) {
         this.prevParent = st.arr.slice();
       }
+      /* DP模式：检测是否有dp数组 */
+      if (st.vars && st.vars.dp && Array.isArray(st.vars.dp)) {
+        st.dp = this.dpSnapshot();
+      }
     }
     if (extra) {
       if (extra.cmp) st.cmp = extra.cmp;
@@ -1263,6 +1267,44 @@
     }
     this.prevParent = parent.slice();
     return { parent: parent.slice(), compressed: compressed };
+  };
+
+  /* DP快照：收集dp数组及相关变量 */
+  Exec.prototype.dpSnapshot = function () {
+    var out = {};
+    for (var si = 0; si < this.scopeStack.length; si++) {
+      var scope = this.scopeStack[si];
+      for (var key in scope) {
+        var slot = scope[key];
+        if (!slot || slot.isPtr) continue;
+        if (slot.isArray) {
+          if (slot !== this.main && !slot.isPtrArray) out[key] = slot.arr.slice();
+          continue;
+        }
+        if (typeof slot.v === "number") out[key] = slot.v;
+      }
+    }
+    /* this.main 是第一个声明的数组（DP 中为 w[]），collectVars 不会收集它，需单独处理 */
+    var mainArr = (this.main && this.main.arr) ? this.main.arr.slice() : [];
+    var phase = out.phase !== undefined ? out.phase : 0;
+    var prevW = out.prev_w !== undefined ? out.prev_w : -1;
+    /* 已处理物品：phase=2 时，i 之前的物品已处理完 */
+    var processed = [];
+    if (phase === 2 && out.i !== undefined) {
+      for (var pi = 0; pi < out.i; pi++) processed.push(pi);
+    }
+    return {
+      table: out.dp || [],
+      weights: mainArr.length ? mainArr : (out.w || out.weight || []),
+      values: out.v || out.value || [],
+      n: out.n !== undefined ? out.n : 0,
+      W: out.W !== undefined ? out.W : 0,
+      phase: phase,
+      i: out.i,
+      j: out.j,
+      prevW: prevW,
+      processed: processed,
+    };
   };
 
   /* 链表节点的显示字段：第一个 int 字段（通常是 data）；没有则取第一个指针字段
