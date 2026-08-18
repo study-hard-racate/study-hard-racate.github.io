@@ -794,6 +794,7 @@
       return "list";
     }).call(this);
     this.mainGraph = null; /* 第一个指针数组（图邻接表） */
+    this.prevParent = null; /* 并查集：上一步的 parent 数组，用于检测路径压缩 */
     this.nodeSeq = 0;
     this.touchedList = false;
     this.listCur = null;
@@ -860,7 +861,15 @@
     if (this.mode === "list") st.list = this.listSnapshot();
     else if (this.mode === "tree") st.tree = this.treeSnapshot();
     else if (this.mode === "graph") st.graph = this.graphSnapshot();
-    else st.vars = this.collectVars();
+    else {
+      st.vars = this.collectVars();
+      /* 并查集模式：通过检测数组变化追踪路径压缩 */
+      if (this.prevParent && st.arr) {
+        st.uf = this.ufSnapshot(st.arr);
+      } else if (st.arr) {
+        this.prevParent = st.arr.slice();
+      }
+    }
     if (extra) {
       if (extra.cmp) st.cmp = extra.cmp;
       if (extra.swap === true) st.swap = true;
@@ -887,6 +896,16 @@
       var snap = this.listSnapshot();
       var msg = "模拟执行结束（执行 " + this.stats.steps + " 步；链表现有 " + snap.ids.length + " 个节点）";
       this.pushStep(-1, msg);
+      return;
+    }
+    /* 并查集模式 */
+    if (this.main && this.main.arr && this.prevParent) {
+      var ufParent = this.prevParent;
+      var components = 0;
+      for (var ui = 0; ui < ufParent.length; ui++) {
+        if (ufParent[ui] === ui) components++;
+      }
+      this.pushStep(-1, "模拟执行结束（执行 " + this.stats.steps + " 步；并查集现有 " + components + " 个连通分量）");
       return;
     }
     var a = this.main ? this.main.arr : [];
@@ -1230,6 +1249,20 @@
       }
     }
     return out;
+  };
+
+  /* 并查集快照：检测路径压缩（parent 数组变化） */
+  Exec.prototype.ufSnapshot = function (parent) {
+    var compressed = [];
+    if (this.prevParent) {
+      for (var i = 0; i < parent.length; i++) {
+        if (this.prevParent[i] !== parent[i]) {
+          compressed.push(i);
+        }
+      }
+    }
+    this.prevParent = parent.slice();
+    return { parent: parent.slice(), compressed: compressed };
   };
 
   /* 链表节点的显示字段：第一个 int 字段（通常是 data）；没有则取第一个指针字段

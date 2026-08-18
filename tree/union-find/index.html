@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-<title>分块查找 - 查找算法动画</title>
+<title>并查集（Union-Find） - 数据结构动画</title>
 <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -57,14 +57,14 @@
 <main class="content">
 
 <div class="algo-header">
-  <h1>分块查找 (Block Search)</h1>
-  <p>16 个元素分 4 块，先用索引表定位块，再在块内顺序查找。点击"🎲 随机数据"生成新的分块数据与随机目标。</p>
+  <h1>并查集 / Union-Find</h1>
+  <p>处理不相交集合的合并与查询。find 带路径压缩（子节点直接连根），unionByRank 按秩合并（矮树接到高树下）。</p>
 </div>
 <div class="algo-layout">
   <div class="code-panel" id="code-panel">
   <div class="code-title">
     <button class="code-collapse-btn" id="code-collapse-btn" title="折叠/展开代码面板">◀</button>
-    <span>分块查找 · C 语言代码</span>
+    <span>并查集：find（路径压缩）+ unionByRank（按秩合并） · C 语言代码</span>
     <label class="code-follow" title="播放时让当前高亮行保持在视野内（手动滚动代码会暂停跟随）">
       <input type="checkbox" id="code-follow" checked>跟随高亮
     </label>
@@ -72,15 +72,10 @@
   <div class="code-lines" id="code-lines"></div>
 </div>
 <div class="code-resize-handle" id="code-resize-handle" title="拖动调整代码面板宽度"></div>
-  
   <div class="anim-panel">
   <div class="demo-hint">
     <span>▶ 播放 · <span class="kbd">Space</span> 播放/暂停 · <span class="kbd">←</span><span class="kbd">→</span> 单步 · <span class="kbd">R</span> 重置</span>
     <span>右侧代码行与动画同步高亮</span>
-  </div>
-  
-  <div class="inputs">
-    <button class="btn" id="btn-random">🎲 随机数据</button>
   </div>
   
   <div class="anim-stage" id="stage"></div>
@@ -98,10 +93,10 @@
 </div>
   <div class="legend">
     
-    <span><span class="dot" style="background:#ffd166"></span>正在比较/扫描</span>
-    <span><span class="dot" style="background:#3ecf8e"></span>找到目标</span>
-    <span><span class="dot" style="background:#5eead4"></span>low / 索引表 / 表槽</span>
-    <span><span class="dot" style="background:#b98cff"></span>hi</span>
+    <span><span class="dot" style="background:#ffd166"></span>当前访问</span>
+    <span><span class="dot" style="background:#ff6b6b"></span>路径压缩</span>
+    <span><span class="dot" style="background:#3ecf8e"></span>根节点</span>
+    <span><span class="dot" style="background:#4da3ff"></span>普通节点</span>
     
   </div>
   <div class="status-line" id="status"></div>
@@ -219,40 +214,10 @@
 <script src="/static/js/tree.js"></script>
 <script src="/static/js/stackqueue.js"></script>
 <script src="/static/js/graph.js"></script>
-<script src="/static/js/hash.js"></script>
-<script src="/static/js/search.js"></script>
+<script src="/static/js/unionfind.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
-function randomizeBlock() {
-  const data = [];
-  for (let b = 0; b < 4; b++) {
-    const set = new Set();
-    while (set.size < 4) set.add(b * 15 + 1 + Math.floor(Math.random() * 13));
-    const vals = Array.from(set).sort(function (a, c) { return a - c; });
-    for (const v of vals) data.push(v);
-  }
-  const block = [data[3], data[7], data[11], data[15]];
-  const x = 1 + Math.floor(Math.random() * 58);
-  return "#include <stdio.h>\n" +
-    "int main(void) {\n" +
-    "    int data[16] = { " + data.join(", ") + " };\n" +
-    "    int block[4] = { " + block.join(", ") + " };\n" +
-    "    int x = " + x + ";\n" +
-    "    int b = -1;\n" +
-    "    for (int i = 0; i < 4; i++) {\n" +
-    "        if (block[i] >= x) { b = i; break; }\n" +
-    "    }\n" +
-    "    int found = -1;\n" +
-    "    if (b >= 0) {\n" +
-    "        int start = b * 4;\n" +
-    "        for (int i = start; i < start + 4; i++) {\n" +
-    "            if (data[i] == x) found = i;\n" +
-    "        }\n" +
-    "    }\n" +
-    "    return 0;\n" +
-    "}";
-}
-setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u5206\u5757\u67e5\u627e\uff1a\u7d22\u5f15\u8868\uff08\u6bcf\u5757\u6700\u5927\u503c\uff09\u2192 \u5b9a\u4f4d\u5757 \u2192 \u5757\u5185\u987a\u5e8f\u67e5\u627e */\nint main(void) {\n    int data[16] = { 3, 5, 8, 12, 15, 18, 21, 26, 30, 34, 39, 41, 45, 49, 52, 57 };\n    int block[4] = { 12, 26, 41, 57 };\n    int x = 26;\n\n    /* 1. \u5b9a\u4f4d\u5757\uff1a\u7b2c\u4e00\u4e2a block[b] \u003e= x */\n    int b = -1;\n    for (int i = 0; i \u003c 4; i++) {\n        if (block[i] \u003e= x) { b = i; break; }\n    }\n\n    /* 2. \u5757\u5185\u987a\u5e8f\u67e5\u627e\uff08\u672a\u5b9a\u4f4d\u5230\u5757\u8bf4\u660e\u76ee\u6807\u592a\u5927\uff0c\u76f4\u63a5\u672a\u627e\u5230\uff09 */\n    int found = -1;\n    if (b \u003e= 0) {\n        int start = b * 4;\n        for (int i = start; i \u003c start + 4; i++) {\n            if (data[i] == x) found = i;\n        }\n    }\n    return 0;\n}\n", renderMode: "block", withRandom: true, randomize: randomizeBlock });
+setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u5e76\u67e5\u96c6\uff08\u6570\u7ec4\u5b9e\u73b0\uff09\uff1afind \u5e26\u8def\u5f84\u538b\u7f29 + unionByRank \u6309\u79e9\u5408\u5e76 */\nint find(int parent[], int x) {\n    while (parent[x] != x) {\n        parent[x] = parent[parent[x]];\n        x = parent[x];\n    }\n    return x;\n}\n\nvoid unionByRank(int parent[], int rank_[], int x, int y) {\n    int rx = find(parent, x);\n    int ry = find(parent, y);\n    if (rx == ry) return;\n    if (rank_[rx] \u003c rank_[ry]) {\n        parent[rx] = ry;\n    } else if (rank_[rx] \u003e rank_[ry]) {\n        parent[ry] = rx;\n    } else {\n        parent[ry] = rx;\n        rank_[rx]++;\n    }\n}\n\nint main() {\n    int parent[8];\n    int rank_[8];\n    int i;\n    for (i = 0; i \u003c 8; i++) {\n        parent[i] = i;\n        rank_[i] = 0;\n    }\n    unionByRank(parent, rank_, 0, 1);\n    unionByRank(parent, rank_, 2, 3);\n    unionByRank(parent, rank_, 0, 2);\n    unionByRank(parent, rank_, 4, 5);\n    unionByRank(parent, rank_, 6, 7);\n    unionByRank(parent, rank_, 4, 6);\n    unionByRank(parent, rank_, 1, 7);\n    int r = find(parent, 5);\n    int s = find(parent, 3);\n    return 0;\n}\n", renderMode: "unionfind", withRandom: false });
 </script>
 
 </body>

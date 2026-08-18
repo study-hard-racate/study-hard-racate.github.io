@@ -97,6 +97,19 @@ function generateStepComment(step, renderMode) {
     return "数组操作";
   }
   
+  /* 并查集模式 */
+  if (renderMode === "unionfind") {
+    const vars = step.vars || {};
+    const uf = step.uf || {};
+    const compressed = uf.compressed || [];
+    if (compressed.length > 0) {
+      return "路径压缩：节点 " + compressed.join(", ") + " 直接连接到根";
+    }
+    if (vars.x !== undefined && msg) return msg;
+    if (msg) return msg;
+    return "并查集操作";
+  }
+  
   return msg || "";
 }
 
@@ -138,7 +151,12 @@ function setupDemo(opts) {
       renderGraphCsim(stage, step.graph);
       return;
     }
+    if (step.uf) {
+      renderUnionFind(stage, step);
+      return;
+    }
     if (step.arr) {
+      if (renderMode === "unionfind") { renderUnionFind(stage, step); return; }
       if (renderMode === "stack") { renderArrayStack(stage, step); return; }
       if (renderMode === "queue") { renderArrayQueue(stage, step); return; }
       if (renderMode === "linear") { renderLinearSearch(stage, step); return; }
