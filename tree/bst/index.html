@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<title>二叉搜索树 - 树与图动画</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><a href="/">C 数据结构 · 算法动画</a></div>
+  <nav class="nav">
+    <div class="nav-item">
+      <a href="/sorting">排序算法</a>
+      <div class="dropdown">
+        <a href="/sorting/bubble">冒泡排序</a>
+        <a href="/sorting/selection">选择排序</a>
+        <a href="/sorting/insertion">插入排序</a>
+        <a href="/sorting/quick">快速排序</a>
+        <a href="/sorting/merge">归并排序</a>
+        <a href="/sorting/shell">希尔排序</a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <a href="#">数据结构</a>
+      <div class="dropdown">
+        <a href="/array">数组</a>
+        <a href="/linked-list">链表</a>
+        <a href="/stack">栈</a>
+        <a href="/queue">队列</a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <a href="/search">查找算法</a>
+      <div class="dropdown">
+        <a href="/search/linear">线性查找</a>
+        <a href="/search/binary">二分查找</a>
+        <a href="/search/hash">哈希查找</a>
+        <a href="/search/block">分块查找</a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <a href="/tree/binary-tree">树与图</a>
+      <div class="dropdown">
+        <a href="/tree/binary-tree">二叉树</a>
+        <a href="/tree/bst">二叉搜索树</a>
+        <a href="/tree/traversal">树的遍历</a>
+        <a href="/tree/heap">堆 / 优先队列</a>
+        <a href="/graph/bfs-dfs">图的 BFS / DFS</a>
+      </div>
+    </div>
+  </nav>
+  <button class="theme-toggle" id="theme-toggle" title="切换深色/浅色主题">☀️</button>
+</header>
+<main class="content">
+
+<div class="algo-header">
+  <h1>二叉搜索树 (BST)</h1>
+  <p>左子树所有值 < 根 ≤ 右子树。查找最多走树的高度步，平均 O(log n)。</p>
+</div>
+<div class="algo-layout">
+  <div class="code-panel" id="code-panel">
+  <div class="code-title">
+    <button class="code-collapse-btn" id="code-collapse-btn" title="折叠/展开代码面板">◀</button>
+    <span>二叉搜索树：查找与插入 · C 语言代码</span>
+    <label class="code-follow" title="播放时让当前高亮行保持在视野内（手动滚动代码会暂停跟随）">
+      <input type="checkbox" id="code-follow" checked>跟随高亮
+    </label>
+  </div>
+  <div class="code-lines" id="code-lines"></div>
+</div>
+<div class="code-resize-handle" id="code-resize-handle" title="拖动调整代码面板宽度"></div>
+  <div class="anim-panel">
+  <div class="demo-hint">
+    <span>▶ 播放 · <span class="kbd">Space</span> 播放/暂停 · <span class="kbd">←</span><span class="kbd">→</span> 单步 · <span class="kbd">R</span> 重置</span>
+    <span>右侧代码行与动画同步高亮</span>
+  </div>
+  
+  <div class="anim-stage" id="stage"></div>
+  <div class="player-controls">
+  <button class="btn" id="btn-reset" title="重置">⟲ 重置</button>
+  <button class="btn" id="btn-prev" title="上一步">⏮ 上一步</button>
+  <button class="btn btn-primary" id="btn-play" title="播放/暂停">▶ 播放</button>
+  <button class="btn" id="btn-next" title="下一步">下一步 ⏭</button>
+  <label class="speed-label">速度
+    <input type="range" id="speed-slider" min="200" max="2200" value="700" step="100" title="拖动调整播放速度">
+    <span id="speed-value">中</span>
+  </label>
+  <span class="step-info" id="step-info">0 / 0</span>
+  <span class="step-info" style="margin-left:auto"><span class="kbd">Space</span> 播放 <span class="kbd">←</span><span class="kbd">→</span> 单步 <span class="kbd">R</span> 重置</span>
+</div>
+  <div class="legend">
+    
+    <span><span class="dot" style="background:#4da3ff"></span>树节点</span>
+    <span><span class="dot" style="background:#ffd166"></span>当前访问</span>
+    <span><span class="dot" style="background:#ff6b6b"></span>写入目标</span>
+    <span><span class="dot" style="background:#b98cff"></span>正在比较</span>
+    
+  </div>
+  <div class="status-line" id="status"></div>
+  <div class="step-comment" id="step-comment"></div>
+</div>
+</div>
+
+</main>
+<footer class="footer">基于 Flask + 原生 JavaScript · 适用于 PythonAnywhere 部署</footer>
+
+<!-- 快捷键提示浮层 -->
+<div class="shortcuts-overlay" id="shortcuts-overlay">
+  <div class="shortcuts-panel">
+    <div class="shortcuts-header">
+      <span>键盘快捷键</span>
+      <button class="shortcuts-close" id="shortcuts-close">✕</button>
+    </div>
+    <div class="shortcuts-body">
+      <div class="shortcut-group">
+        <div class="shortcut-title">播放控制</div>
+        <div class="shortcut-item"><span class="kbd">Space</span><span>播放 / 暂停</span></div>
+        <div class="shortcut-item"><span class="kbd">→</span><span>下一步</span></div>
+        <div class="shortcut-item"><span class="kbd">←</span><span>上一步</span></div>
+        <div class="shortcut-item"><span class="kbd">R</span><span>重置</span></div>
+      </div>
+      <div class="shortcut-group">
+        <div class="shortcut-title">界面操作</div>
+        <div class="shortcut-item"><span class="kbd">?</span><span>显示 / 隐藏此帮助</span></div>
+        <div class="shortcut-item"><span class="kbd">T</span><span>切换深色 / 浅色主题</span></div>
+      </div>
+    </div>
+    <div class="shortcuts-footer">按 <span class="kbd">?</span> 或 <span class="kbd">Esc</span> 关闭</div>
+  </div>
+</div>
+<script>
+/* 导航当前页高亮 */
+(function () {
+  if (typeof location === "undefined") return;
+  var path = location.pathname;
+  var map = [
+    ["/sorting", "排序算法"],
+    ["/search", "查找算法"],
+    ["/array", "数据结构"],
+    ["/linked-list", "数据结构"],
+    ["/stack", "数据结构"],
+    ["/queue", "数据结构"],
+    ["/tree", "树与图"],
+    ["/graph", "树与图"],
+  ];
+  for (var i = 0; i < map.length; i++) {
+    if (path.indexOf(map[i][0]) === 0) {
+      var items = document.querySelectorAll(".nav-item > a");
+      for (var j = 0; j < items.length; j++) {
+        if (items[j].textContent.indexOf(map[i][1]) >= 0) items[j].classList.add("active");
+      }
+      break;
+    }
+  }
+})();
+
+/* 主题切换 */
+(function () {
+  var toggle = document.getElementById("theme-toggle");
+  if (!toggle) return;
+  try {
+    var saved = localStorage.getItem("theme");
+    if (saved === "light") {
+      document.body.classList.add("light");
+      toggle.textContent = "🌙";
+    }
+  } catch (e) {}
+  toggle.addEventListener("click", function () {
+    document.body.classList.toggle("light");
+    var isLight = document.body.classList.contains("light");
+    toggle.textContent = isLight ? "🌙" : "☀️";
+    try { localStorage.setItem("theme", isLight ? "light" : "dark"); } catch (e) {}
+  });
+})();
+
+/* 快捷键提示浮层 */
+(function () {
+  var overlay = document.getElementById("shortcuts-overlay");
+  var closeBtn = document.getElementById("shortcuts-close");
+  if (!overlay) return;
+  
+  function showShortcuts() { overlay.classList.add("visible"); }
+  function hideShortcuts() { overlay.classList.remove("visible"); }
+  
+  if (closeBtn) closeBtn.addEventListener("click", hideShortcuts);
+  overlay.addEventListener("click", function (e) { if (e.target === overlay) hideShortcuts(); });
+  
+  document.addEventListener("keydown", function (e) {
+    var t = e.target;
+    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+    if (e.key === "?") { e.preventDefault(); overlay.classList.contains("visible") ? hideShortcuts() : showShortcuts(); }
+    if (e.key === "Escape" && overlay.classList.contains("visible")) { e.preventDefault(); hideShortcuts(); }
+    if (e.key === "t" || e.key === "T") {
+      if (e.target && e.target.tagName === "SELECT") return;
+      document.body.classList.toggle("light");
+      var isLight = document.body.classList.contains("light");
+      var toggle = document.getElementById("theme-toggle");
+      if (toggle) toggle.textContent = isLight ? "🌙" : "☀️";
+      try { localStorage.setItem("theme", isLight ? "light" : "dark"); } catch (e) {}
+    }
+  });
+})();
+</script>
+
+<script src="/static/js/player.js"></script>
+<script src="/static/js/svg.js"></script>
+<script src="/static/js/sorter.js"></script>
+<script src="/static/js/csim.js"></script>
+<script src="/static/js/list.js"></script>
+<script src="/static/js/tree.js"></script>
+<script src="/static/js/stackqueue.js"></script>
+<script src="/static/js/graph.js"></script>
+<script src="/static/js/demo.js"></script>
+<script>
+setupDemo({ sample: "#include \u003cstdio.h\u003e\n#include \u003cstdlib.h\u003e\n\ntypedef struct BSTNode {\n    int val;\n    struct BSTNode *left;\n    struct BSTNode *right;\n} BSTNode;\n\nBSTNode* createNode(int val) {\n    BSTNode* node = (BSTNode*)malloc(sizeof(BSTNode));\n    node-\u003eval = val;\n    node-\u003eleft = NULL;\n    node-\u003eright = NULL;\n    return node;\n}\n\n/* \u67e5\u627e\uff1a\u5c0f \u2192 \u5de6\uff0c\u5927 \u2192 \u53f3 */\nBSTNode* search(BSTNode* root, int val) {\n    if (root == NULL || root-\u003eval == val) return root;\n    if (val \u003c root-\u003eval) return search(root-\u003eleft, val);\n    return search(root-\u003eright, val);\n}\n\nint main() {\n    BSTNode* root = createNode(5);\n    root-\u003eleft = createNode(3);\n    root-\u003eright = createNode(8);\n    root-\u003eleft-\u003eleft = createNode(2);\n    root-\u003eright-\u003eleft = createNode(7);\n    BSTNode* found = search(root, 7);\n    return 0;\n}\n", renderMode: "tree", withRandom: false });
+</script>
+
+</body>
+</html>
