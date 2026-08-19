@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="C语言动态规划可视化合集：0-1背包、完全背包动画演示。">
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 <title>动态规划 - C语言数据结构与算法动画</title>
 <link rel="stylesheet" href="/static/css/style.css">
@@ -85,7 +86,7 @@
 </section>
 
 </main>
-<footer class="footer">基于 Flask + 原生 JavaScript · 适用于 PythonAnywhere 部署</footer>
+<footer class="footer">基于原生 JavaScript + SVG 动画 · 部署于 GitHub Pages</footer>
 
 <!-- 快捷键提示浮层 -->
 <div class="shortcuts-overlay" id="shortcuts-overlay">
@@ -111,83 +112,7 @@
     <div class="shortcuts-footer">按 <span class="kbd">?</span> 或 <span class="kbd">Esc</span> 关闭</div>
   </div>
 </div>
-<script>
-/* 导航当前页高亮 */
-(function () {
-  if (typeof location === "undefined") return;
-  var path = location.pathname;
-  var map = [
-    ["/sorting", "排序算法"],
-    ["/data-structure", "数据结构"],
-    ["/array", "数据结构"],
-    ["/linked-list", "数据结构"],
-    ["/stack", "数据结构"],
-    ["/queue", "数据结构"],
-    ["/tree/union-find", "数据结构"],
-    ["/search", "查找算法"],
-    ["/tree-graph", "树与图"],
-    ["/tree", "树与图"],
-    ["/graph", "树与图"],
-    ["/dp", "动态规划"],
-  ];
-  for (var i = 0; i < map.length; i++) {
-    if (path.indexOf(map[i][0]) === 0) {
-      var items = document.querySelectorAll(".nav-item > a");
-      for (var j = 0; j < items.length; j++) {
-        if (items[j].textContent.indexOf(map[i][1]) >= 0) items[j].classList.add("active");
-      }
-      break;
-    }
-  }
-})();
-
-/* 主题切换 */
-(function () {
-  var toggle = document.getElementById("theme-toggle");
-  if (!toggle) return;
-  try {
-    var saved = localStorage.getItem("theme");
-    if (saved === "light") {
-      document.body.classList.add("light");
-      toggle.textContent = "🌙";
-    }
-  } catch (e) {}
-  toggle.addEventListener("click", function () {
-    document.body.classList.toggle("light");
-    var isLight = document.body.classList.contains("light");
-    toggle.textContent = isLight ? "🌙" : "☀️";
-    try { localStorage.setItem("theme", isLight ? "light" : "dark"); } catch (e) {}
-  });
-})();
-
-/* 快捷键提示浮层 */
-(function () {
-  var overlay = document.getElementById("shortcuts-overlay");
-  var closeBtn = document.getElementById("shortcuts-close");
-  if (!overlay) return;
-  
-  function showShortcuts() { overlay.classList.add("visible"); }
-  function hideShortcuts() { overlay.classList.remove("visible"); }
-  
-  if (closeBtn) closeBtn.addEventListener("click", hideShortcuts);
-  overlay.addEventListener("click", function (e) { if (e.target === overlay) hideShortcuts(); });
-  
-  document.addEventListener("keydown", function (e) {
-    var t = e.target;
-    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
-    if (e.key === "?") { e.preventDefault(); overlay.classList.contains("visible") ? hideShortcuts() : showShortcuts(); }
-    if (e.key === "Escape" && overlay.classList.contains("visible")) { e.preventDefault(); hideShortcuts(); }
-    if (e.key === "t" || e.key === "T") {
-      if (e.target && e.target.tagName === "SELECT") return;
-      document.body.classList.toggle("light");
-      var isLight = document.body.classList.contains("light");
-      var toggle = document.getElementById("theme-toggle");
-      if (toggle) toggle.textContent = isLight ? "🌙" : "☀️";
-      try { localStorage.setItem("theme", isLight ? "light" : "dark"); } catch (e) {}
-    }
-  });
-})();
-</script>
+<script src="/static/js/common.js"></script>
 
 </body>
 </html>

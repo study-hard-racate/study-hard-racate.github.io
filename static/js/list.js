@@ -309,10 +309,10 @@ function listSpecs(snap) {
       const fill = isCur ? L_CUR_FILL : (isMark ? "#3a2a3a" : "#12261c");
       const stroke = isMark ? "#ff6b6b" : (isCur ? L_CUR_FILL : (isCmp ? "#b98cff" : "#3ecf8e"));
       const tc = isCur ? L_CUR_TEXT : (isMark ? "#ff9f9f" : (isCmp ? "#d9c4ff" : "#3ecf8e"));
-      specs.push(rect("ln-" + id, x, sideY, L_NODE_W, L_NODE_H, {
+      specs.push(rect("ls-" + id, x, sideY, L_NODE_W, L_NODE_H, {
         fill: fill, stroke: stroke, "stroke-width": (isCur || isMark || isCmp) ? 2.5 : 1.5, rx: 6,
       }));
-      specs.push(text("lt-" + id, x + L_NODE_W / 2, sideY + L_NODE_H / 2 + 5,
+      specs.push(text("lst-" + id, x + L_NODE_W / 2, sideY + L_NODE_H / 2 + 5,
         data[id] !== undefined ? String(data[id]) : "·",
         { fill: tc, "text-anchor": "middle", "font-size": 16, "font-weight": "bold" }));
     }

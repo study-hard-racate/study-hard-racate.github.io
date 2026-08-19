@@ -52,16 +52,19 @@ function generateStepComment(step, renderMode) {
     return "树操作";
   }
   
-  /* 图模式 */
-  if (step.graph && (renderMode === "graph" || renderMode === "hash")) {
+  /* 哈希表模式（必须在图模式之前检查，防止 fall-through 到"图遍历"） */
+  if (step.graph && renderMode === "hash") {
     const snap = step.graph;
-    if (renderMode === "hash") {
-      if (snap.cur != null) {
-        const val = snap.data ? snap.data[snap.cur] : "";
-        return "访问哈希槽中的元素 " + val;
-      }
-      return "哈希表操作";
+    if (snap.cur != null) {
+      const val = snap.data ? snap.data[snap.cur] : "";
+      return "访问哈希槽中的元素 " + val;
     }
+    return "哈希表操作";
+  }
+
+  /* 图模式 */
+  if (step.graph && renderMode === "graph") {
+    const snap = step.graph;
     if (snap.curVertex != null) {
       return "访问顶点 " + snap.curVertex;
     }

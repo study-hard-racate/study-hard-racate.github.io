@@ -843,21 +843,6 @@
     }
     this.stats.steps++;
     var st = { line: line, arr: this.main ? this.main.arr.slice() : null, msg: msg || "" };
-    if (extra) {
-      if (extra.cmp) st.cmp = extra.cmp;
-      if (extra.swap === true) st.swap = true;
-      if (extra.done) st.done = extra.done;
-    }
-    this.steps.push(st);
-    return st;
-  };
-
-  Exec.prototype.pushStep = function (line, msg, extra) {
-    if (this.stats.steps >= MAX_STEPS) {
-      throw new CSimError(line > 0 ? line : 1, "模拟步数超过上限（" + MAX_STEPS + "），可能存在死循环");
-    }
-    this.stats.steps++;
-    var st = { line: line, arr: this.main ? this.main.arr.slice() : null, msg: msg || "" };
     if (this.mode === "list") st.list = this.listSnapshot();
     else if (this.mode === "tree") st.tree = this.treeSnapshot();
     else if (this.mode === "graph") st.graph = this.graphSnapshot();
