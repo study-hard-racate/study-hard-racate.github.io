@@ -75,6 +75,25 @@ function generateStepComment(step, renderMode) {
     }
     return "图遍历";
   }
+
+  /* 拓扑排序模式 */
+  if (step.graph && renderMode === "topological") {
+    const snap = step.graph;
+    const vars = snap.vars || {};
+    const inDegree = vars.inDegree;
+    const result = vars.result;
+    const top = vars.top !== undefined ? vars.top : 0;
+    if (snap.curVertex != null) {
+      if (inDegree && inDegree[snap.curVertex] === 0 && (!vars.visited || !vars.visited[snap.curVertex])) {
+        return "入度为 0，顶点 " + snap.curVertex + " 入队并加入结果";
+      }
+      return "处理顶点 " + snap.curVertex + " 的邻居，减少入度";
+    }
+    if (top > 0 && result) {
+      return "已排序 " + top + " 个顶点：" + result.slice(0, top).join(" → ");
+    }
+    return "计算入度，准备拓扑排序";
+  }
   
   /* 查找模式 */
   if (renderMode === "linear" || renderMode === "binary" || renderMode === "block") {
@@ -182,6 +201,7 @@ function setupDemo(opts) {
     }
     if (step.graph) {
       if (renderMode === "hash") { renderHash(stage, step.graph); return; }
+      if (renderMode === "topological") { renderTopological(stage, step); return; }
       renderGraphCsim(stage, step.graph);
       return;
     }
