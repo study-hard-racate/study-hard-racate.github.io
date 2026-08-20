@@ -126,18 +126,26 @@ function renderTopological(stage, step) {
     const [x, y] = pos[i];
     const done = !!(visited && visited[i] === 1);
     const isCur = (snap.curVertex !== undefined && snap.curVertex === i);
-    const fill = isCur ? "#ffd166" : (done ? "#3ecf8e" : "#232c40");
-    const stroke = isCur ? "#ffd166" : (done ? "#3ecf8e" : "#4da3ff");
-    specs.push(circ("gn-" + i, x, y, R, { fill: fill, stroke: stroke, "stroke-width": isCur ? 3 : 1.5 }));
+    const deg = inDegree ? (inDegree[i] !== undefined ? inDegree[i] : -1) : -1;
+    const isReady = deg === 0 && !done && !isCur;
+    const fill = isCur ? "#ffd166" : (done ? "#3ecf8e" : (isReady ? "rgba(77,163,255,0.25)" : "#232c40"));
+    const stroke = isCur ? "#ffd166" : (done ? "#3ecf8e" : (isReady ? "#4da3ff" : "#4da3ff"));
+    const sw = isCur ? 3 : (isReady ? 2.5 : 1.5);
+    specs.push(circ("gn-" + i, x, y, R, { fill: fill, stroke: stroke, "stroke-width": sw }));
     specs.push(text("gt-" + i, x, y + 5, String(i),
       { "text-anchor": "middle", "font-size": 16, "font-weight": "bold", fill: isCur ? "#1c2433" : "#e8eef7" }));
     
-    /* 入度标签（顶点下方） */
+    /* 入度标签（顶点下方），入度为 0 时高亮 */
     if (inDegree) {
-      const deg = inDegree[i] !== undefined ? inDegree[i] : "-";
-      const degColor = (deg === 0) ? "#4da3ff" : "#b98cff";
-      specs.push(text("gd-" + i, x, y + R + 16, "入度:" + deg,
-        { "text-anchor": "middle", "font-size": 11, fill: degColor }));
+      if (deg === 0 && !done) {
+        /* 入度为 0 的顶点显示蓝色背景标签 */
+        specs.push(rect("gdb-" + i, x - 22, y + R + 4, 44, 18, { fill: "#4da3ff", rx: 9, opacity: 0.2 }));
+        specs.push(text("gd-" + i, x, y + R + 16, "入度:0",
+          { "text-anchor": "middle", "font-size": 11, fill: "#4da3ff", "font-weight": "bold" }));
+      } else {
+        specs.push(text("gd-" + i, x, y + R + 16, "入度:" + deg,
+          { "text-anchor": "middle", "font-size": 11, fill: done ? "#3ecf8e" : "#b98cff" }));
+      }
     }
   }
 
@@ -147,12 +155,14 @@ function renderTopological(stage, step) {
     specs.push(text("rlabel", (minX + maxX) / 2, resultY, "排序结果：",
       { "text-anchor": "middle", "font-size": 12, fill: "#93a4c2" }));
     for (let i = 0; i < top; i++) {
-      const rx = (minX + maxX) / 2 - (top - 1) * 14 + i * 28;
-      specs.push(text("rv-" + i, rx, resultY + 18, String(result[i]),
+      const rx = (minX + maxX) / 2 - (top - 1) * 16 + i * 32;
+      /* 结果项背景 */
+      specs.push(rect("rr-" + i, rx - 12, resultY + 6, 24, 20, { fill: "#3ecf8e", rx: 4, opacity: 0.15 }));
+      specs.push(text("rv-" + i, rx, resultY + 20, String(result[i]),
         { "text-anchor": "middle", "font-size": 14, "font-weight": "bold", fill: "#3ecf8e" }));
       if (i < top - 1) {
-        specs.push(text("ra-" + i, rx + 14, resultY + 18, "→",
-          { "text-anchor": "middle", "font-size": 12, fill: "#93a4c2" }));
+        specs.push(text("ra-" + i, rx + 16, resultY + 20, "→",
+          { "text-anchor": "middle", "font-size": 13, fill: "#93a4c2" }));
       }
     }
   }

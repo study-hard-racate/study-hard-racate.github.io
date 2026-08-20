@@ -17,6 +17,18 @@ function generateStepComment(step, renderMode) {
     return msg;
   }
   
+  /* 堆排序模式 */
+  if (renderMode === "heap" && step.arr) {
+    const arr = step.arr;
+    const line = step.line;
+    if (msg && msg.indexOf("初始化数组") >= 0) return "建堆准备：即将对数组进行原地堆排序";
+    if (msg && msg.indexOf("交换") >= 0) return "交换堆顶与末尾元素，最大值归位";
+    if (line >= 4 && line <= 11) return "调整堆：比较父子节点，下沉较大值";
+    if (line >= 14 && line <= 15) return "建堆阶段：从最后一个非叶子节点开始，逐个下沉";
+    if (line >= 18 && line <= 20) return "排序阶段：交换堆顶与末尾，缩小堆范围";
+    return msg || "堆排序操作";
+  }
+  
   /* 链表模式 */
   if (step.list && renderMode === "list") {
     const snap = step.list;
@@ -166,6 +178,94 @@ function generateStepComment(step, renderMode) {
   return msg || "";
 }
 
+/* 堆排序渲染器：上方显示数组柱状图，下方显示堆的树形结构 */
+function renderHeapSort(stage, step) {
+  const arr = step.arr;
+  const n = arr ? arr.length : 0;
+  if (!n) {
+    renderSVG(stage, "0 0 400 120",
+      [text("empty", 200, 60, "（无数据）", { "text-anchor": "middle", "font-size": 15, fill: "#5c6a85" })]);
+    return;
+  }
+
+  const maxVal = Math.max.apply(null, arr);
+  const barH = 80, barW = Math.min(50, (400 - 20) / n - 4);
+  const gap = 4;
+  const totalW = n * (barW + gap);
+  const offsetX = (400 - totalW) / 2;
+
+  /* ---- 上半部分：数组柱状图 ---- */
+  const barSpecs = [];
+  for (let i = 0; i < n; i++) {
+    const h = Math.max(8, (arr[i] / maxVal) * barH);
+    const x = offsetX + i * (barW + gap);
+    const y = barH - h + 10;
+    const isComp = step.cmp && (step.cmp[0] === i || step.cmp[1] === i);
+    const isSwap = step.swap && step.swap === true && step.cmp && (step.cmp[0] === i || step.cmp[1] === i);
+    const isDone = step.done && step.done.indexOf(i) >= 0;
+    const fill = isSwap ? "#ff6b6b" : isComp ? "#ffd166" : isDone ? "#3ecf8e" : "#4da3ff";
+    barSpecs.push(rect("bar-" + i, x, y, barW, h, { fill: fill, rx: 3 }));
+    barSpecs.push(text("bval-" + i, x + barW / 2, y - 4, String(arr[i]),
+      { "text-anchor": "middle", "font-size": 11, fill: "#e8eef7", "font-weight": "bold" }));
+    barSpecs.push(text("bidx-" + i, x + barW / 2, barH + 16, String(i),
+      { "text-anchor": "middle", "font-size": 10, fill: "#93a4c2" }));
+  }
+
+  /* ---- 下半部分：堆的树形结构 ---- */
+  const treeTop = barH + 35;
+  const R = 16;
+  const treeLevels = Math.ceil(Math.log2(n + 1));
+  const treeW = Math.max(totalW, 200);
+  const treeGapY = 38;
+  const treeSpecs = [];
+
+  for (let i = 0; i < n; i++) {
+    const level = Math.floor(Math.log2(i + 1));
+    const posInLevel = i - (Math.pow(2, level) - 1);
+    const nodesInLevel = Math.min(Math.pow(2, level), n - (Math.pow(2, level) - 1));
+    const levelWidth = nodesInLevel * (R * 2 + 8);
+    const levelStart = (treeW - levelWidth) / 2;
+    const x = levelStart + posInLevel * (R * 2 + 8) + R;
+    const y = treeTop + level * treeGapY + R;
+
+    /* 画边到父节点 */
+    if (i > 0) {
+      const parent = Math.floor((i - 1) / 2);
+      const pLevel = Math.floor(Math.log2(parent + 1));
+      const pPosInLevel = parent - (Math.pow(2, pLevel) - 1);
+      const pNodesInLevel = Math.min(Math.pow(2, pLevel), n - (Math.pow(2, pLevel) - 1));
+      const pLevelWidth = pNodesInLevel * (R * 2 + 8);
+      const pLevelStart = (treeW - pLevelWidth) / 2;
+      const px = pLevelStart + pPosInLevel * (R * 2 + 8) + R;
+      const py = treeTop + pLevel * treeGapY + R;
+      treeSpecs.push(line("edge-" + parent + "-" + i, px, py + R, x, y - R,
+        { stroke: "#3a4c6e", "stroke-width": 1.5 }));
+    }
+
+    const isComp = step.cmp && (step.cmp[0] === i || step.cmp[1] === i);
+    const isSwap = step.swap && step.swap === true && step.cmp && (step.cmp[0] === i || step.cmp[1] === i);
+    const isDone = step.done && step.done.indexOf(i) >= 0;
+    const fill = isSwap ? "#ff6b6b" : isComp ? "#ffd166" : isDone ? "#3ecf8e" : "#232c40";
+    const stroke = isSwap ? "#ff6b6b" : isComp ? "#ffd166" : isDone ? "#3ecf8e" : "#4da3ff";
+    treeSpecs.push(circ("tn-" + i, x, y, R, { fill: fill, stroke: stroke, "stroke-width": isComp || isSwap ? 2.5 : 1.5 }));
+    treeSpecs.push(text("tv-" + i, x, y + 4, String(arr[i]),
+      { "text-anchor": "middle", "font-size": 11, "font-weight": "bold", fill: isComp || isSwap ? "#1c2433" : "#e8eef7" }));
+  }
+
+  /* 分隔线 */
+  const sepY = barH + 28;
+  treeSpecs.push(line("sep", offsetX, sepY, offsetX + totalW, sepY,
+    { stroke: "#2c3a55", "stroke-width": 1, "stroke-dasharray": "4,4" }));
+
+  /* 标签 */
+  barSpecs.push(text("arr-label", 5, 8, "数组", { "font-size": 10, fill: "#93a4c2" }));
+  treeSpecs.push(text("tree-label", 5, treeTop + 4, "堆结构", { "font-size": 10, fill: "#93a4c2" }));
+
+  const allSpecs = barSpecs.concat(treeSpecs);
+  const svgH = treeTop + treeLevels * treeGapY + R + 10;
+  renderSVG(stage, "0 0 400 " + svgH, allSpecs);
+}
+
 function setupDemo(opts) {
   const stage = document.getElementById("stage");
   const status = document.getElementById("status");
@@ -222,6 +322,7 @@ function setupDemo(opts) {
       if (renderMode === "linear") { renderLinearSearch(stage, step); return; }
       if (renderMode === "binary") { renderBinarySearch(stage, step); return; }
       if (renderMode === "block") { renderBlockSearch(stage, step); return; }
+      if (renderMode === "heap") { renderHeapSort(stage, step); return; }
       const specs = buildSortSpecs(step);
       renderSVG(stage, "0 0 " + SVG_W + " " + SVG_H, specs);
       return;
