@@ -197,6 +197,34 @@ body.light .anim-stage svg circle[fill="#232c40"] { fill: #f1f5f9 !important; }
 body.light .anim-stage svg circle[fill="#ffd166"] { fill: #fbbf24 !important; }
 body.light .anim-stage svg circle[fill="#ff6b6b"] { fill: #f87171 !important; }
 body.light .anim-stage svg circle[fill="#b98cff"] { fill: #a78bfa !important; }
+
+/* DP 渲染器浅色覆盖 */
+body.light .anim-stage svg rect[fill="#232c40"] { fill: #f1f5f9 !important; }
+body.light .anim-stage svg rect[stroke="#2e3a52"] { stroke: #cbd5e1 !important; }
+body.light .anim-stage svg text[fill="#f472b6"] { fill: #db2777 !important; }
+body.light .anim-stage svg path[fill="#b98cff"] { fill: #7c3aed !important; }
+body.light .anim-stage svg path[fill="#f472b6"] { fill: #db2777 !important; }
+body.light .anim-stage svg rect[fill="#1a2332"] { fill: rgba(241,245,249,0.95) !important; }
+
+/* 哈希表浅色覆盖 */
+body.light .anim-stage svg rect[fill="#1f2940"] { fill: #e8eef7 !important; }
+body.light .anim-stage svg text[fill="#8fa1bd"] { fill: #475569 !important; }
+body.light .anim-stage svg text[fill="#8b96a8"] { fill: #475569 !important; }
+
+/* 减少动画设置 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .anim-stage svg rect,
+  .anim-stage svg text,
+  .anim-stage svg line,
+  .anim-stage svg circle,
+  .anim-stage svg path {
+    transition: none !important;
+  }
+}
 body.light .player-controls { background: var(--panel); border-color: var(--border); }
 body.light .demo-hint { background: rgba(8, 145, 178, .05); border-color: rgba(8, 145, 178, .2); }
 body.light .status-line { background: rgba(238, 241, 245, .7); }
