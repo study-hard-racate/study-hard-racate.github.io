@@ -655,6 +655,57 @@ body.light .code-line .cm { color: #6b7280; }
   box-shadow: var(--shadow);
 }
 .player-controls .btn { padding: 7px 13px; }
+
+/* 步骤进度条 */
+.step-progress-wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.step-progress-wrap label {
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+#step-progress {
+  flex: 1;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--border);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+#step-progress::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid var(--panel);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  transition: transform 0.15s ease;
+}
+#step-progress::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid var(--panel);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  transition: transform 0.15s ease;
+}
+#step-progress:hover::-webkit-slider-thumb { transform: scale(1.2); }
+#step-progress:hover::-moz-range-thumb { transform: scale(1.2); }
+body.light #step-progress::-webkit-slider-thumb { border-color: var(--panel); }
+body.light #step-progress::-moz-range-thumb { border-color: var(--panel); }
+
 .speed-label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 14px; margin-left: auto; }
 .speed-label input[type="range"] {
   width: 120px;

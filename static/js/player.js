@@ -71,9 +71,25 @@ class StepPlayer {
     this.setSteps(this.steps);
   }
 
+  /* 跳转到指定步骤（进度条用） */
+  goToStep(idx) {
+    if (!this.steps.length) return;
+    idx = Math.max(0, Math.min(this.steps.length - 1, idx));
+    this.i = idx;
+    this.render(this.steps[this.i], this.i);
+    this.renderCode(this.code, this.steps[this.i].line);
+    this._updateInfo();
+  }
+
   _updateInfo() {
     const el = document.getElementById("step-info");
     if (el) el.textContent = (this.i + 1) + " / " + this.steps.length;
+    /* 更新进度条 */
+    const bar = document.getElementById("step-progress");
+    if (bar) {
+      bar.max = this.steps.length - 1;
+      bar.value = this.i;
+    }
   }
 
   _btn(id, glyph) {
@@ -133,6 +149,15 @@ function bindPlayer(p) {
   document.getElementById("btn-next").addEventListener("click", () => { p.pause(); p.next(); });
   document.getElementById("btn-prev").addEventListener("click", () => { p.pause(); p.prev(); });
   document.getElementById("btn-reset").addEventListener("click", () => p.reset());
+
+  /* 步骤进度条 */
+  const progressBar = document.getElementById("step-progress");
+  if (progressBar) {
+    progressBar.addEventListener("input", e => {
+      const idx = parseInt(e.target.value, 10);
+      p.goToStep(idx);
+    });
+  }
 
   /* 速度滑块 */
   const speedSlider = document.getElementById("speed-slider");
