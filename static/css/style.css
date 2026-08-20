@@ -656,6 +656,20 @@ body.light .code-line .cm { color: #6b7280; }
 }
 .player-controls .btn { padding: 7px 13px; }
 
+/* 步骤统计面板 */
+.step-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 8px 14px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.step-stats b { color: var(--accent); font-weight: 700; }
+
 /* 步骤进度条 */
 .step-progress-wrap {
   width: 100%;

@@ -384,6 +384,29 @@ function setupDemo(opts) {
       status.textContent = "演示代码无法执行：" + (res.error && res.error.msg ? res.error.msg : "未知错误");
       return;
     }
+    /* 预计算统计信息 */
+    var stats = { comparisons: 0, swaps: 0, visited: 0, writes: 0 };
+    var visitedSet = {};
+    for (var si = 0; si < res.steps.length; si++) {
+      var s = res.steps[si];
+      if (s.cmp) stats.comparisons++;
+      if (s.swap) stats.swaps++;
+      if (s.list && s.list.cur != null && !visitedSet["l" + s.list.cur]) { visitedSet["l" + s.list.cur] = 1; stats.visited++; }
+      if (s.tree && s.tree.cur != null && !visitedSet["t" + s.tree.cur]) { visitedSet["t" + s.tree.cur] = 1; stats.visited++; }
+      if (s.graph && s.graph.curVertex != null && !visitedSet["g" + s.graph.curVertex]) { visitedSet["g" + s.graph.curVertex] = 1; stats.visited++; }
+      if (s.markNode != null) stats.writes++;
+    }
+    /* 渲染统计面板 */
+    var statsEl = document.getElementById("step-stats");
+    if (statsEl) {
+      var parts = [];
+      if (stats.comparisons > 0) parts.push("比较: <b>" + stats.comparisons + "</b>");
+      if (stats.swaps > 0) parts.push("交换: <b>" + stats.swaps + "</b>");
+      if (stats.visited > 0) parts.push("访问: <b>" + stats.visited + "</b>");
+      if (stats.writes > 0) parts.push("写入: <b>" + stats.writes + "</b>");
+      statsEl.innerHTML = parts.join("　");
+      statsEl.style.display = parts.length ? "" : "none";
+    }
     if (!player) {
       player = new StepPlayer({
         steps: [], code: res.lines, render: render, speed: speed,
