@@ -83,18 +83,21 @@
   </div>
 
   <div class="anim-panel">
+    <div class="demo-hint">
+      <span>▶ 播放 · <span class="kbd">Space</span> 播放/暂停 · <span class="kbd">←</span><span class="kbd">→</span> 单步 · <span class="kbd">R</span> 重置</span>
+      <span>右侧代码行与动画同步高亮</span>
+    </div>
     <div class="anim-stage" id="stage"></div>
-    <div class="player-controls" id="player-controls">
-      <button class="btn" id="btn-play" title="播放/暂停 (Space)">▶</button>
+    <div class="player-controls">
+      <button class="btn" id="btn-reset" title="重置 (R)">↺ 重置</button>
       <button class="btn" id="btn-prev" title="上一步 (←)">⏮</button>
+      <button class="btn btn-primary" id="btn-play" title="播放/暂停 (Space)">▶ 播放</button>
       <button class="btn" id="btn-next" title="下一步 (→)">⏭</button>
-      <button class="btn" id="btn-reset" title="重置 (R)">↺</button>
-      <div class="speed-label">
-        <span>速度</span>
+      <label class="speed-label">速度
         <input type="range" id="speed-slider" min="200" max="2200" value="800" step="100">
         <span id="speed-value">中</span>
-      </div>
-      <span class="step-info" id="step-info"></span>
+      </label>
+      <span class="step-info" id="step-info">0 / 0</span>
     </div>
     <div class="demo-hint">💡 拓扑排序适用于有向无环图（DAG），用于确定任务的执行顺序</div>
     <div class="legend">

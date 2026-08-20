@@ -83,20 +83,24 @@
   </div>
 
   <div class="anim-panel">
+    <div class="demo-hint">
+      <span>▶ 播放 · <span class="kbd">Space</span> 播放/暂停 · <span class="kbd">←</span><span class="kbd">→</span> 单步 · <span class="kbd">R</span> 重置</span>
+      <span>右侧代码行与动画同步高亮</span>
+    </div>
     <div class="anim-stage" id="stage"></div>
-    <div class="player-controls" id="player-controls">
-      <button class="btn" id="btn-play" title="播放/暂停 (Space)">▶</button>
+    <div class="player-controls">
+      <button class="btn" id="btn-random">🎲 随机数据</button>
+      <button class="btn" id="btn-reset" title="重置 (R)">↺ 重置</button>
       <button class="btn" id="btn-prev" title="上一步 (←)">⏮</button>
+      <button class="btn btn-primary" id="btn-play" title="播放/暂停 (Space)">▶ 播放</button>
       <button class="btn" id="btn-next" title="下一步 (→)">⏭</button>
-      <button class="btn" id="btn-reset" title="重置 (R)">↺</button>
-      <div class="speed-label">
-        <span>速度</span>
+      <label class="speed-label">速度
         <input type="range" id="speed-slider" min="200" max="2200" value="800" step="100">
         <span id="speed-value">中</span>
-      </div>
-      <span class="step-info" id="step-info"></span>
+      </label>
+      <span class="step-info" id="step-info">0 / 0</span>
     </div>
-    <div class="demo-hint">💡 堆排序：O(n log n) 不稳定排序，利用最大堆性质原地排序</div>
+    <div class="demo-hint">💡 堆排序：先建最大堆，再反复将堆顶与末尾交换并缩小堆范围</div>
     <div class="legend">
       <span><span class="dot" style="background:#ffd166"></span>正在比较</span>
       <span><span class="dot" style="background:#ff6b6b"></span>发生交换</span>

@@ -188,6 +188,13 @@ function renderHeapSort(stage, step) {
     return;
   }
 
+  /* 解析消息获取交换的两个索引 */
+  var swapI = -1, swapJ = -1;
+  if (step.swap && step.msg) {
+    var mm = step.msg.match(/a\[(\d+)\].*a\[(\d+)\]/);
+    if (mm) { swapI = parseInt(mm[1]); swapJ = parseInt(mm[2]); }
+  }
+
   const maxVal = Math.max.apply(null, arr);
   const barH = 80, barW = Math.min(50, (400 - 20) / n - 4);
   const gap = 4;
@@ -201,7 +208,7 @@ function renderHeapSort(stage, step) {
     const x = offsetX + i * (barW + gap);
     const y = barH - h + 10;
     const isComp = step.cmp && (step.cmp[0] === i || step.cmp[1] === i);
-    const isSwap = step.swap && step.swap === true && step.cmp && (step.cmp[0] === i || step.cmp[1] === i);
+    const isSwap = (i === swapI || i === swapJ);
     const isDone = step.done && step.done.indexOf(i) >= 0;
     const fill = isSwap ? "#ff6b6b" : isComp ? "#ffd166" : isDone ? "#3ecf8e" : "#4da3ff";
     barSpecs.push(rect("bar-" + i, x, y, barW, h, { fill: fill, rx: 3 }));
@@ -243,7 +250,7 @@ function renderHeapSort(stage, step) {
     }
 
     const isComp = step.cmp && (step.cmp[0] === i || step.cmp[1] === i);
-    const isSwap = step.swap && step.swap === true && step.cmp && (step.cmp[0] === i || step.cmp[1] === i);
+    const isSwap = (i === swapI || i === swapJ);
     const isDone = step.done && step.done.indexOf(i) >= 0;
     const fill = isSwap ? "#ff6b6b" : isComp ? "#ffd166" : isDone ? "#3ecf8e" : "#232c40";
     const stroke = isSwap ? "#ff6b6b" : isComp ? "#ffd166" : isDone ? "#3ecf8e" : "#4da3ff";
