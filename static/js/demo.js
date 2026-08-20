@@ -63,6 +63,29 @@ function generateStepComment(step, renderMode) {
     }
     return "树操作";
   }
+
+  /* 红黑树模式 */
+  if (step.tree && renderMode === "rbtree") {
+    const snap = step.tree;
+    const msg = step.msg || "";
+    if (msg.indexOf("左旋") >= 0) return "左旋操作：调整树平衡";
+    if (msg.indexOf("右旋") >= 0) return "右旋操作：调整树平衡";
+    if (msg.indexOf("变色") >= 0 || msg.indexOf("color") >= 0) return "调整节点颜色，维护红黑性质";
+    if (snap.markNode != null && snap.markField) {
+      const node = snap.nodes ? snap.nodes[snap.markNode] : null;
+      return "写入节点 " + (node ? node.data : "") + " 的 " + snap.markField;
+    }
+    if (snap.cmpIds && snap.cmpIds.length === 2) {
+      const n1 = snap.nodes ? snap.nodes[snap.cmpIds[0]] : null;
+      const n2 = snap.nodes ? snap.nodes[snap.cmpIds[1]] : null;
+      return "比较节点 " + (n1 ? n1.data : "") + " 与 " + (n2 ? n2.data : "");
+    }
+    if (snap.cur != null) {
+      const node = snap.nodes ? snap.nodes[snap.cur] : null;
+      return "访问节点 " + (node ? node.data : "");
+    }
+    return msg || "红黑树操作";
+  }
   
   /* 哈希表模式（必须在图模式之前检查，防止 fall-through 到"图遍历"） */
   if (step.graph && renderMode === "hash") {
@@ -297,7 +320,23 @@ function setupDemo(opts) {
       }
     }
     
-    if (step.tree) { renderTreeCsim(stage, step.tree); return; }
+    if (step.tree) {
+      if (renderMode === "rbtree") {
+        /* 红黑树：从 vars.colors 提取颜色信息 */
+        var rbColors = {};
+        if (step.vars && step.vars.colors) {
+          var cArr = step.vars.colors;
+          for (var ci = 0; ci < cArr.length; ci++) {
+            if (cArr[ci] !== undefined && cArr[ci] !== null) {
+              rbColors[ci] = cArr[ci] === 1 ? "red" : "black";
+            }
+          }
+        }
+        renderTreeCsim(stage, step.tree, rbColors);
+        return;
+      }
+      renderTreeCsim(stage, step.tree); return;
+    }
     if (step.list) {
       if (step.list.minStack) {
         renderArrayStack(stage, { arr: step.list.minStack.data, vars: { top: step.list.minStack.top } });

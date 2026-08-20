@@ -1160,6 +1160,10 @@
           left: n.left && n.left.__node && !n.left.__freed ? n.left._id : null,
           right: n.right && n.right.__node && !n.right.__freed ? n.right._id : null,
         };
+        /* 红黑树：捕获 color 字段 */
+        if (n.color !== undefined && n.color !== null) {
+          nodes[n._id].color = n.color;
+        }
         if (n.left && n.left.__node) q.push(n.left);
         if (n.right && n.right.__node) q.push(n.right);
       }

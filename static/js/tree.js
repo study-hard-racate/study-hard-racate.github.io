@@ -75,8 +75,9 @@ function seqBoxSpecs(items, y, prefix, emptyText) {
 }
 
 /* 自定义代码（csim）的树快照 → 树形图渲染。
-   snap: { nodes:{id→{data,left,right}}, rootId, cur, markNode, markField, cmpIds } */
-function renderTreeCsim(stage, snap) {
+   snap: { nodes:{id→{data,left,right}}, rootId, cur, markNode, markField, cmpIds }
+   rbColors: 可选，{nodeId -> "red"|"black"} 红黑树着色 */
+function renderTreeCsim(stage, snap, rbColors) {
   const out = document.getElementById("status");
   if (out) out.innerHTML = "";
   if (!snap || !snap.nodes || !snap.rootId || !snap.nodes[snap.rootId]) {
@@ -107,8 +108,21 @@ function renderTreeCsim(stage, snap) {
       if (!seen[n.right.id]) { seen[n.right.id] = 1; q.push(n.right); }
     }
   }
-  /* 着色：mark 红 > cur 黄 > cmp 紫 */
+  /* 着色：红黑树颜色优先 > mark 红 > cur 黄 > cmp 紫 */
   const colors = {};
+  /* 从 rbColors 参数获取颜色 */
+  if (rbColors) {
+    for (const nid in rbColors) {
+      colors[nid] = rbColors[nid] === "red" ? "#ff6b6b" : "#2c3a55";
+    }
+  }
+  /* 从 snap.nodes 的 color 字段获取红黑树颜色 */
+  for (const nid in snap.nodes) {
+    const nd = snap.nodes[nid];
+    if (nd.color !== undefined && nd.color !== null && !colors[nid]) {
+      colors[nid] = nd.color === 1 ? "#ff6b6b" : "#2c3a55";
+    }
+  }
   if (snap.markNode !== null && snap.markNode !== undefined) colors[snap.markNode] = "#ff6b6b";
   if (snap.cur !== null && snap.cur !== undefined && !colors[snap.cur]) colors[snap.cur] = "#ffd166";
   if (snap.cmpIds) {

@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="C语言二叉树可视化：节点创建与BST插入动画演示。">
+<meta name="description" content="C语言红黑树可视化：自平衡二叉搜索树，插入/旋转/变色动画演示。">
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-<title>二叉树 - C语言数据结构与算法动画</title>
+<title>红黑树 - C语言数据结构与算法动画</title>
 <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -68,51 +68,47 @@
 <main class="content">
 
 <div class="algo-header">
-  <h1>二叉树 (Binary Tree)</h1>
-  <p>每个节点最多有两个孩子（左子树、右子树）。演示二叉搜索树插入：小 → 左，大 → 右，递归找空位。</p>
+  <h1>红黑树</h1>
+  <p>自平衡二叉搜索树：通过节点着色和旋转保持近似平衡，查找/插入/删除均为 O(log n)</p>
 </div>
+
 <div class="algo-layout">
-  <div class="code-panel" id="code-panel">
-  <div class="code-title">
-    <button class="code-collapse-btn" id="code-collapse-btn" title="折叠/展开代码面板">◀</button>
-    <span>二叉树：节点的创建与插入 · C 语言代码</span>
-    <label class="code-follow" title="播放时让当前高亮行保持在视野内（手动滚动代码会暂停跟随）">
-      <input type="checkbox" id="code-follow" checked>跟随高亮
-    </label>
+  <div class="code-panel">
+    <div class="code-title">
+      <span>C 代码</span>
+      <label class="code-follow"><input type="checkbox" id="code-follow" checked> 跟随</label>
+      <button class="code-collapse-btn" id="code-collapse-btn" title="折叠/展开代码面板">◀</button>
+    </div>
+    <div class="code-lines" id="code-lines"></div>
+    <div class="code-resize-handle" id="code-resize-handle" title="拖动调整代码面板宽度"></div>
   </div>
-  <div class="code-lines" id="code-lines"></div>
-</div>
-<div class="code-resize-handle" id="code-resize-handle" title="拖动调整代码面板宽度"></div>
+
   <div class="anim-panel">
-  <div class="demo-hint">
-    <span>▶ 播放 · <span class="kbd">Space</span> 播放/暂停 · <span class="kbd">←</span><span class="kbd">→</span> 单步 · <span class="kbd">R</span> 重置</span>
-    <span>右侧代码行与动画同步高亮</span>
+    <div class="demo-hint">
+      <span>▶ 播放 · <span class="kbd">Space</span> 播放/暂停 · <span class="kbd">←</span><span class="kbd">→</span> 单步 · <span class="kbd">R</span> 重置</span>
+      <span>右侧代码行与动画同步高亮</span>
+    </div>
+    <div class="anim-stage" id="stage"></div>
+    <div class="player-controls">
+      <button class="btn btn-primary" id="btn-play" title="播放/暂停 (Space)">▶ 播放</button>
+      <button class="btn" id="btn-prev" title="上一步 (←)">⏮</button>
+      <button class="btn" id="btn-next" title="下一步 (→)">⏭</button>
+      <button class="btn" id="btn-reset" title="重置 (R)">↺ 重置</button>
+      <label class="speed-label">速度
+        <input type="range" id="speed-slider" min="200" max="2200" value="1000" step="100">
+        <span id="speed-value">中</span>
+      </label>
+      <span class="step-info" id="step-info">0 / 0</span>
+    </div>
+    <div class="demo-hint">💡 红黑树：每个节点非红即黑，根黑、叶黑、红节点的子节点必须黑</div>
+    <div class="legend">
+      <span><span class="dot" style="background:#ff6b6b"></span>红色节点</span>
+      <span><span class="dot" style="background:#2c3a55;border:1px solid #4da3ff"></span>黑色节点</span>
+      <span><span class="dot" style="background:#ffd166"></span>当前操作</span>
+    </div>
+    <div class="status-line" id="status"></div>
+    <div class="step-comment" id="step-comment"></div>
   </div>
-  
-  <div class="anim-stage" id="stage"></div>
-  <div class="player-controls">
-  <button class="btn" id="btn-reset" title="重置">⟲ 重置</button>
-  <button class="btn" id="btn-prev" title="上一步">⏮ 上一步</button>
-  <button class="btn btn-primary" id="btn-play" title="播放/暂停">▶ 播放</button>
-  <button class="btn" id="btn-next" title="下一步">下一步 ⏭</button>
-  <label class="speed-label">速度
-    <input type="range" id="speed-slider" min="200" max="2200" value="700" step="100" title="拖动调整播放速度">
-    <span id="speed-value">中</span>
-  </label>
-  <span class="step-info" id="step-info">0 / 0</span>
-  <span class="step-info" style="margin-left:auto"><span class="kbd">Space</span> 播放 <span class="kbd">←</span><span class="kbd">→</span> 单步 <span class="kbd">R</span> 重置</span>
-</div>
-  <div class="legend">
-    
-    <span><span class="dot" style="background:#4da3ff"></span>树节点</span>
-    <span><span class="dot" style="background:#ffd166"></span>当前访问</span>
-    <span><span class="dot" style="background:#ff6b6b"></span>写入目标</span>
-    <span><span class="dot" style="background:#b98cff"></span>正在比较</span>
-    
-  </div>
-  <div class="status-line" id="status"></div>
-  <div class="step-comment" id="step-comment"></div>
-</div>
 </div>
 
 <div class="complexity-card">
@@ -128,15 +124,27 @@
     </thead>
     <tbody>
       <tr>
-        <td class="complexity-label">时间复杂度</td>
+        <td class="complexity-label">查找</td>
         <td>O(log n)</td>
-        <td>O(n)</td>
-        <td>O(n)</td>
+        <td>O(log n)</td>
+        <td>O(1)</td>
+      </tr>
+      <tr>
+        <td class="complexity-label">插入</td>
+        <td>O(log n)</td>
+        <td>O(log n)</td>
+        <td>O(1)</td>
+      </tr>
+      <tr>
+        <td class="complexity-label">删除</td>
+        <td>O(log n)</td>
+        <td>O(log n)</td>
+        <td>O(1)</td>
       </tr>
     </tbody>
   </table>
   
-  <div class="complexity-note">BST 插入，平均 O(log n)，最坏退化为链表 O(n)</div>
+  <div class="complexity-note">自平衡 BST，最长路径不超过最短路径的 2 倍；Java TreeMap / C++ std::map 底层实现</div>
   
 </div>
 
@@ -179,7 +187,7 @@
 <script src="/static/js/graph.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
-setupDemo({ sample: "#include \u003cstdio.h\u003e\n#include \u003cstdlib.h\u003e\n\ntypedef struct TreeNode {\n    int val;\n    struct TreeNode *left;\n    struct TreeNode *right;\n} TreeNode;\n\nTreeNode* createNode(int val) {\n    TreeNode* node = (TreeNode*)malloc(sizeof(TreeNode));\n    node-\u003eval = val;\n    node-\u003eleft = NULL;\n    node-\u003eright = NULL;\n    return node;\n}\n\n/* \u4e8c\u53c9\u641c\u7d22\u6811\u63d2\u5165\uff1a\u5c0f \u2192 \u5de6\uff0c\u5927 \u2192 \u53f3 */\nTreeNode* insert(TreeNode* root, int val) {\n    if (root == NULL) return createNode(val);\n    if (val \u003c root-\u003eval)\n        root-\u003eleft = insert(root-\u003eleft, val);\n    else\n        root-\u003eright = insert(root-\u003eright, val);\n    return root;\n}\n\nint main() {\n    TreeNode* root = NULL;\n    int arr[] = { 5, 3, 8, 2, 4, 7, 9 };\n    for (int i = 0; i \u003c 7; i++) {\n        root = insert(root, arr[i]);\n    }\n    return 0;\n}\n", renderMode: "tree", withRandom: false });
+setupDemo({ sample: "typedef struct Node {\n    int val;\n    struct Node *left;\n    struct Node *right;\n    int color;\n} Node;\n\nNode* createNode(int v, int c) {\n    Node* n = (Node*)malloc(sizeof(Node));\n    n->val = v;\n    n->left = NULL;\n    n->right = NULL;\n    n->color = c;\n    return n;\n}\n\nint main() {\n    /* \u7ea2\u9ed1\u6811\u6f14\u793a\uff1a\u9010\u6b65\u63d2\u5165\u5e76\u8c03\u6574 */\n    /* \u6b65\u9aa4 1: \u63d2\u5165 10 \u4f5c\u4e3a\u6839\u8282\u70b9\uff08\u9ed1\u8272\uff09 */\n    Node* root = createNode(10, 0);\n    /* \u6b65\u9aa4 2: \u63d2\u5165 20\uff08\u7ea2\u8272\uff09\u4f5c\u4e3a\u53f3\u5b50 */\n    root->right = createNode(20, 1);\n    /* \u6b65\u9aa4 3: \u63d2\u5165 5\uff08\u7ea2\u8272\uff09\u4f5c\u4e3a\u5de6\u5b50 */\n    root->left = createNode(5, 1);\n    /* \u6b65\u9aa4 4: \u63d2\u5165 15\uff08\u7ea2\u8272\uff09\u4f5c\u4e3a20\u7684\u5de6\u5b50 */\n    root->right->left = createNode(15, 1);\n    /* \u6b65\u9aa4 5: \u63d2\u5165 25\uff08\u7ea2\u8272\uff09\u4f5c\u4e3a20\u7684\u53f3\u5b50 */\n    root->right->right = createNode(25, 1);\n    /* \u6b65\u9aa4 6: \u63d2\u5165 3\uff08\u7ea2\u8272\uff09\u4f5c\u4e3a5\u7684\u5de6\u5b50 */\n    root->left->left = createNode(3, 1);\n    /* \u6b65\u9aa4 7: \u63d2\u5165 7\uff08\u7ea2\u8272\uff09\u4f5c\u4e3a5\u7684\u53f3\u5b50 */\n    root->left->right = createNode(7, 1);\n    /* \u6b65\u9aa4 8: \u53d8\u8272 - \u6839\u4fdd\u6301\u9ed1\u8272\uff0c\u6240\u6709\u5b50\u8282\u70b9\u7ea2\u8272 */\n    root->color = 0;\n    root->left->color = 1;\n    root->right->color = 1;\n    return 0;\n}\n", renderMode: "rbtree" });
 </script>
 
 </body>
