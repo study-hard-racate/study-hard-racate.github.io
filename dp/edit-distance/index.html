@@ -1,11 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="C语言数组基本操作可视化：查找、删除、插入，动画同步高亮C代码。">
+<meta name="description" content="C语言编辑距离动态规划可视化：插入/删除/替换三种操作，2D填表与回溯路径动画演示。">
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-<title>数组 - C语言数据结构与算法动画</title>
+<title>编辑距离 - C语言数据结构与算法动画</title>
 <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -70,14 +70,14 @@
 <main class="content">
 
 <div class="algo-header">
-  <h1>数组 (Array)</h1>
-  <p>连续内存中的元素序列，按下标 O(1) 随机访问；插入/删除需要移动元素。</p>
+  <h1>编辑距离（动态规划）</h1>
+  <p>经典DP问题：把序列 S 变成序列 T 所需的最少操作次数，允许插入、删除、替换三种操作。</p>
 </div>
 <div class="algo-layout">
   <div class="code-panel" id="code-panel">
   <div class="code-title">
     <button class="code-collapse-btn" id="code-collapse-btn" title="折叠/展开代码面板">◀</button>
-    <span>数组：插入 · 查找 · 删除 · C 语言代码</span>
+    <span>编辑距离：2D 填表（一维数组模拟二维）· C 语言代码</span>
     <label class="code-follow" title="播放时让当前高亮行保持在视野内（手动滚动代码会暂停跟随）">
       <input type="checkbox" id="code-follow" checked>跟随高亮
     </label>
@@ -85,15 +85,10 @@
   <div class="code-lines" id="code-lines"></div>
 </div>
 <div class="code-resize-handle" id="code-resize-handle" title="拖动调整代码面板宽度"></div>
-  
   <div class="anim-panel">
   <div class="demo-hint">
     <span>▶ 播放 · <span class="kbd">Space</span> 播放/暂停 · <span class="kbd">←</span><span class="kbd">→</span> 单步 · <span class="kbd">R</span> 重置</span>
     <span>右侧代码行与动画同步高亮</span>
-  </div>
-  
-  <div class="inputs">
-    <button class="btn" id="btn-random">🎲 随机数据</button>
   </div>
   
   <div class="anim-stage" id="stage"></div>
@@ -115,9 +110,12 @@
     </div>
   <div class="legend">
     
-    <span><span class="dot" style="background:#ffd166"></span>正在访问</span>
-    <span><span class="dot" style="background:#ff6b6b"></span>写入 / 删除</span>
-    <span><span class="dot" style="background:#3ecf8e"></span>已完成</span>
+    <span><span class="dot" style="background:#ffd166"></span>当前计算</span>
+    <span><span class="dot" style="background:#b98cff"></span>依赖格</span>
+    <span><span class="dot" style="background:#4da3ff"></span>已填好</span>
+    <span><span class="dot" style="background:#3ecf8e"></span>回溯路径</span>
+    <span><span class="dot" style="background:#f472b6"></span>初始化</span>
+    <span><span class="dot" style="background:#b98cff; border-left:2px dashed #b98cff; width:16px; height:0; display:inline-block; vertical-align:middle"></span>依赖方向</span>
     
   </div>
   <div class="status-line" id="status"></div>
@@ -132,22 +130,20 @@
     <thead>
       <tr>
         <th></th>
-        <th>平均情况</th>
-        <th>最坏情况</th>
+        <th>时间复杂度</th>
         <th>空间复杂度</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td class="complexity-label">时间复杂度</td>
-        <td>O(n)</td>
-        <td>O(n)</td>
-        <td>O(1)</td>
+        <td class="complexity-label">动态规划</td>
+        <td>O(m × n)</td>
+        <td>O(m × n)</td>
       </tr>
     </tbody>
   </table>
   
-  <div class="complexity-note">线性存储，随机访问 O(1)，插入删除需要移动元素</div>
+  <div class="complexity-note">m、n 为两个序列的长度；三种操作：插入、删除、替换</div>
   
 </div>
 
@@ -188,10 +184,10 @@
 <script src="/static/js/tree.js"></script>
 <script src="/static/js/stackqueue.js"></script>
 <script src="/static/js/graph.js"></script>
+<script src="/static/js/dp.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
-setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u6570\u7ec4\u57fa\u672c\u64cd\u4f5c\uff1a\u67e5\u627e \u2192 \u5220\u9664 \u2192 \u63d2\u5165 */\nint main(void) {\n    int a[] = { 3, 7, 2, 9, 5 };\n    int n = 5;\n\n    /* 1. \u67e5\u627e\u503c\u4e3a 9 \u7684\u4f4d\u7f6e */\n    int x = 9;\n    int idx = -1;\n    for (int i = 0; i \u003c n; i++) {\n        if (a[i] == x) idx = i;\n    }\n\n    /* 2. \u5220\u9664\u4e0b\u6807 idx \u7684\u5143\u7d20\uff1a\u540e\u9762\u7684\u5143\u7d20\u9010\u4e2a\u524d\u79fb */\n    for (int i = idx; i \u003c n - 1; i++) {\n        a[i] = a[i + 1];\n    }\n    n = n - 1;\n\n    /* 3. \u5728\u4e0b\u6807 2 \u5904\u63d2\u5165 6\uff1a\u540e\u9762\u7684\u5143\u7d20\u9010\u4e2a\u540e\u79fb */\n    for (int i = n; i \u003e 2; i--) {\n        a[i] = a[i - 1];\n    }\n    a[2] = 6;\n    n = n + 1;\n    return 0;\n}\n", renderMode: "sort", withRandom: true });
+setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u7f16\u8f91\u8ddd\u79bb\uff1a\u63d2\u5165/\u5220\u9664/\u66ff\u6362\u4e09\u79cd\u64cd\u4f5c\uff0c\u4e00\u7ef4\u6570\u7ec4\u6a21\u62df\u4e8c\u7ef4\u8868 */\nint main() {\n    int s[] = { 1, 2, 3 };     /* \u5e8f\u5217 S\uff0c\u957f\u5ea6 m=3 */\n    int t[] = { 1, 3, 2 };     /* \u5e8f\u5217 T\uff0c\u957f\u5ea6 n=3 */\n    int m = 3;\n    int n = 3;\n    int dp[16];                 /* \u8868\u5927\u5c0f (m+1)*(n+1) = 16 */\n    int path[16];               /* \u56de\u6eaf\u8def\u5f84\uff08\u4e00\u7ef4\u4e0b\u6807\uff09 */\n    int path_len = 0;\n    int i, j, k;\n    int phase = 0;\n    int prev_w = -1;            /* \u4f9d\u8d56\u683c\u4e0b\u6807 */\n    \n    /* \u521d\u59cb\u5316\u7b2c 0 \u884c\u4e0e\u7b2c 0 \u5217 */\n    phase = 1;\n    for (i = 0; i \u003c= m; i++) {\n        dp[i * (n + 1)] = i;\n    }\n    for (j = 0; j \u003c= n; j++) {\n        dp[j] = j;\n    }\n    \n    /* \u586b\u8868\uff1a\u9010\u683c\u8ba1\u7b97 */\n    phase = 2;\n    for (i = 1; i \u003c= m; i++) {\n        for (j = 1; j \u003c= n; j++) {\n            k = i * (n + 1) + j;\n            if (s[i - 1] == t[j - 1]) {\n                prev_w = k - (n + 1) - 1;   /* \u5de6\u4e0a\uff1a\u4e0d\u9700\u64cd\u4f5c */\n                dp[k] = dp[prev_w];\n            } else {\n                prev_w = k - (n + 1);       /* \u4e0a\uff1a\u5220\u9664 */\n                if (dp[k - 1] \u003c dp[prev_w]) prev_w = k - 1;           /* \u5de6\uff1a\u63d2\u5165 */\n                if (dp[k - (n + 1) - 1] \u003c dp[prev_w]) prev_w = k - (n + 1) - 1;  /* \u5de6\u4e0a\uff1a\u66ff\u6362 */\n                dp[k] = dp[prev_w] + 1;\n            }\n        }\n    }\n    \n    /* \u56de\u6eaf\uff1a\u4ece\u53f3\u4e0b\u89d2\u5f80\u56de\u8d70 */\n    phase = 3;\n    i = m;\n    j = n;\n    while (i \u003e 0 \u0026\u0026 j \u003e 0) {\n        k = i * (n + 1) + j;\n        path[path_len] = k;\n        path_len = path_len + 1;\n        if (s[i - 1] == t[j - 1]) {\n            i = i - 1;\n            j = j - 1;\n        } else {\n            prev_w = k - (n + 1);           /* \u4e0a\uff1a\u5220\u9664 */\n            if (dp[k - 1] \u003c dp[prev_w]) prev_w = k - 1;              /* \u5de6\uff1a\u63d2\u5165 */\n            if (dp[k - (n + 1) - 1] \u003c dp[prev_w]) prev_w = k - (n + 1) - 1;  /* \u5de6\u4e0a\uff1a\u66ff\u6362 */\n            if (prev_w == k - (n + 1)) {\n                i = i - 1;\n            } else if (prev_w == k - 1) {\n                j = j - 1;\n            } else {\n                i = i - 1;\n                j = j - 1;\n            }\n        }\n    }\n    \n    phase = 4;\n    k = m * (n + 1) + n;\n    dp[k] = dp[k];      /* \u89e6\u53d1\u5b8c\u6210\u6b65\u9aa4 */\n    return 0;\n}\n", renderMode: "editdistance", withRandom: false });
 </script>
 
 </body>
-</html>

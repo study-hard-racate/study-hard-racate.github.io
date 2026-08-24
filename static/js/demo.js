@@ -1,7 +1,8 @@
 /* 固定演示页初始化：用 csim 引擎跑内置示例代码，生成步骤交给播放器与对应渲染器。
    页面用法：setupDemo({ sample, renderMode, withRandom, speed })
    renderMode: "sort"（排序数组）| "array"（通用数组）| "stack"（竖直数组栈）
-               | "queue"（数组队列）| "list"（链表）| "tree"（树形图）| "graph"（图） */
+               | "queue"（数组队列）| "list"（链表）| "tree"（树形图）| "graph"（图）
+               | "dp01"/"dpcomplete"（一维 DP 滚动数组）| "lcs"/"editdistance"（2D DP 表） */
 
 /* 根据步骤快照生成人类可读的步骤注释 */
 function generateStepComment(step, renderMode) {
@@ -198,6 +199,55 @@ function generateStepComment(step, renderMode) {
     return "动态规划";
   }
   
+  /* LCS / 编辑距离（2D DP 表） */
+  if (step.dp && (renderMode === "lcs" || renderMode === "editdistance")) {
+    const dp = step.dp;
+    const vars = step.vars || {};
+    const phase = dp.phase;
+    const isLcs = renderMode === "lcs";
+    const seqB = vars.b || vars.t || [];
+    const m = vars.m !== undefined ? vars.m : 0;
+    const n = dp.n !== undefined ? dp.n : 0;
+    const table = dp.table || [];
+    if (phase === 1) {
+      return isLcs ? "初始化：第 0 行 / 第 0 列全部置 0" : "初始化：第 0 行 / 第 0 列填 i 与 j";
+    }
+    if (phase === 2 && dp.i !== undefined && dp.j !== undefined) {
+      const aVal = (dp.weights || [])[dp.i - 1];
+      const bVal = seqB[dp.j - 1];
+      const curVal = table[dp.i * (n + 1) + dp.j];
+      if (isLcs) {
+        if (aVal === bVal) {
+          return "A[" + (dp.i-1) + "]=" + aVal + " == B[" + (dp.j-1) + "]=" + bVal +
+            "，dp[" + dp.i + "][" + dp.j + "] = dp[" + (dp.i-1) + "][" + (dp.j-1) + "] + 1 = " + curVal;
+        }
+        return "A[" + (dp.i-1) + "]=" + aVal + " ≠ B[" + (dp.j-1) + "]=" + bVal +
+          "，dp[" + dp.i + "][" + dp.j + "] = max(上=" + (table[(dp.i-1) * (n + 1) + dp.j] || 0) +
+          ", 左=" + (table[dp.i * (n + 1) + (dp.j-1)] || 0) + ") = " + curVal;
+      }
+      if (aVal === bVal) {
+        return "S[" + (dp.i-1) + "]=" + aVal + " == T[" + (dp.j-1) + "]=" + bVal +
+          "，dp[" + dp.i + "][" + dp.j + "] = dp[" + (dp.i-1) + "][" + (dp.j-1) + "] = " + curVal;
+      }
+      return "S[" + (dp.i-1) + "]=" + aVal + " ≠ T[" + (dp.j-1) + "]=" + bVal +
+        "，dp[" + dp.i + "][" + dp.j + "] = min(上+1, 左+1, 左上+1) = " + curVal;
+    }
+    if (phase === 3) {
+      const pathLen = vars.path_len !== undefined ? vars.path_len : 0;
+      return isLcs
+        ? "回溯：沿依赖方向回走，已标记 " + pathLen + " 个路径格（绿色）"
+        : "回溯：反推最小操作路径，已标记 " + pathLen + " 个路径格（绿色）";
+    }
+    if (phase === 4) {
+      const ans = table[m * (n + 1) + n] || 0;
+      return isLcs
+        ? "完成！最长公共子序列长度 = dp[" + m + "][" + n + "] = " + ans
+        : "完成！最小编辑距离 = dp[" + m + "][" + n + "] = " + ans;
+    }
+    if (msg) return msg;
+    return isLcs ? "最长公共子序列" : "编辑距离";
+  }
+  
   return msg || "";
 }
 
@@ -349,6 +399,11 @@ function setupDemo(opts) {
       if (renderMode === "hash") { renderHash(stage, step.graph); return; }
       if (renderMode === "topological") { renderTopological(stage, step); return; }
       renderGraphCsim(stage, step.graph);
+      return;
+    }
+    /* 2D DP 表（LCS/编辑距离）：无条件路由，入口步骤无 dp 快照时也渲染空表格 */
+    if (renderMode === "lcs" || renderMode === "editdistance") {
+      renderDP2D(stage, step, renderMode);
       return;
     }
     if (step.dp) {

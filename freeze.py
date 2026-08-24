@@ -40,6 +40,8 @@ ROUTES = [
     ("/dp", "dp/index.html"),
     ("/dp/01-knapsack", "dp/01-knapsack/index.html"),
     ("/dp/complete-knapsack", "dp/complete-knapsack/index.html"),
+    ("/dp/lcs", "dp/lcs/index.html"),
+    ("/dp/edit-distance", "dp/edit-distance/index.html"),
 ]
 
 BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "site")
