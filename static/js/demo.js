@@ -199,6 +199,47 @@ function generateStepComment(step, renderMode) {
     return "动态规划";
   }
   
+  /* 基数排序 */
+  if (renderMode === "radix") {
+    const vars = step.vars || {};
+    const exp = vars.exp;
+    const i = vars.i;
+    const a = step.arr || [];
+    if (exp !== undefined && exp <= 100 && i !== undefined && i >= 0 && i < a.length) {
+      return "按" + (exp === 1 ? "个位" : exp === 10 ? "十位" : "百位") + "排序：处理 a[" + i + "]=" + a[i];
+    }
+    if (exp !== undefined && exp > 100) {
+      return "完成！三轮排序后数组有序";
+    }
+    return msg || "基数排序";
+  }
+
+  /* KMP 字符串匹配 */
+  if (renderMode === "kmp") {
+    const vars = step.vars || {};
+    const phase = vars.phase;
+    const i = vars.i, j = vars.j;
+    const t = step.arr || [];
+    const p = vars.p || [];
+    const CHAR = ["", "A", "B", "C", "D"];
+    const ch = (v) => CHAR[v] !== undefined ? CHAR[v] : String(v);
+    if (phase === 1) {
+      return "构建 next 数组：j=" + j + "（记录前缀与后缀的最长公共长度）";
+    }
+    if (phase === 2 && i !== undefined && j !== undefined && i < t.length && j >= 0) {
+      if (t[i] === p[j]) {
+        return "t[" + i + "]=" + ch(t[i]) + " == p[" + j + "]=" + ch(p[j]) + "，匹配继续";
+      }
+      return "t[" + i + "]=" + ch(t[i]) + " ≠ p[" + j + "]=" + ch(p[j]) + "，失配！j 回退到 next[" + j + "]=" + (p.length ? (vars.next || [])[j] : 0);
+    }
+    if (phase === 3) {
+      return vars.pos >= 0
+        ? "匹配成功！模式串出现在主串下标 " + vars.pos + " 处"
+        : "匹配结束，未找到模式串";
+    }
+    return msg || "KMP 字符串匹配";
+  }
+
   /* 计数排序 */
   if (renderMode === "countingsort") {
     const vars = step.vars || {};
@@ -508,6 +549,16 @@ function setupDemo(opts) {
       if (renderMode === "hash") { renderHash(stage, step.graph); return; }
       if (renderMode === "topological") { renderTopological(stage, step); return; }
       renderGraphCsim(stage, step.graph);
+      return;
+    }
+    /* 基数排序：两行视图（a/out + 当前位数字） */
+    if (renderMode === "radix") {
+      renderRadixSort(stage, step);
+      return;
+    }
+    /* KMP 字符串匹配：主串/模式串/next 表 */
+    if (renderMode === "kmp") {
+      renderKMP(stage, step);
       return;
     }
     /* 计数排序：三行视图（a/count/out） */

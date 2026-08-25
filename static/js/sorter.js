@@ -218,6 +218,114 @@ function renderCountingSort(stage, step) {
   renderSVG(stage, "0 0 " + Wtotal + " " + Htotal, specs);
 }
 
+/* 基数排序渲染器（renderMode: "radix"）：
+   两行视图——上行 a[]（当前数组，格子上方显示当前位数字），下行 out[]（本轮结果）。
+   数据：step.arr = a（main），vars = { out, count, n, exp, i, d, phase }。
+   exp: 1=个位 10=十位 100=百位，>100 表示完成。 */
+function renderRadixSort(stage, step) {
+  const vars = step.vars || {};
+  const a = step.arr || [];
+  const out = vars.out || [];
+  const n = vars.n !== undefined ? vars.n : a.length;
+  const exp = vars.exp !== undefined ? vars.exp : 1;
+  const i = vars.i;
+  const d = vars.d;
+
+  if (!a.length) {
+    renderSVG(stage, "0 0 300 120",
+      [text("rd-empty", 150, 60, "（空数据）", { "text-anchor": "middle", "font-size": 15, fill: "#5c6a85" })]);
+    return;
+  }
+
+  const cellW = 44, cellH = 30, gap = 4;
+  const left = 40;
+  const rowAY = 70, rowBY = 70 + 48;
+  const specs = [];
+
+  /* 阶段标签 */
+  let phaseText = "", phaseColor = "#8b96a8";
+  if (exp <= 1) { phaseText = "第 1 轮：按个位排序（LSD）"; phaseColor = "#ffd166"; }
+  else if (exp === 10) { phaseText = "第 2 轮：按十位排序"; phaseColor = "#ffd166"; }
+  else if (exp === 100) { phaseText = "第 3 轮：按百位排序"; phaseColor = "#ffd166"; }
+  else { phaseText = "完成！所有位排序完毕，数组有序"; phaseColor = "#3ecf8e"; }
+  specs.push(text("rd-phase", left, 26, phaseText,
+    { "font-size": 12, "font-weight": "bold", fill: phaseColor }));
+
+  specs.push(text("rd-la", left - 6, rowAY + 20, "a", { "font-size": 13, "font-weight": "bold", fill: "#5eead4" }));
+  specs.push(text("rd-lo", left - 6, rowBY + 20, "o", { "font-size": 13, "font-weight": "bold", fill: "#5eead4" }));
+
+  /* 上行 a[] + 当前位数字 */
+  for (let k = 0; k < n; k++) {
+    const x = left + k * (cellW + gap);
+    const isCur = exp <= 100 && i === k;
+    specs.push(rect("rda-" + k, x, rowAY, cellW, cellH, {
+      rx: 4,
+      fill: isCur ? "#ffd166" : "#232c40",
+      stroke: isCur ? "#ffd166" : "#4da3ff",
+      "stroke-width": isCur ? 2.5 : 1.5,
+    }));
+    specs.push(text("rdat-" + k, x + cellW / 2, rowAY + cellH / 2 + 5,
+      a[k] !== undefined ? String(a[k]) : "·",
+      { "text-anchor": "middle", "font-size": 12, "font-weight": "bold",
+        fill: isCur ? "#1c2433" : "#e8eef7" }));
+    /* 当前位数字（格子上方小字） */
+    if (exp <= 100 && a[k] !== undefined) {
+      const digit = Math.floor(a[k] / exp) % 10;
+      specs.push(text("rdad-" + k, x + cellW / 2, rowAY - 8, String(digit),
+        { "text-anchor": "middle", "font-size": 11, "font-weight": "bold",
+          fill: isCur ? "#ffd166" : "#8b96a8" }));
+    }
+    specs.push(text("rdai-" + k, x + cellW / 2, rowAY + cellH + 13, String(k),
+      { "text-anchor": "middle", "font-size": 9, fill: "#5c6a85" }));
+  }
+
+  /* 下行 out[] */
+  for (let k = 0; k < n; k++) {
+    const x = left + k * (cellW + gap);
+    const filled = out[k] !== undefined && out[k] > 0;
+    specs.push(rect("rdo-" + k, x, rowBY, cellW, cellH, {
+      rx: 4,
+      fill: filled ? "#3ecf8e" : "#232c40",
+      stroke: filled ? "#3ecf8e" : "#2e3a52",
+      "stroke-width": filled ? 2 : 1.5,
+    }));
+    specs.push(text("rdot-" + k, x + cellW / 2, rowBY + cellH / 2 + 5,
+      filled ? String(out[k]) : "",
+      { "text-anchor": "middle", "font-size": 12, "font-weight": "bold",
+        fill: filled ? "#1c2433" : "#5c6a85" }));
+  }
+
+  /* 状态说明 */
+  const statusY = rowBY + cellH + 34;
+  if (exp <= 100 && i !== undefined && i >= 0 && i < n) {
+    specs.push(text("rd-status", left, statusY,
+      "a[" + i + "]=" + a[i] + " 的" + (exp === 1 ? "个位" : exp === 10 ? "十位" : "百位") + "数字是 " + d + "，放入 out 的 count[" + d + "]-1 位置",
+      { "font-size": 12, fill: "#ffd166" }));
+  } else if (exp > 100) {
+    specs.push(text("rd-status", left, statusY,
+      "三轮排序后数组已有序", { "font-size": 12, "font-weight": "bold", fill: "#3ecf8e" }));
+  } else {
+    specs.push(text("rd-status", left, statusY,
+      "用计数排序按当前位稳定排序（LSD 从低位到高位）", { "font-size": 12, fill: "#8b96a8" }));
+  }
+
+  /* 图例 */
+  const legendY = statusY + 24;
+  specs.push(el("rd-legend-bg", "rect", {
+    x: left - 5, y: legendY - 12, width: 420, height: 20, rx: 4,
+    fill: "#1a2332", opacity: 0.8 }));
+  specs.push(text("rd-leg-1", left, legendY, "■ ", { "font-size": 11, fill: "#ffd166" }));
+  specs.push(text("rd-leg-1t", left + 16, legendY, "当前元素", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("rd-leg-2", left + 70, legendY, "■ ", { "font-size": 11, fill: "#3ecf8e" }));
+  specs.push(text("rd-leg-2t", left + 86, legendY, "本轮已放回", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("rd-leg-3", left + 140, legendY, "7", { "font-size": 11, fill: "#8b96a8", "font-weight": "bold" }));
+  specs.push(text("rd-leg-3t", left + 156, legendY, "当前位数字", { "font-size": 10, fill: "#8b96a8" }));
+
+  const Wtotal = left + n * (cellW + gap) + 40;
+  const Htotal = legendY + 30;
+  renderSVG(stage, "0 0 " + Wtotal + " " + Htotal, specs);
+}
+
 /* 排序页面统一初始化入口 */
 function sortPageSetup(codeLines, genStepsFn, extraRender) {
   const stage = document.getElementById("stage");

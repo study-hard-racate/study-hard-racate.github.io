@@ -99,7 +99,7 @@ def _load_js_files():
     out = ""
     for fn in ["player.js", "svg.js", "sorter.js", "csim.js", "list.js", "tree.js",
                "stackqueue.js", "graph.js", "hash.js", "search.js", "unionfind.js",
-               "dp.js", "hanoi.js", "demo.js"]:
+               "dp.js", "hanoi.js", "string.js", "demo.js"]:
         p = os.path.join(ROOT, "static", "js", fn)
         if os.path.exists(p):
             with open(p, encoding="utf-8") as f:

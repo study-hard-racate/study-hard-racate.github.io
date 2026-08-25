@@ -23,6 +23,7 @@ PAGES = {
     "/sorting/shell": "sorting/shell/index.html",
     "/sorting/heap": "sorting/heap/index.html",
     "/sorting/counting": "sorting/counting/index.html",
+    "/sorting/radix": "sorting/radix/index.html",
     "/search": "search/index.html",
     "/search/linear": "search/linear/index.html",
     "/search/binary": "search/binary/index.html",
@@ -48,6 +49,7 @@ PAGES = {
     "/dp/lis": "dp/lis/index.html",
     "/classic": "classic/index.html",
     "/classic/hanoi": "classic/hanoi/index.html",
+    "/classic/kmp": "classic/kmp/index.html",
 }
 
 # 所有算法/模块页（含播放器与舞台），列表页/首页不在此列
