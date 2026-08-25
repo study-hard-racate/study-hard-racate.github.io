@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# 部署产物（由 freeze.py 生成，独立 git 仓库）
+site/
+_site_git_backup_*/
+
+# 系统文件
+Thumbs.db
+.DS_Store
