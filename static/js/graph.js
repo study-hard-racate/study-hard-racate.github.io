@@ -65,6 +65,229 @@ function renderGraphCsim(stage, snap) {
   renderSVG(stage, vbX + " " + vbY + " " + W + " " + H, specs);
 }
 
+/* ===== Floyd-Warshall 全源最短路渲染器（renderMode: "floyd"）=====
+   一维模拟二维距离矩阵 d[u*n+v]，逐格松弛：经 k 中转是否更短。
+   数据：step.arr = d（main），vars = { n, k, i, j }。 */
+function renderFloyd(stage, step) {
+  const vars = step.vars || {};
+  const d = step.arr || [];
+  const n = vars.n || 0;
+  const phase = vars.phase !== undefined ? vars.phase : 0;
+  const k = vars.k, i = vars.i, j = vars.j;
+  const INF = 9999;
+
+  if (!n || !d.length) {
+    renderSVG(stage, "0 0 300 120",
+      [text("fw-empty", 150, 60, "（空矩阵）", { "text-anchor": "middle", "font-size": 15, fill: "#5c6a85" })]);
+    return;
+  }
+
+  const cellW = 46, cellH = 30, gap = 2;
+  const left = 52, top = 58;
+  const specs = [];
+
+  /* 阶段标签 */
+  const kActive = phase === 2 && k !== undefined && k >= 0 && k < n;
+  let phaseText = "", phaseColor = "#8b96a8";
+  if (phase === 1) { phaseText = "阶段：初始化距离矩阵（对角线 0，无边 ∞，边为权重）"; phaseColor = "#f472b6"; }
+  else if (phase === 2) { phaseText = "阶段：以顶点 " + (k !== undefined && k >= 0 && k < n ? k : "?") + " 为中转，松弛所有 i→j"; phaseColor = "#ffd166"; }
+  else if (phase === 3) { phaseText = "阶段：完成 ✓ 所有顶点对的最短距离"; phaseColor = "#3ecf8e"; }
+  specs.push(text("fw-phase", left, 24, phaseText,
+    { "font-size": 12, "font-weight": "bold", fill: phaseColor }));
+
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      const x = left + c * (cellW + gap);
+      const y = top + r * (cellH + gap);
+      const isCur = kActive && i === r && j === c;
+      const isKRow = kActive && r === k && !isCur;
+      const isKCol = kActive && c === k && !isCur;
+      let fill = "#232c40", stroke = "#2e3a52", sw = 1.5, tc = "#e8eef7";
+      if (isCur) { fill = "#ffd166"; stroke = "#ffd166"; sw = 2.5; tc = "#1c2433"; }
+      else if (isKRow || isKCol) { fill = "#b98cff"; stroke = "#b98cff"; sw = 1.5; tc = "#1c2433"; }
+      specs.push(rect("fwc-" + r + "-" + c, x, y, cellW, cellH, {
+        rx: 4, fill: fill, stroke: stroke, "stroke-width": sw,
+      }));
+      const v = d[r * n + c];
+      const txt = v === undefined || v >= INF ? "∞" : String(v);
+      specs.push(text("fwt-" + r + "-" + c, x + cellW / 2, y + cellH / 2 + 5,
+        txt, { "text-anchor": "middle", "font-size": 13, "font-weight": "bold", fill: tc }));
+    }
+  }
+
+  /* 行/列标签（顶点号） */
+  for (let r = 0; r < n; r++) {
+    specs.push(text("fwr-" + r, left - 12, top + r * (cellH + gap) + cellH / 2 + 5, String(r),
+      { "text-anchor": "middle", "font-size": 12, "font-weight": "bold", fill: "#5eead4" }));
+  }
+  for (let c = 0; c < n; c++) {
+    specs.push(text("fwc-" + c, left + c * (cellW + gap) + cellW / 2, top - 8, String(c),
+      { "text-anchor": "middle", "font-size": 12, "font-weight": "bold", fill: "#5eead4" }));
+  }
+
+  /* 状态说明 */
+  const statusY = top + n * (cellH + gap) + 34;
+  if (kActive && i !== undefined && j !== undefined) {
+    const via = (d[i * n + k] !== undefined ? d[i * n + k] : INF) + (d[k * n + j] !== undefined ? d[k * n + j] : INF);
+    const cur = d[i * n + j] !== undefined ? d[i * n + j] : INF;
+    const viaTxt = via >= INF ? "∞" : String(via);
+    const curTxt = cur >= INF ? "∞" : String(cur);
+    specs.push(text("fw-status", left, statusY,
+      "d[" + i + "][" + j + "] = min(" + curTxt + ", d[" + i + "][" + k + "]+d[" + k + "][" + j + "]=" + viaTxt + ") = " + (via < cur ? via : curTxt),
+      { "font-size": 12, "font-weight": "bold", fill: "#ffd166" }));
+  } else if (phase === 3) {
+    specs.push(text("fw-status", left, statusY,
+      "完成！所有顶点对最短距离已求出",
+      { "font-size": 12, "font-weight": "bold", fill: "#3ecf8e" }));
+  } else {
+    specs.push(text("fw-status", left, statusY,
+      "初始化：d[u][u]=0，有边 d[u][v]=权重，其余 ∞（9999）",
+      { "font-size": 12, fill: "#f472b6" }));
+  }
+
+  /* 图例 */
+  const legendY = statusY + 24;
+  specs.push(el("fw-legend-bg", "rect", {
+    x: left - 5, y: legendY - 12, width: 430, height: 20, rx: 4,
+    fill: "#1a2332", opacity: 0.8 }));
+  specs.push(text("fw-leg-1", left, legendY, "■ ", { "font-size": 11, fill: "#ffd166" }));
+  specs.push(text("fw-leg-1t", left + 16, legendY, "当前松弛", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("fw-leg-2", left + 70, legendY, "■ ", { "font-size": 11, fill: "#b98cff" }));
+  specs.push(text("fw-leg-2t", left + 86, legendY, "中转行/列", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("fw-leg-3", left + 135, legendY, "∞", { "font-size": 11, fill: "#8b96a8", "font-weight": "bold" }));
+  specs.push(text("fw-leg-3t", left + 151, legendY, "不可达", { "font-size": 10, fill: "#8b96a8" }));
+
+  const Wtotal = left + n * (cellW + gap) + 40;
+  const Htotal = legendY + 30;
+  renderSVG(stage, "0 0 " + Wtotal + " " + Htotal, specs);
+}
+
+/* ===== Prim 最小生成树渲染器（renderMode: "prim"）=====
+   与 Dijkstra 同布局：key（到树的最小边权）标签、inMST 绿色、树边绿色加粗。
+   数据：step.arr = key（main），vars = { n, w[], inMST[], parent[], phase, u, v }。 */
+function renderPrim(stage, step) {
+  const vars = step.vars || {};
+  const n = vars.n || 0;
+  const key = (step.arr && Array.isArray(step.arr)) ? step.arr : (vars.key || []);
+  if (!n || !key.length) {
+    renderSVG(stage, "0 0 300 120",
+      [text("pr-empty", 150, 60, "（空图，无邻接信息）", { "text-anchor": "middle", "font-size": 15, fill: "#5c6a85" })]);
+    return;
+  }
+  const w = vars.w || [];
+  const inMST = vars.inMST || [];
+  const parent = vars.parent || [];
+  const phase = vars.phase !== undefined ? vars.phase : 0;
+  const cur = vars.u !== undefined ? vars.u : null;
+  const relaxV = vars.v !== undefined ? vars.v : null;
+  const INF = 9999;
+
+  const R = 26;
+  const cx = 65, cy = 65;
+  const RLAY = Math.max(75, Math.min(135, n * 26));
+  const pos = [];
+  let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
+  for (let i = 0; i < n; i++) {
+    const a = (2 * Math.PI * i) / n - Math.PI / 2;
+    const x = cx + RLAY * Math.cos(a);
+    const y = cy + RLAY * Math.sin(a);
+    pos.push([x, y]);
+    minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+    minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+  }
+  const pad = R + 40;
+  const vbX = minX - pad, vbY = minY - pad - 24;
+  const W = maxX - minX + 2 * pad;
+  const H = maxY - minY + 2 * pad + 34;
+  const specs = [];
+
+  /* 阶段标签 */
+  let phaseText = "", phaseColor = "#8b96a8";
+  if (phase === 1) { phaseText = "阶段：初始化（key 置 ∞，key[0]=0 为起点）"; phaseColor = "#f472b6"; }
+  else if (phase === 2) { phaseText = "阶段：主循环（选 key 最小顶点加入 MST → 更新邻居 key）"; phaseColor = "#ffd166"; }
+  else if (phase === 3) { phaseText = "阶段：完成 ✓ 最小生成树已生成"; phaseColor = "#3ecf8e"; }
+  specs.push(text("pr-phase", minX, vbY + 22, phaseText,
+    { "font-size": 12, "font-weight": "bold", fill: phaseColor }));
+
+  function isTreeEdge(u, v) {
+    return (parent[u] === v) || (parent[v] === u);
+  }
+
+  /* 边 + 权重标签 */
+  for (let u = 0; u < n; u++) {
+    for (let v = u + 1; v < n; v++) {
+      const wt = w[u * n + v];
+      if (!wt || wt <= 0) continue;
+      const [x1, y1] = pos[u];
+      const [x2, y2] = pos[v];
+      const dx = x2 - x1, dy = y2 - y1;
+      const d = Math.sqrt(dx * dx + dy * dy) || 1;
+      const ux = dx / d, uy = dy / d;
+      const sx = x1 + ux * R, sy = y1 + uy * R;
+      const tipX = x2 - ux * (R + 7), tipY = y2 - uy * (R + 7);
+      const tree = phase >= 2 && isTreeEdge(u, v);
+      const stroke = tree ? "#3ecf8e" : "#4da3ff";
+      specs.push(line("pe-" + u + "-" + v, sx, sy, tipX, tipY, { stroke: stroke, "stroke-width": tree ? 3 : 2 }));
+      const mx = (x1 + x2) / 2 + (tree ? 0 : -uy * 10);
+      const my = (y1 + y2) / 2 + (tree ? 0 : ux * 10);
+      specs.push(rect("peb-" + u + "-" + v, mx - 9, my - 9, 18, 16, { fill: "#1a2332", rx: 3, opacity: 0.9 }));
+      specs.push(text("pwt-" + u + "-" + v, mx, my + 4, String(wt),
+        { "text-anchor": "middle", "font-size": 11, "font-weight": "bold", fill: tree ? "#3ecf8e" : "#5eead4" }));
+    }
+  }
+
+  /* 顶点：key 标签 + inMST 绿色 */
+  for (let i = 0; i < n; i++) {
+    const [x, y] = pos[i];
+    const done = inMST[i] === 1;
+    const isCur = cur === i;
+    const isRelax = relaxV === i && phase === 2;
+    let fill = "#232c40", stroke = "#4da3ff", sw = 1.5, tc = "#e8eef7";
+    if (isCur) { fill = "#ffd166"; stroke = "#ffd166"; sw = 3; tc = "#1c2433"; }
+    else if (isRelax) { fill = "#b98cff"; stroke = "#b98cff"; sw = 3; tc = "#1c2433"; }
+    else if (done) { fill = "#3ecf8e"; stroke = "#3ecf8e"; sw = 2; }
+    specs.push(circ("pn-" + i, x, y, R, { fill: fill, stroke: stroke, "stroke-width": sw }));
+    specs.push(text("pt-" + i, x, y + 5, String(i),
+      { "text-anchor": "middle", "font-size": 16, "font-weight": "bold", fill: tc }));
+    const kv = key[i] !== undefined ? key[i] : INF;
+    const kText = kv >= INF ? "∞" : String(kv);
+    const kFill = isCur ? "#ffd166" : (done ? "#3ecf8e" : (kv < INF ? "#93a4c2" : "#5c6a85"));
+    specs.push(rect("pjb-" + i, x - 14, y - R - 24, 28, 18, { fill: "#1a2332", rx: 4, opacity: 0.92 }));
+    specs.push(text("pjv-" + i, x, y - R - 11, kText,
+      { "text-anchor": "middle", "font-size": 12, "font-weight": "bold", fill: kFill }));
+  }
+
+  /* 状态说明 */
+  const statusY = maxY + pad - 6;
+  if (phase === 1) {
+    specs.push(text("pr-status", (minX + maxX) / 2, statusY,
+      "key[0]=0，其余顶点 key 暂为 ∞（9999）",
+      { "text-anchor": "middle", "font-size": 12, fill: "#f472b6" }));
+  } else if (phase === 2) {
+    if (cur !== null && cur !== undefined && relaxV !== null && relaxV !== undefined) {
+      const wt = w[cur * n + relaxV] || 0;
+      specs.push(text("pr-status", (minX + maxX) / 2, statusY,
+        "边 " + cur + "-" + relaxV + " 权重 " + wt + "：key[" + relaxV + "] 更新为 " + wt + "（若更小）",
+        { "text-anchor": "middle", "font-size": 12, fill: "#b98cff" }));
+    } else if (cur !== null && cur !== undefined) {
+      specs.push(text("pr-status", (minX + maxX) / 2, statusY,
+        "选择 key 最小的未加入顶点 u=" + cur + "，加入 MST（绿色）",
+        { "text-anchor": "middle", "font-size": 12, fill: "#ffd166" }));
+    } else {
+      specs.push(text("pr-status", (minX + maxX) / 2, statusY,
+        "在未加入 MST 的顶点中选出 key 最小者",
+        { "text-anchor": "middle", "font-size": 12, fill: "#8b96a8" }));
+    }
+  } else if (phase === 3) {
+    let total = 0;
+    for (let i = 0; i < n; i++) if (parent[i] >= 0) total += w[i * n + parent[i]] || 0;
+    specs.push(text("pr-status", (minX + maxX) / 2, statusY,
+      "完成！最小生成树总权重 = " + total,
+      { "text-anchor": "middle", "font-size": 12, "font-weight": "bold", fill: "#3ecf8e" }));
+  }
+
+  renderSVG(stage, vbX + " " + vbY + " " + W + " " + H, specs);
+}
 /* ===== Dijkstra 最短路径渲染器（renderMode: "dijkstra"）=====
    输入为数组模式步骤：step.arr = dist[]（main），step.vars = { n, fin[], parent[], w[], phase, u, v }。
    圆形布局 + 边权重标签 + 距离标签 + 已确定顶点绿色 + 最短路径树绿色加粗。 */

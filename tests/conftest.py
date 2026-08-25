@@ -43,6 +43,8 @@ PAGES = {
     "/graph/bfs-dfs": "graph/bfs-dfs/index.html",
     "/graph/topological": "graph/topological/index.html",
     "/graph/dijkstra": "graph/dijkstra/index.html",
+    "/graph/prim": "graph/prim/index.html",
+    "/graph/floyd": "graph/floyd/index.html",
     "/dp/01-knapsack": "dp/01-knapsack/index.html",
     "/dp/complete-knapsack": "dp/complete-knapsack/index.html",
     "/dp/lcs": "dp/lcs/index.html",

@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="C语言哈希查找可视化：链地址法处理冲突的哈希表查找。">
+<meta name="description" content="C语言Floyd-Warshall全源最短路可视化：距离矩阵三重循环松弛过程动画演示。">
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-<title>哈希查找 - C语言数据结构与算法动画</title>
+<title>Floyd-Warshall 全源最短路 - C语言数据结构与算法动画</title>
 <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -73,7 +73,6 @@
         <a href="/dp/lis">LIS 最长递增子序列</a>
       </div>
     </div>
-
     <div class="nav-item">
       <a href="/classic">经典算法</a>
       <div class="dropdown">
@@ -87,14 +86,15 @@
 <main class="content">
 
 <div class="algo-header">
-  <h1>哈希查找 (Hash Search)</h1>
-  <p>哈希表（链地址法）：先插入 8 个元素建表，再查找随机目标（可能命中，也可能未找到）。</p>
+  <h1>Floyd-Warshall 全源最短路</h1>
+  <p>一次求出图中任意两点间的最短距离。动态规划思想：以每个顶点 k 作为"中转"，检查 d[i][k]+d[k][j] 是否比 d[i][j] 更短。时间复杂度 O(n³)，适合稠密图。</p>
+  <p style="color:var(--muted)">矩阵用一维数组模拟：d[u*n+v]，9999 表示 ∞（不可达）。紫色行/列为当前中转顶点 k 所在行列。</p>
 </div>
 <div class="algo-layout">
   <div class="code-panel" id="code-panel">
   <div class="code-title">
     <button class="code-collapse-btn" id="code-collapse-btn" title="折叠/展开代码面板">◀</button>
-    <span>哈希查找 · C 语言代码</span>
+    <span>Floyd-Warshall · C 语言代码</span>
     <label class="code-follow" title="播放时让当前高亮行保持在视野内（手动滚动代码会暂停跟随）">
       <input type="checkbox" id="code-follow" checked>跟随高亮
     </label>
@@ -110,7 +110,6 @@
   </div>
   
   <div class="inputs">
-    <button class="btn" id="btn-random">🎲 随机数据</button>
   </div>
   
   <div class="anim-stage" id="stage"></div>
@@ -132,10 +131,9 @@
     </div>
   <div class="legend">
     
-    <span><span class="dot" style="background:#ffd166"></span>正在比较/扫描</span>
-    <span><span class="dot" style="background:#3ecf8e"></span>找到目标</span>
-    <span><span class="dot" style="background:#5eead4"></span>low / 索引表 / 表槽</span>
-    <span><span class="dot" style="background:#b98cff"></span>hi</span>
+    <span><span class="dot" style="background:#ffd166"></span>当前松弛格</span>
+    <span><span class="dot" style="background:#b98cff"></span>中转行/列</span>
+    <span><span class="dot" style="background:#f472b6"></span>初始化</span>
     
   </div>
   <div class="status-line" id="status"></div>
@@ -150,22 +148,20 @@
     <thead>
       <tr>
         <th></th>
-        <th>平均情况</th>
-        <th>最坏情况</th>
+        <th>时间复杂度</th>
         <th>空间复杂度</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td class="complexity-label">时间复杂度</td>
-        <td>O(1)</td>
-        <td>O(n)</td>
-        <td>O(n)</td>
+        <td class="complexity-label">Floyd-Warshall</td>
+        <td>O(n³)</td>
+        <td>O(n²)</td>
       </tr>
     </tbody>
   </table>
   
-  <div class="complexity-note">链地址法处理冲突，平均 O(1)，最坏所有元素在同一槽</div>
+  <div class="complexity-note">三重循环逐格松弛；实现极简，适合稠密图；不能处理负权环</div>
   
 </div>
 
@@ -206,30 +202,9 @@
 <script src="/static/js/tree.js"></script>
 <script src="/static/js/stackqueue.js"></script>
 <script src="/static/js/graph.js"></script>
-<script src="/static/js/hash.js"></script>
-<script src="/static/js/search.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
-function randomizeHash() {
-  const set = new Set();
-  while (set.size < 8) set.add(1 + Math.floor(Math.random() * 40));
-  const vals = Array.from(set);
-  const x = 1 + Math.floor(Math.random() * 40);
-  let code = "#include <stdio.h>\n#include <stdlib.h>\n\n" +
-    "typedef struct HNode {\n    int val;\n    struct HNode *next;\n} HNode;\n\n" +
-    "HNode* createNode(int v) {\n    HNode* n = (HNode*)malloc(sizeof(HNode));\n" +
-    "    n->val = v;\n    n->next = NULL;\n    return n;\n}\n\n" +
-    "void insert(HNode* table[], int v) {\n    int h = v % 7;\n    HNode* n = createNode(v);\n" +
-    "    n->next = table[h];\n    table[h] = n;\n}\n\n" +
-    "int main() {\n    HNode* table[7];\n    for (int i = 0; i < 7; i++) table[i] = NULL;\n";
-  for (const v of vals) code += "    insert(table, " + v + ");\n";
-  code += "    int h = " + x + " % 7;\n" +
-    "    HNode* p = table[h];\n    int found = 0;\n" +
-    "    while (p) {\n        if (p->val == " + x + ") found = 1;\n        p = p->next;\n    }\n" +
-    "    return 0;\n}\n";
-  return code;
-}
-setupDemo({ sample: "#include \u003cstdio.h\u003e\n#include \u003cstdlib.h\u003e\n\n/* \u54c8\u5e0c\u8868\uff08\u94fe\u5730\u5740\u6cd5\uff09\uff1ah(v) = v % 7 */\ntypedef struct HNode {\n    int val;\n    struct HNode *next;\n} HNode;\n\nHNode* createNode(int v) {\n    HNode* n = (HNode*)malloc(sizeof(HNode));\n    n-\u003eval = v;\n    n-\u003enext = NULL;\n    return n;\n}\n\n/* \u63d2\u5165\uff1a\u5934\u63d2\u6cd5\u52a0\u5165\u5bf9\u5e94\u69fd\u7684\u94fe */\nvoid insert(HNode* table[], int v) {\n    int h = v % 7;\n    HNode* n = createNode(v);\n    n-\u003enext = table[h];\n    table[h] = n;\n}\n\nint main() {\n    HNode* table[7];\n    for (int i = 0; i \u003c 7; i++) table[i] = NULL;\n    insert(table, 15);\n    insert(table, 8);\n    insert(table, 22);\n    insert(table, 29);\n    insert(table, 5);\n    insert(table, 12);\n    insert(table, 19);\n    insert(table, 26);\n    /* \u67e5\u627e 10\uff1a10 % 7 = 3\uff0c\u904d\u5386 3 \u53f7\u69fd\u7684\u94fe\uff0c\u672a\u627e\u5230 */\n    int h = 10 % 7;\n    HNode* p = table[h];\n    int found = 0;\n    while (p) {\n        if (p-\u003eval == 10) found = 1;\n        p = p-\u003enext;\n    }\n    return 0;\n}\n", renderMode: "hash", withRandom: true, randomize: randomizeHash });
+setupDemo({ sample: "/* Floyd-Warshall \u5168\u6e90\u6700\u77ed\u8def\uff1a\u4e00\u7ef4\u6570\u7ec4\u6a21\u62df\u4e8c\u7ef4\u8ddd\u79bb\u77e9\u9635 */\nint main() {\n    int n = 4;\n    int d[16];          /* d[u*4+v]\uff1a\u9876\u70b9 u \u5230 v \u7684\u6700\u77ed\u8ddd\u79bb\uff0c9999 = \u221e */\n    int phase = 0;      /* 1 \u521d\u59cb\u5316 / 2 \u4e3b\u5faa\u73af / 3 \u5b8c\u6210 */\n    int i, j, k;\n\n    phase = 1;\n    for (i = 0; i \u003c 16; i++) d[i] = 9999;\n    for (i = 0; i \u003c n; i++) d[i*4+i] = 0;\n\n    /* \u76f4\u63a5\u76f8\u8fde\u7684\u8fb9 */\n    d[0*4+1] = 2; d[1*4+0] = 2;\n    d[0*4+2] = 6; d[2*4+0] = 6;\n    d[1*4+2] = 3; d[2*4+1] = 3;\n    d[1*4+3] = 1; d[3*4+1] = 1;\n    d[2*4+3] = 5; d[3*4+2] = 5;\n\n    /* \u4e09\u91cd\u5faa\u73af\uff1a\u4ee5 k \u4e3a\u4e2d\u8f6c\u677e\u5f1b */\n    phase = 2;\n    for (k = 0; k \u003c n; k++) {\n        for (i = 0; i \u003c n; i++) {\n            for (j = 0; j \u003c n; j++) {\n                if (d[i*4+k] + d[k*4+j] \u003c d[i*4+j]) {\n                    d[i*4+j] = d[i*4+k] + d[k*4+j];\n                }\n            }\n        }\n    }\n\n    phase = 3;\n    return 0;\n}", renderMode: "floyd" });
 </script>
 
 </body>

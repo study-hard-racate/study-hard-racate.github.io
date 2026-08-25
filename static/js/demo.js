@@ -282,6 +282,42 @@ function generateStepComment(step, renderMode) {
     return msg || "汉诺塔";
   }
 
+  /* Floyd-Warshall */
+  if (renderMode === "floyd") {
+    const vars = step.vars || {};
+    const phase = vars.phase;
+    const k = vars.k, i = vars.i, j = vars.j;
+    const d = step.arr || [];
+    const n = vars.n || 0;
+    if (phase === 1) {
+      return "初始化：d[u][u]=0，有边为权重，其余 ∞（9999）";
+    }
+    if (phase === 2 && k !== undefined && k >= 0 && k < n && i !== undefined && j !== undefined) {
+      const via = (d[i * n + k] !== undefined ? d[i * n + k] : 9999) + (d[k * n + j] !== undefined ? d[k * n + j] : 9999);
+      const cur = d[i * n + j] !== undefined ? d[i * n + j] : 9999;
+      return "经 " + k + " 中转：d[" + i + "][" + j + "] = min(" + (cur >= 9999 ? "∞" : cur) + ", " + (via >= 9999 ? "∞" : via) + ")";
+    }
+    if (phase === 3) return "完成！所有顶点对最短距离已求出";
+    return msg || "Floyd-Warshall";
+  }
+
+  /* Prim 最小生成树 */
+  if (renderMode === "prim") {
+    const vars = step.vars || {};
+    const phase = vars.phase;
+    const u = vars.u, v = vars.v;
+    if (phase === 1) return "初始化：key[0]=0，其余 key 置 ∞，全部未加入 MST";
+    if (phase === 3) return "完成！最小生成树已生成（绿色边）";
+    if (phase === 2 && u !== undefined && v !== undefined) {
+      return "边 " + u + "-" + v + "：尝试更新 key[" + v + "]";
+    }
+    if (phase === 2 && u !== undefined) {
+      return "选择 key 最小的顶点 u=" + u + " 加入 MST";
+    }
+    if (phase === 2) return "在未加入顶点中查找 key 最小者";
+    return msg || "Prim 最小生成树";
+  }
+
   /* Dijkstra 最短路径 */
   if (renderMode === "dijkstra") {
     const vars = step.vars || {};
@@ -580,6 +616,16 @@ function setupDemo(opts) {
     /* 汉诺塔：三柱盘片 */
     if (renderMode === "hanoi") {
       renderHanoi(stage, step);
+      return;
+    }
+    /* Floyd-Warshall：距离矩阵逐格松弛 */
+    if (renderMode === "floyd") {
+      renderFloyd(stage, step);
+      return;
+    }
+    /* Prim 最小生成树：key/inMST/parent 数组驱动 */
+    if (renderMode === "prim") {
+      renderPrim(stage, step);
       return;
     }
     /* Dijkstra 最短路径：数组模式驱动（dist/fin/w 在 vars） */
