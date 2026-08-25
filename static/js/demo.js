@@ -282,6 +282,23 @@ function generateStepComment(step, renderMode) {
     return msg || "汉诺塔";
   }
 
+  /* Kruskal 最小生成树 */
+  if (renderMode === "kruskal") {
+    const vars = step.vars || {};
+    const phase = vars.phase;
+    const i = vars.i;
+    const eu = vars.eu || [], ev = vars.ev || [], ew = vars.ew || [], inTree = vars.inTree || [];
+    const n = vars.n || 0, cnt = vars.cnt || 0;
+    if (phase === 1) return "初始化并查集：每个顶点自成一集";
+    if (phase === 2 && i !== undefined && i >= 0 && i < eu.length) {
+      const added = inTree[i] === 1;
+      return "处理边 " + eu[i] + "-" + ev[i] + "（权重 " + ew[i] + "）：" +
+        (added ? "加入 MST（不成环），已选 " + cnt + "/" + (n - 1) + " 条" : "两端同集合，成环跳过");
+    }
+    if (phase === 3) return "完成！最小生成树已生成";
+    return msg || "Kruskal 最小生成树";
+  }
+
   /* Floyd-Warshall */
   if (renderMode === "floyd") {
     const vars = step.vars || {};
@@ -616,6 +633,11 @@ function setupDemo(opts) {
     /* 汉诺塔：三柱盘片 */
     if (renderMode === "hanoi") {
       renderHanoi(stage, step);
+      return;
+    }
+    /* Kruskal 最小生成树：边表 + 并查集 */
+    if (renderMode === "kruskal") {
+      renderKruskal(stage, step);
       return;
     }
     /* Floyd-Warshall：距离矩阵逐格松弛 */

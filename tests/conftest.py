@@ -44,6 +44,7 @@ PAGES = {
     "/graph/topological": "graph/topological/index.html",
     "/graph/dijkstra": "graph/dijkstra/index.html",
     "/graph/prim": "graph/prim/index.html",
+    "/graph/kruskal": "graph/kruskal/index.html",
     "/graph/floyd": "graph/floyd/index.html",
     "/dp/01-knapsack": "dp/01-knapsack/index.html",
     "/dp/complete-knapsack": "dp/complete-knapsack/index.html",

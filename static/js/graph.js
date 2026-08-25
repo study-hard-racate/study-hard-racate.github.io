@@ -288,6 +288,117 @@ function renderPrim(stage, step) {
 
   renderSVG(stage, vbX + " " + vbY + " " + W + " " + H, specs);
 }
+/* ===== Kruskal 最小生成树渲染器（renderMode: "kruskal"）=====
+   边表（eu/ev/ew 平行数组，按权重升序）+ 并查集判环。
+   数据：step.arr = parent（main），vars = { rank, eu[], ev[], ew[], inTree[], n, m, i, rx, ry, cnt, phase }。 */
+function renderKruskal(stage, step) {
+  const vars = step.vars || {};
+  const n = vars.n || 0;
+  const eu = vars.eu || [];
+  const ev = vars.ev || [];
+  const ew = vars.ew || [];
+  const inTree = vars.inTree || [];
+  const m = vars.m !== undefined ? vars.m : eu.length;
+  const phase = vars.phase !== undefined ? vars.phase : 0;
+  const cur = vars.i !== undefined ? vars.i : -1;
+  const cnt = vars.cnt !== undefined ? vars.cnt : 0;
+
+  if (!n || !eu.length) {
+    renderSVG(stage, "0 0 300 120",
+      [text("kr-empty", 150, 60, "（空图，无边表）", { "text-anchor": "middle", "font-size": 15, fill: "#5c6a85" })]);
+    return;
+  }
+
+  const R = 26;
+  const cx = 65, cy = 65;
+  const RLAY = Math.max(75, Math.min(135, n * 26));
+  const pos = [];
+  let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
+  for (let i = 0; i < n; i++) {
+    const a = (2 * Math.PI * i) / n - Math.PI / 2;
+    const x = cx + RLAY * Math.cos(a);
+    const y = cy + RLAY * Math.sin(a);
+    pos.push([x, y]);
+    minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+    minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+  }
+  const pad = R + 40;
+  const vbX = minX - pad, vbY = minY - pad - 24;
+  const W = maxX - minX + 2 * pad;
+  const H = maxY - minY + 2 * pad + 34;
+  const specs = [];
+
+  /* 阶段标签 */
+  let phaseText = "", phaseColor = "#8b96a8";
+  if (phase === 1) { phaseText = "阶段：初始化并查集（每个顶点自成一集）"; phaseColor = "#f472b6"; }
+  else if (phase === 2) { phaseText = "阶段：按权重升序处理边（并查集判环，不成环即加入）"; phaseColor = "#ffd166"; }
+  else if (phase === 3) { phaseText = "阶段：完成 ✓ 最小生成树已生成（" + cnt + " 条边）"; phaseColor = "#3ecf8e"; }
+  specs.push(text("kr-phase", minX, vbY + 22, phaseText,
+    { "font-size": 12, "font-weight": "bold", fill: phaseColor }));
+
+  /* 边：按权重升序，已加入绿色 / 当前黄色 / 已处理被跳过灰色 / 未处理蓝色 */
+  for (let i = 0; i < m; i++) {
+    const u = eu[i], v = ev[i], wt = ew[i];
+    if (u === undefined || v === undefined || pos[u] === undefined || pos[v] === undefined) continue;
+    const [x1, y1] = pos[u];
+    const [x2, y2] = pos[v];
+    const dx = x2 - x1, dy = y2 - y1;
+    const d = Math.sqrt(dx * dx + dy * dy) || 1;
+    const ux = dx / d, uy = dy / d;
+    const sx = x1 + ux * R, sy = y1 + uy * R;
+    const tipX = x2 - ux * (R + 7), tipY = y2 - uy * (R + 7);
+    const added = inTree[i] === 1;
+    const isCur = phase === 2 && i === cur;
+    const skipped = phase === 2 && i < cur && !added;
+    let stroke = "#4da3ff", sw = 2;
+    if (added) { stroke = "#3ecf8e"; sw = 3; }
+    else if (isCur) { stroke = "#ffd166"; sw = 3; }
+    else if (skipped) { stroke = "#3a4c6e"; sw = 1.5; }
+    specs.push(line("ke-" + i, sx, sy, tipX, tipY, { stroke: stroke, "stroke-width": sw }));
+    const mx = (x1 + x2) / 2 + (added || isCur ? 0 : -uy * 10);
+    const my = (y1 + y2) / 2 + (added || isCur ? 0 : ux * 10);
+    const tFill = added ? "#3ecf8e" : (isCur ? "#ffd166" : (skipped ? "#5c6a85" : "#5eead4"));
+    specs.push(rect("keb-" + i, mx - 9, my - 9, 18, 16, { fill: "#1a2332", rx: 3, opacity: 0.9 }));
+    specs.push(text("kwt-" + i, mx, my + 4, String(wt),
+      { "text-anchor": "middle", "font-size": 11, "font-weight": "bold", fill: tFill }));
+  }
+
+  /* 顶点 */
+  for (let i = 0; i < n; i++) {
+    const [x, y] = pos[i];
+    specs.push(circ("kn-" + i, x, y, R, { fill: "#232c40", stroke: "#4da3ff", "stroke-width": 1.5 }));
+    specs.push(text("kt-" + i, x, y + 5, String(i),
+      { "text-anchor": "middle", "font-size": 16, "font-weight": "bold", fill: "#e8eef7" }));
+  }
+
+  /* 状态说明 */
+  const statusY = maxY + pad - 6;
+  if (phase === 1) {
+    specs.push(text("kr-status", (minX + maxX) / 2, statusY,
+      "并查集初始化：parent[i]=i，每个顶点各自成集",
+      { "text-anchor": "middle", "font-size": 12, fill: "#f472b6" }));
+  } else if (phase === 2 && cur >= 0 && cur < m) {
+    const u = eu[cur], v = ev[cur];
+    const added = inTree[cur] === 1;
+    specs.push(text("kr-status", (minX + maxX) / 2, statusY,
+      "边 " + u + "-" + v + "（权重 " + ew[cur] + "）：" + (added ? "两端不同集合 → 加入 MST（绿）" : "两端同集合 → 成环跳过（灰）") +
+      "　已选 " + cnt + "/" + (n - 1) + " 条",
+      { "text-anchor": "middle", "font-size": 12, "font-weight": "bold", fill: added ? "#3ecf8e" : "#ffd166" }));
+  } else if (phase === 3) {
+    let total = 0;
+    for (let i = 0; i < m; i++) if (inTree[i] === 1) total += ew[i];
+    specs.push(text("kr-status", (minX + maxX) / 2, statusY,
+      "完成！最小生成树总权重 = " + total + "（" + cnt + " 条边）",
+      { "text-anchor": "middle", "font-size": 12, "font-weight": "bold", fill: "#3ecf8e" }));
+  } else {
+    specs.push(text("kr-status", (minX + maxX) / 2, statusY,
+      "边已按权重升序排列，待处理",
+      { "text-anchor": "middle", "font-size": 12, fill: "#8b96a8" }));
+  }
+
+  renderSVG(stage, vbX + " " + vbY + " " + W + " " + H, specs);
+}
+
 /* ===== Dijkstra 最短路径渲染器（renderMode: "dijkstra"）=====
    输入为数组模式步骤：step.arr = dist[]（main），step.vars = { n, fin[], parent[], w[], phase, u, v }。
    圆形布局 + 边权重标签 + 距离标签 + 已确定顶点绿色 + 最短路径树绿色加粗。 */
