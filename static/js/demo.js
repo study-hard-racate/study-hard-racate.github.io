@@ -251,6 +251,21 @@ function generateStepComment(step, renderMode) {
     return msg || "KMP 字符串匹配";
   }
 
+  /* Trie 字典树 */
+  if (renderMode === "trie") {
+    const vars = step.vars || {};
+    const phase = vars.phase;
+    const cur = vars.cur;
+    const ch = step.arr || [];
+    const LETTER = ["·", "A", "B", "C", "D"];
+    if (phase === 1) return "初始化：创建根节点，children 全部置 -1";
+    if (phase === 2 && cur !== undefined && cur >= 0) {
+      return "当前节点 #" + cur + (cur === 0 ? "（根）" : "，字母 " + (LETTER[ch[cur]] || "·"));
+    }
+    if (phase === 3) return "完成！三个单词 AB、ABC、AD 已插入（共享前缀路径）";
+    return msg || "Trie 字典树";
+  }
+
   /* 计数排序 */
   if (renderMode === "countingsort") {
     const vars = step.vars || {};
@@ -658,6 +673,11 @@ function setupDemo(opts) {
     /* 循环队列：环形布局 + front/rear 指针 */
     if (renderMode === "circularqueue") {
       renderCircularQueue(stage, step);
+      return;
+    }
+    /* Trie 字典树：数组模拟前缀树 */
+    if (renderMode === "trie") {
+      renderTrie(stage, step);
       return;
     }
     /* 2D DP 表（LCS/编辑距离）：无条件路由，入口步骤无 dp 快照时也渲染空表格 */

@@ -16,6 +16,7 @@ PAGES = {
     "/stack": "stack/index.html",
     "/queue": "queue/index.html",
     "/circular-queue": "circular-queue/index.html",
+    "/trie": "trie/index.html",
     "/sorting": "sorting/index.html",
     "/sorting/bubble": "sorting/bubble/index.html",
     "/sorting/selection": "sorting/selection/index.html",
