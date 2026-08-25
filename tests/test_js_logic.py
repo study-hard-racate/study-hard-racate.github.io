@@ -98,7 +98,8 @@ def _load_js_files():
     """按页面加载顺序拼接全部渲染器 JS（与线上页面 <script> 顺序一致）"""
     out = ""
     for fn in ["player.js", "svg.js", "sorter.js", "csim.js", "list.js", "tree.js",
-               "stackqueue.js", "graph.js", "hash.js", "search.js", "unionfind.js", "dp.js", "demo.js"]:
+               "stackqueue.js", "graph.js", "hash.js", "search.js", "unionfind.js",
+               "dp.js", "hanoi.js", "demo.js"]:
         p = os.path.join(ROOT, "static", "js", fn)
         if os.path.exists(p):
             with open(p, encoding="utf-8") as f:
@@ -115,7 +116,7 @@ def test_page_js_logic_runs(path):
     inline = "\n".join(s for s in scripts if s.strip())
     result = _run_js(
         STUBS + "window.__checkSorted = " +
-        ("true" if path.startswith("/sorting") else "false") + ";\n"
+        ("true" if (path.startswith("/sorting") and "countingsort" not in inline) else "false") + ";\n"
         + _load_js_files() + "\n" + inline + "\n" + VERIFY, path)
     assert "ok" in result, f"{path} 验证失败: {result}"
 

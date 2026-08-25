@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="C语言线性查找可视化：逐个扫描数组元素查找目标值。">
+<meta name="description" content="C语言汉诺塔递归可视化：三柱盘片移动动画，大盘不压小盘，2^n-1 步完成演示。">
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-<title>线性查找 - C语言数据结构与算法动画</title>
+<title>汉诺塔 - C语言数据结构与算法动画</title>
 <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -68,7 +68,6 @@
         <a href="/dp/lis">LIS 最长递增子序列</a>
       </div>
     </div>
-
     <div class="nav-item">
       <a href="/classic">经典算法</a>
       <div class="dropdown">
@@ -81,14 +80,14 @@
 <main class="content">
 
 <div class="algo-header">
-  <h1>线性查找 (Linear Search)</h1>
-  <p>从头到尾逐个比较数组元素，找到目标值即返回下标。点击"🎲 随机数据"可生成新的数组与随机目标。</p>
+  <h1>汉诺塔</h1>
+  <p>经典递归问题：把 n 个盘从 A 柱移到 C 柱（借助 B 柱），每次只能移动一个盘，且大盘不能压在小盘上。n 个盘需要 2ⁿ-1 步。</p>
 </div>
 <div class="algo-layout">
   <div class="code-panel" id="code-panel">
   <div class="code-title">
     <button class="code-collapse-btn" id="code-collapse-btn" title="折叠/展开代码面板">◀</button>
-    <span>线性查找 · C 语言代码</span>
+    <span>汉诺塔 · C 语言代码</span>
     <label class="code-follow" title="播放时让当前高亮行保持在视野内（手动滚动代码会暂停跟随）">
       <input type="checkbox" id="code-follow" checked>跟随高亮
     </label>
@@ -104,7 +103,6 @@
   </div>
   
   <div class="inputs">
-    <button class="btn" id="btn-random">🎲 随机数据</button>
   </div>
   
   <div class="anim-stage" id="stage"></div>
@@ -126,10 +124,9 @@
     </div>
   <div class="legend">
     
-    <span><span class="dot" style="background:#ffd166"></span>正在比较/扫描</span>
-    <span><span class="dot" style="background:#3ecf8e"></span>找到目标</span>
-    <span><span class="dot" style="background:#5eead4"></span>low / 索引表 / 表槽</span>
-    <span><span class="dot" style="background:#b98cff"></span>hi</span>
+    <span><span class="dot" style="background:#ffd166"></span>正在移动的盘</span>
+    <span><span class="dot" style="background:#4da3ff"></span>盘片</span>
+    <span><span class="dot" style="background:#3ecf8e"></span>目标柱（C）</span>
     
   </div>
   <div class="status-line" id="status"></div>
@@ -144,22 +141,20 @@
     <thead>
       <tr>
         <th></th>
-        <th>平均情况</th>
-        <th>最坏情况</th>
+        <th>时间复杂度</th>
         <th>空间复杂度</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td class="complexity-label">时间复杂度</td>
+        <td class="complexity-label">汉诺塔（递归）</td>
+        <td>O(2ⁿ)</td>
         <td>O(n)</td>
-        <td>O(n)</td>
-        <td>O(1)</td>
       </tr>
     </tbody>
   </table>
   
-  <div class="complexity-note">无需排序，逐个扫描；适合小规模或无序数据</div>
+  <div class="complexity-note">n 个盘需要 2ⁿ-1 步；递归深度 O(n)，是理解"分治 + 递归"的最佳入门题</div>
   
 </div>
 
@@ -200,28 +195,10 @@
 <script src="/static/js/tree.js"></script>
 <script src="/static/js/stackqueue.js"></script>
 <script src="/static/js/graph.js"></script>
-<script src="/static/js/hash.js"></script>
-<script src="/static/js/search.js"></script>
+<script src="/static/js/hanoi.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
-function randomizeLinear() {
-  const set = new Set();
-  while (set.size < 8) set.add(1 + Math.floor(Math.random() * 15));
-  const arr = Array.from(set);
-  const x = 1 + Math.floor(Math.random() * 15);
-  return "#include <stdio.h>\n" +
-    "int main(void) {\n" +
-    "    int a[] = { " + arr.join(", ") + " };\n" +
-    "    int n = 8;\n" +
-    "    int x = " + x + ";\n" +
-    "    int found = -1;\n" +
-    "    for (int i = 0; i < n; i++) {\n" +
-    "        if (a[i] == x) found = i;\n" +
-    "    }\n" +
-    "    return 0;\n" +
-    "}";
-}
-setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u7ebf\u6027\u67e5\u627e\uff1a\u4ece\u5934\u5230\u5c3e\u9010\u4e2a\u6bd4\u8f83 */\nint main(void) {\n    int a[] = { 3, 7, 2, 9, 5, 1, 8, 4 };\n    int n = 8;\n    int x = 7;\n    int found = -1;\n    for (int i = 0; i \u003c n; i++) {\n        if (a[i] == x) found = i;\n    }\n    return 0;\n}\n", renderMode: "linear", withRandom: true, randomize: randomizeLinear });
+setupDemo({ sample: "/* \u6c49\u8bfa\u5854\uff1a\u628a n \u4e2a\u76d8\u4ece A \u79fb\u5230 C\uff08\u501f\u52a9 B\uff09\uff0c\u5927\u76d8\u4e0d\u80fd\u538b\u5c0f\u76d8 */\nvoid moveDisk(int from[], int to[], int n, int disk) {\n    int ft = -1, tt = -1;\n    int i;\n    int cur = disk;       /* \u4f9b\u6e32\u67d3\u5668\u9ad8\u4eae\u5f53\u524d\u79fb\u52a8\u7684\u76d8 */\n    for (i = 0; i \u003c n; i++) {\n        if (from[i] \u003e 0) ft = i;   /* \u627e\u5230 from \u7684\u6808\u9876 */\n    }\n    for (i = 0; i \u003c n; i++) {\n        if (to[i] \u003e 0) tt = i;     /* \u627e\u5230 to \u7684\u6808\u9876 */\n    }\n    from[ft] = 0;\n    to[tt + 1] = disk;             /* \u653e\u5230 to \u7684\u6808\u9876 */\n}\n\nvoid hanoi(int n, int A[], int B[], int C[], int size) {\n    if (n == 1) {\n        moveDisk(A, C, size, 1);   /* \u6700\u5c0f\u7684\u76d8\u76f4\u63a5\u79fb\u8fc7\u53bb */\n        return;\n    }\n    hanoi(n - 1, A, C, B, size);   /* \u5148\u628a n-1 \u4e2a\u76d8\u79fb\u5230 B */\n    moveDisk(A, C, size, n);       /* \u628a\u6700\u5927\u7684\u76d8\u79fb\u5230 C */\n    hanoi(n - 1, B, A, C, size);   /* \u518d\u628a n-1 \u4e2a\u76d8\u4ece B \u79fb\u5230 C */\n}\n\nint main() {\n    int n = 4;             /* \u76d8\u6570 */\n    int size = 4;\n    int A[4], B[4], C[4];  /* \u4e09\u67f1\uff1a\u4e0b\u6807 0 \u4e3a\u5e95\u90e8 */\n    int i;\n    for (i = 0; i \u003c n; i++) {\n        A[i] = n - i;      /* A \u81ea\u5e95\u5411\u4e0a 4,3,2,1 */\n        B[i] = 0;\n        C[i] = 0;\n    }\n    hanoi(n, A, B, C, size);\n    return 0;\n}", renderMode: "hanoi" });
 </script>
 
 </body>

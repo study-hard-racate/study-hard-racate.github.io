@@ -86,6 +86,138 @@ function buildSortSpecs(step) {
   return specs;
 }
 
+/* 计数排序渲染器（renderMode: "countingsort"）：
+   三行视图——上行 a[]（待排序）、中行 count[]（计数/前缀和）、下行 out[]（结果）。
+   数据：step.arr = a（main），vars = { count, out, n, max, phase, i } */
+function renderCountingSort(stage, step) {
+  const vars = step.vars || {};
+  const a = step.arr || [];
+  const count = vars.count || [];
+  const out = vars.out || [];
+  const n = vars.n !== undefined ? vars.n : a.length;
+  const max = vars.max !== undefined ? vars.max : (count.length - 1);
+  const phase = vars.phase !== undefined ? vars.phase : 0;
+  const i = vars.i;
+
+  if (!a.length && !count.length) {
+    renderSVG(stage, "0 0 300 120",
+      [text("cs-empty", 150, 60, "（空数据）", { "text-anchor": "middle", "font-size": 15, fill: "#5c6a85" })]);
+    return;
+  }
+
+  const cellW = 40, cellH = 28, gap = 4;
+  const left = 46;
+  const rowAY = 66, rowBY = 66 + 42, rowCY = 66 + 84;
+  const specs = [];
+
+  /* 阶段标签 */
+  let phaseText = "", phaseColor = "#8b96a8";
+  if (phase === 1) { phaseText = "阶段 1：计数（统计每个值出现的次数）"; phaseColor = "#ffd166"; }
+  else if (phase === 2) { phaseText = "阶段 2：前缀和（count[i] = 值 ≤ i 的元素个数）"; phaseColor = "#b98cff"; }
+  else if (phase === 3) { phaseText = "阶段 3：放回（从后往前确定每个元素的位置）"; phaseColor = "#3ecf8e"; }
+  specs.push(text("cs-phase", left, 26, phaseText,
+    { "font-size": 12, "font-weight": "bold", fill: phaseColor }));
+
+  /* 行标签 */
+  specs.push(text("cs-la", left - 6, rowAY + 20, "a", { "font-size": 13, "font-weight": "bold", fill: "#5eead4" }));
+  specs.push(text("cs-lc", left - 6, rowBY + 20, "c", { "font-size": 13, "font-weight": "bold", fill: "#5eead4" }));
+  specs.push(text("cs-lo", left - 6, rowCY + 20, "o", { "font-size": 13, "font-weight": "bold", fill: "#5eead4" }));
+
+  /* 上行 a[] */
+  for (let k = 0; k < n; k++) {
+    const x = left + k * (cellW + gap);
+    const isCur = (phase === 1 || phase === 3) && i === k;
+    specs.push(rect("csa-" + k, x, rowAY, cellW, cellH, {
+      rx: 4,
+      fill: isCur ? "#ffd166" : "#232c40",
+      stroke: isCur ? "#ffd166" : "#4da3ff",
+      "stroke-width": isCur ? 2.5 : 1.5,
+    }));
+    specs.push(text("csat-" + k, x + cellW / 2, rowAY + cellH / 2 + 5,
+      a[k] !== undefined ? String(a[k]) : "·",
+      { "text-anchor": "middle", "font-size": 12, "font-weight": "bold",
+        fill: isCur ? "#1c2433" : "#e8eef7" }));
+    specs.push(text("csai-" + k, x + cellW / 2, rowAY - 6, String(k),
+      { "text-anchor": "middle", "font-size": 9, fill: "#5c6a85" }));
+  }
+
+  /* 中行 count[]（0..max） */
+  for (let k = 0; k <= max; k++) {
+    const x = left + k * (cellW + gap);
+    const isInc = phase === 1 && i !== undefined && i >= 0 && i < n && a[i] === k;
+    const isPre = phase === 2 && i === k;
+    const isDec = phase === 3 && i >= 0 && i < n && a[i] === k;
+    const isCur2 = isInc || isPre || isDec;
+    let fill = "#232c40", stroke = "#4da3ff", sw = 1.5, tc = "#e8eef7";
+    if (isInc) { fill = "#ffd166"; stroke = "#ffd166"; sw = 2.5; tc = "#1c2433"; }
+    else if (isPre) { fill = "#b98cff"; stroke = "#b98cff"; sw = 2.5; tc = "#1c2433"; }
+    else if (isDec) { fill = "#ff6b6b"; stroke = "#ff6b6b"; sw = 2.5; tc = "#1c2433"; }
+    specs.push(rect("csc-" + k, x, rowBY, cellW, cellH, {
+      rx: 4, fill: fill, stroke: stroke, "stroke-width": sw,
+    }));
+    specs.push(text("csct-" + k, x + cellW / 2, rowBY + cellH / 2 + 5,
+      count[k] !== undefined ? String(count[k]) : "0",
+      { "text-anchor": "middle", "font-size": 12, "font-weight": "bold", fill: tc }));
+    specs.push(text("csci-" + k, x + cellW / 2, rowBY - 6, String(k),
+      { "text-anchor": "middle", "font-size": 9, fill: "#5c6a85" }));
+  }
+
+  /* 下行 out[] */
+  for (let k = 0; k < n; k++) {
+    const x = left + k * (cellW + gap);
+    const filled = out[k] !== undefined && out[k] > 0;
+    specs.push(rect("cso-" + k, x, rowCY, cellW, cellH, {
+      rx: 4,
+      fill: filled ? "#3ecf8e" : "#232c40",
+      stroke: filled ? "#3ecf8e" : "#2e3a52",
+      "stroke-width": filled ? 2 : 1.5,
+    }));
+    specs.push(text("csot-" + k, x + cellW / 2, rowCY + cellH / 2 + 5,
+      filled ? String(out[k]) : "",
+      { "text-anchor": "middle", "font-size": 12, "font-weight": "bold",
+        fill: filled ? "#1c2433" : "#5c6a85" }));
+    specs.push(text("csoi-" + k, x + cellW / 2, rowCY - 6, String(k),
+      { "text-anchor": "middle", "font-size": 9, fill: "#5c6a85" }));
+  }
+
+  /* 状态说明 */
+  const statusY = rowCY + cellH + 34;
+  if (phase === 1) {
+    specs.push(text("cs-status", left, statusY,
+      "遇到值 " + (a[i] !== undefined ? a[i] : "·") + "，count[" + (a[i] !== undefined ? a[i] : "·") + "] +1",
+      { "font-size": 12, fill: "#ffd166" }));
+  } else if (phase === 2) {
+    specs.push(text("cs-status", left, statusY,
+      "count[" + i + "] = count[" + i + "] + count[" + (i - 1) + "]（前缀和：值 ≤ " + i + " 的个数）",
+      { "font-size": 12, fill: "#b98cff" }));
+  } else if (phase === 3) {
+    specs.push(text("cs-status", left, statusY,
+      "把 a[" + i + "]=" + (a[i] !== undefined ? a[i] : "·") + " 放到 out[count[" + (a[i] !== undefined ? a[i] : "·") + "] - 1]，count 减 1",
+      { "font-size": 12, fill: "#3ecf8e" }));
+  } else if (phase === 0 && !count.length) {
+    specs.push(text("cs-status", left, statusY,
+      "待播放动画（数据已就绪）", { "font-size": 12, fill: "#8b96a8" }));
+  }
+
+  /* 图例 */
+  const legendY = statusY + 24;
+  specs.push(el("cs-legend-bg", "rect", {
+    x: left - 5, y: legendY - 12, width: 420, height: 20, rx: 4,
+    fill: "#1a2332", opacity: 0.8 }));
+  specs.push(text("cs-leg-1", left, legendY, "■ ", { "font-size": 11, fill: "#ffd166" }));
+  specs.push(text("cs-leg-1t", left + 16, legendY, "当前", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("cs-leg-2", left + 50, legendY, "■ ", { "font-size": 11, fill: "#b98cff" }));
+  specs.push(text("cs-leg-2t", left + 66, legendY, "前缀和", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("cs-leg-3", left + 105, legendY, "■ ", { "font-size": 11, fill: "#ff6b6b" }));
+  specs.push(text("cs-leg-3t", left + 121, legendY, "计数减 1", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("cs-leg-4", left + 165, legendY, "■ ", { "font-size": 11, fill: "#3ecf8e" }));
+  specs.push(text("cs-leg-4t", left + 181, legendY, "已放回", { "font-size": 10, fill: "#8b96a8" }));
+
+  const Wtotal = left + Math.max(n, max + 1) * (cellW + gap) + 40;
+  const Htotal = legendY + 30;
+  renderSVG(stage, "0 0 " + Wtotal + " " + Htotal, specs);
+}
+
 /* 排序页面统一初始化入口 */
 function sortPageSetup(codeLines, genStepsFn, extraRender) {
   const stage = document.getElementById("stage");

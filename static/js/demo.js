@@ -199,6 +199,37 @@ function generateStepComment(step, renderMode) {
     return "动态规划";
   }
   
+  /* 计数排序 */
+  if (renderMode === "countingsort") {
+    const vars = step.vars || {};
+    const phase = vars.phase;
+    const i = vars.i;
+    const a = step.arr || [];
+    if (phase === 1 && i !== undefined && i >= 0) {
+      return "计数：count[" + a[i] + "] 加 1（值 " + a[i] + " 出现次数 +1）";
+    }
+    if (phase === 2 && i !== undefined) {
+      return "前缀和：count[" + i + "] = count[" + i + "] + count[" + (i - 1) + "]（值 ≤ " + i + " 的个数）";
+    }
+    if (phase === 3 && i !== undefined && i >= 0) {
+      return "放回：把 a[" + i + "]=" + a[i] + " 放入 out 的 count[" + a[i] + "]-1 位置";
+    }
+    if (phase === 3) {
+      return "完成！out 数组已有序";
+    }
+    return msg || "计数排序";
+  }
+
+  /* 汉诺塔 */
+  if (renderMode === "hanoi") {
+    const vars = step.vars || {};
+    const cur = vars.cur;
+    if (cur !== undefined && cur !== null && cur >= 1) {
+      return "移动盘 " + cur + "（黄色高亮）";
+    }
+    return msg || "汉诺塔";
+  }
+
   /* Dijkstra 最短路径 */
   if (renderMode === "dijkstra") {
     const vars = step.vars || {};
@@ -477,6 +508,16 @@ function setupDemo(opts) {
       if (renderMode === "hash") { renderHash(stage, step.graph); return; }
       if (renderMode === "topological") { renderTopological(stage, step); return; }
       renderGraphCsim(stage, step.graph);
+      return;
+    }
+    /* 计数排序：三行视图（a/count/out） */
+    if (renderMode === "countingsort") {
+      renderCountingSort(stage, step);
+      return;
+    }
+    /* 汉诺塔：三柱盘片 */
+    if (renderMode === "hanoi") {
+      renderHanoi(stage, step);
       return;
     }
     /* Dijkstra 最短路径：数组模式驱动（dist/fin/w 在 vars） */

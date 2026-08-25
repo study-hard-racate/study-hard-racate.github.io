@@ -22,6 +22,7 @@ PAGES = {
     "/sorting/merge": "sorting/merge/index.html",
     "/sorting/shell": "sorting/shell/index.html",
     "/sorting/heap": "sorting/heap/index.html",
+    "/sorting/counting": "sorting/counting/index.html",
     "/search": "search/index.html",
     "/search/linear": "search/linear/index.html",
     "/search/binary": "search/binary/index.html",
@@ -45,10 +46,12 @@ PAGES = {
     "/dp/edit-distance": "dp/edit-distance/index.html",
     "/dp/stairs": "dp/stairs/index.html",
     "/dp/lis": "dp/lis/index.html",
+    "/classic": "classic/index.html",
+    "/classic/hanoi": "classic/hanoi/index.html",
 }
 
 # 所有算法/模块页（含播放器与舞台），列表页/首页不在此列
-ALGO_PAGES = [p for p in PAGES if p not in ("/", "/sorting", "/search", "/data-structure", "/tree-graph", "/dp")]
+ALGO_PAGES = [p for p in PAGES if p not in ("/", "/sorting", "/search", "/data-structure", "/tree-graph", "/dp", "/classic")]
 
 # 所有页面（含列表页与首页）
 ALL_PAGES = list(PAGES.keys())
