@@ -1003,6 +1003,7 @@
        建树过程中 root（外层）恒为主链，队列就绪后 q.front 链最长胜出 */
     var mainLink = null;
     var edges = {};
+    var prevEdges = null; /* 双向链表：节点的 prev 字段指向（有 prev 字段时才收集） */
     for (var ci = 0; ci < chains.length; ci++) {
       var link = { ids: [], data: {}, edges: {}, src: chains[ci] };
       var curN = chains[ci].root;
@@ -1016,6 +1017,11 @@
         else link.data[curN._id] = "·";
         var nx = this.derefVal(curN.next);
         link.edges[curN._id] = (nx && nx.__node && !nx.__freed) ? nx._id : null;
+        if (curN.prev !== undefined) {
+          if (!prevEdges) prevEdges = {};
+          var pv = this.derefVal(curN.prev);
+          prevEdges[curN._id] = (pv && pv.__node && !pv.__freed) ? pv._id : null;
+        }
         curN = nx;
         g2++;
       }
@@ -1122,6 +1128,7 @@
     }
     return {
       ids: ids, data: data, ptrs: ptrs, nodePos: this.nodePos, edges: edges,
+      prevEdges: prevEdges,
       side: side, cmpIds: cmpIds, minStack: minStack,
       markNode: this.lastIsWrite ? this.lastMemberNode : null,
       markField: this.lastIsWrite ? this.lastMember : null,

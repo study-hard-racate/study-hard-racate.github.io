@@ -85,3 +85,85 @@ function renderArrayQueue(stage, step) {
   }
   renderSVG(stage, "0 0 " + W + " " + H, specs);
 }
+
+/* 循环队列渲染器：环形布局 + front/rear 指针从圆心指向格子，直观展示"循环利用" */
+function renderCircularQueue(stage, step) {
+  const arr = (step && step.arr) ? step.arr : [];
+  const vars = (step && step.vars) ? step.vars : {};
+  const front = vars.front !== undefined ? vars.front : 0;
+  const rear = vars.rear !== undefined ? vars.rear : 0;
+  const size = vars.size !== undefined ? vars.size : 0;
+  const n = Math.max(arr.length, 6);
+  const cx = 150, cy = 118;
+  const R = 90;
+  const cellW = 42, cellH = 36;
+  const specs = [];
+
+  specs.push(text("cq-title", cx, 22, "循环队列 · 容量 " + n + "（最多存 " + (n - 1) + " 个元素）",
+    { "text-anchor": "middle", "font-size": 12, "font-weight": "bold", fill: "#8b96a8" }));
+
+  /* 是否在队列中：从 front 起 size 个（模 n） */
+  function inQ(i) {
+    if (size <= 0) return false;
+    let d = (i - front + n) % n;
+    return d >= 0 && d < size;
+  }
+
+  for (let i = 0; i < n; i++) {
+    const a = (2 * Math.PI * i) / n - Math.PI / 2;
+    const x = cx + R * Math.cos(a) - cellW / 2;
+    const y = cy + R * Math.sin(a) - cellH / 2;
+    const active = inQ(i);
+    const isFront = i === front && size > 0;
+    const isRear = i === rear;
+    let fill = active ? "#232c40" : "#161c29";
+    let stroke = active ? "#4da3ff" : "#2e3a52";
+    let sw = 1.5;
+    if (isFront) { stroke = "#3ecf8e"; sw = 3; }
+    else if (isRear) { stroke = "#ffd166"; sw = 3; }
+    specs.push(rect("cqc-" + i, x, y, cellW, cellH, {
+      rx: 5, fill: fill, stroke: stroke, "stroke-width": sw,
+    }));
+    specs.push(text("cqv-" + i, cx + R * Math.cos(a), cy + R * Math.sin(a) + 5,
+      active ? String(arr[i]) : "",
+      { "text-anchor": "middle", "font-size": 13, "font-weight": "bold", fill: "#e8eef7" }));
+    /* 下标（格子外侧） */
+    const ix = cx + (R + 24) * Math.cos(a);
+    const iy = cy + (R + 24) * Math.sin(a);
+    specs.push(text("cqi-" + i, ix, iy + 4, String(i),
+      { "text-anchor": "middle", "font-size": 10, fill: "#5c6a85" }));
+  }
+
+  /* front / rear 指针：从圆心指向格子中心 */
+  function ptrLabel(name, idx, color, key, valid) {
+    if (!valid) return;
+    const a = (2 * Math.PI * idx) / n - Math.PI / 2;
+    const tx = cx + R * Math.cos(a);
+    const ty = cy + R * Math.sin(a);
+    specs.push(line(key, cx, cy, tx, ty, { stroke: color, "stroke-width": 1.5, "stroke-dasharray": "4 3" }));
+    specs.push(text(key + "-t", cx - 40, cy + (name === "front" ? -6 : 14), name,
+      { "font-size": 12, "font-weight": "bold", fill: color }));
+  }
+  ptrLabel("front", front, "#3ecf8e", "cqfront", size > 0);
+  ptrLabel("rear", rear, "#ffd166", "cqrear", true);
+
+  /* 状态说明 */
+  specs.push(text("cq-status", cx, 238,
+    size === 0
+      ? "空队列：front = rear = " + front
+      : "front = " + front + "（绿）　rear = " + rear + "（黄）　size = " + size + "　队列元素：" +
+        (function () { const els = []; for (let k = 0; k < n; k++) if (inQ(k)) els.push(arr[k]); return els.join(", "); })(),
+    { "text-anchor": "middle", "font-size": 12, "font-weight": "bold", fill: "#8b96a8" }));
+
+  /* 图例 */
+  specs.push(el("cq-legend-bg", "rect", {
+    x: cx - 210, y: 258, width: 420, height: 20, rx: 4, fill: "#1a2332", opacity: 0.8 }));
+  specs.push(text("cq-leg-1", cx - 190, 272, "■ ", { "font-size": 11, fill: "#3ecf8e" }));
+  specs.push(text("cq-leg-1t", cx - 174, 272, "front", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("cq-leg-2", cx - 130, 272, "■ ", { "font-size": 11, fill: "#ffd166" }));
+  specs.push(text("cq-leg-2t", cx - 114, 272, "rear", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("cq-leg-3", cx - 80, 272, "■ ", { "font-size": 11, fill: "#4da3ff" }));
+  specs.push(text("cq-leg-3t", cx - 64, 272, "队中元素", { "font-size": 10, fill: "#8b96a8" }));
+
+  renderSVG(stage, "0 0 " + (cx * 2) + " " + 290, specs);
+}

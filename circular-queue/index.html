@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="C语言Dijkstra最短路径可视化：dist数组更新、松弛操作、最短路径树、贪心选择过程动画演示。">
+<meta name="description" content="C语言循环队列可视化：环形数组、front/rear 指针循环移动、空间循环利用动画演示。">
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-<title>Dijkstra 最短路径 - C语言数据结构与算法动画</title>
+<title>循环队列 - C语言数据结构与算法动画</title>
 <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -71,7 +71,6 @@
         <a href="/dp/lis">LIS 最长递增子序列</a>
       </div>
     </div>
-
     <div class="nav-item">
       <a href="/classic">经典算法</a>
       <div class="dropdown">
@@ -85,14 +84,14 @@
 <main class="content">
 
 <div class="algo-header">
-  <h1>Dijkstra 最短路径</h1>
-  <p>求带权图中从源点 0 到其余各顶点的最短距离。贪心思想：每次选出"未确定顶点中距离最小者"并标记，再用它去"松弛"邻居。要求边权非负。</p>
+  <h1>循环队列</h1>
+  <p>用数组实现队列时，出队后前面的空间无法再利用；循环队列让 rear/front 指针"绕回"数组开头，空间循环利用。注意：容量 n 的数组最多存 n-1 个元素（用于区分空/满）。</p>
 </div>
 <div class="algo-layout">
   <div class="code-panel" id="code-panel">
   <div class="code-title">
     <button class="code-collapse-btn" id="code-collapse-btn" title="折叠/展开代码面板">◀</button>
-    <span>Dijkstra 最短路径 · C 语言代码</span>
+    <span>循环队列 · C 语言代码</span>
     <label class="code-follow" title="播放时让当前高亮行保持在视野内（手动滚动代码会暂停跟随）">
       <input type="checkbox" id="code-follow" checked>跟随高亮
     </label>
@@ -129,10 +128,9 @@
     </div>
   <div class="legend">
     
-    <span><span class="dot" style="background:#ffd166"></span>当前选中</span>
-    <span><span class="dot" style="background:#b98cff"></span>正在松弛</span>
-    <span><span class="dot" style="background:#3ecf8e"></span>已确定最短距离</span>
-    <span><span class="dot" style="background:#3ecf8e"></span>最短路径树边</span>
+    <span><span class="dot" style="background:#3ecf8e"></span>front（队头）</span>
+    <span><span class="dot" style="background:#ffd166"></span>rear（队尾）</span>
+    <span><span class="dot" style="background:#4da3ff"></span>队中元素</span>
     
   </div>
   <div class="status-line" id="status"></div>
@@ -147,20 +145,20 @@
     <thead>
       <tr>
         <th></th>
-        <th>时间复杂度</th>
+        <th>入队 / 出队</th>
         <th>空间复杂度</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td class="complexity-label">Dijkstra（邻接矩阵）</td>
-        <td>O(n²)</td>
-        <td>O(n²)</td>
+        <td class="complexity-label">循环队列</td>
+        <td>O(1)</td>
+        <td>O(n)</td>
       </tr>
     </tbody>
   </table>
   
-  <div class="complexity-note">用二叉堆/优先队列优化选最小顶点可降至 O((n+e)log n)；不适用于负权边</div>
+  <div class="complexity-note">与普通数组队列相比，出队后空间可复用，不会"假溢出"；容量 n 最多存 n-1 个元素</div>
   
 </div>
 
@@ -203,7 +201,7 @@
 <script src="/static/js/graph.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
-setupDemo({ sample: "/* Dijkstra \u6700\u77ed\u8def\u5f84\uff1a\u4ece\u6e90\u70b9 0 \u51fa\u53d1\uff0c\u6c42\u5230\u5404\u9876\u70b9\u7684\u6700\u77ed\u8ddd\u79bb */\nint main() {\n    int n = 6;            /* \u9876\u70b9\u6570 */\n    int dist[6];          /* \u6e90\u70b9\u5230\u5404\u9876\u70b9\u7684\u5f53\u524d\u6700\u77ed\u8ddd\u79bb */\n    int fin[6];           /* \u662f\u5426\u5df2\u786e\u5b9a\u6700\u77ed\u8ddd\u79bb */\n    int parent[6];        /* \u6700\u77ed\u8def\u5f84\u6811\u4e2d\u7684\u7236\u8282\u70b9 */\n    int w[36];            /* \u8fb9\u6743\u91cd\u77e9\u9635 w[u*6+v]\uff0c0 \u8868\u793a\u65e0\u8fb9 */\n    int phase = 0;        /* 1 \u521d\u59cb\u5316 / 2 \u4e3b\u5faa\u73af / 3 \u5b8c\u6210 */\n    int i, j, u, v;\n\n    /* \u521d\u59cb\u5316\uff1a\u6743\u91cd\u77e9\u9635\u6e05\u96f6\uff0cdist \u7f6e \u221e\uff0cfin \u7f6e 0 */\n    phase = 1;\n    for (i = 0; i \u003c 36; i++) w[i] = 0;\n    for (i = 0; i \u003c n; i++) {\n        dist[i] = 9999;\n        fin[i] = 0;\n        parent[i] = -1;\n    }\n\n    /* \u793a\u4f8b\u65e0\u5411\u5e26\u6743\u56fe\uff08\u9876\u70b9 0..5\uff09\uff0cw[u*6+v] = \u8fb9\u6743\u91cd */\n    w[0*6+1] = 4; w[0*6+2] = 2;\n    w[1*6+0] = 4; w[1*6+2] = 1; w[1*6+3] = 5;\n    w[2*6+0] = 2; w[2*6+1] = 1; w[2*6+3] = 8; w[2*6+4] = 10;\n    w[3*6+1] = 5; w[3*6+2] = 8; w[3*6+4] = 2; w[3*6+5] = 6;\n    w[4*6+2] = 10; w[4*6+3] = 2; w[4*6+5] = 3;\n    w[5*6+3] = 6; w[5*6+4] = 3;\n\n    /* \u6e90\u70b9 0 \u8ddd\u79bb\u4e3a 0 */\n    dist[0] = 0;\n\n    /* \u4e3b\u5faa\u73af\uff1a\u53cd\u590d\u9009\u51fa\u672a\u786e\u5b9a\u9876\u70b9\u4e2d\u8ddd\u79bb\u6700\u5c0f\u8005 */\n    phase = 2;\n    for (i = 0; i \u003c n; i++) {\n        /* \u627e\u672a\u786e\u5b9a\u9876\u70b9\u4e2d dist \u6700\u5c0f\u7684 u */\n        u = -1;\n        for (j = 0; j \u003c n; j++) {\n            if (fin[j] == 0 \u0026\u0026 (u == -1 || dist[j] \u003c dist[u])) {\n                u = j;\n            }\n        }\n        fin[u] = 1;      /* \u786e\u5b9a u \u7684\u6700\u77ed\u8ddd\u79bb */\n        /* \u677e\u5f1b\uff1a\u5c1d\u8bd5\u7ecf u \u66f4\u65b0\u90bb\u5c45 v \u7684\u8ddd\u79bb */\n        for (v = 0; v \u003c n; v++) {\n            if (w[u*6+v] \u003e 0 \u0026\u0026 fin[v] == 0 \u0026\u0026 dist[u] + w[u*6+v] \u003c dist[v]) {\n                dist[v] = dist[u] + w[u*6+v];\n                parent[v] = u;   /* \u8bb0\u5f55\u6700\u77ed\u8def\u5f84\u6811 */\n            }\n        }\n    }\n\n    /* \u5b8c\u6210 */\n    phase = 3;\n    return 0;\n}", renderMode: "dijkstra" });
+setupDemo({ sample: "/* \u5faa\u73af\u961f\u5217\uff1a\u6570\u7ec4 + front/rear \u6307\u9488\uff0c\u7a7a\u95f4\u5faa\u73af\u5229\u7528 */\nint main() {\n    int q[6];          /* \u961f\u5217\u6570\u7ec4\uff08\u5bb9\u91cf 6\uff0c\u6700\u591a\u5b58 5 \u4e2a\u5143\u7d20\uff09 */\n    int front = 0;     /* \u961f\u5934\u4e0b\u6807\uff08\u51fa\u961f\u65b9\u5411\uff09 */\n    int rear = 0;      /* \u961f\u5c3e\u4e0b\u6807\uff08\u4e0b\u4e00\u4e2a\u5199\u5165\u4f4d\u7f6e\uff09 */\n    int size = 0;      /* \u5f53\u524d\u5143\u7d20\u4e2a\u6570 */\n    int i;\n\n    /* \u521d\u59cb\u5316\u5168\u90e8\u7f6e 0 */\n    for (i = 0; i \u003c 6; i++) q[i] = 0;\n\n    /* \u5165\u961f 1\u30012\u30013\uff08rear \u540e\u79fb\uff09 */\n    q[rear] = 1;\n    rear = (rear + 1) % 6;\n    size = size + 1;\n    q[rear] = 2;\n    rear = (rear + 1) % 6;\n    size = size + 1;\n    q[rear] = 3;\n    rear = (rear + 1) % 6;\n    size = size + 1;\n\n    /* \u51fa\u961f\u4e24\u6b21\uff08front \u524d\u79fb\uff09 */\n    front = (front + 1) % 6;\n    size = size - 1;\n    front = (front + 1) % 6;\n    size = size - 1;\n\n    /* \u518d\u5165\u961f 4\u30015\u30016\uff1a\u961f\u5c3e\u7ed5\u56de\u5f00\u5934\uff0c\u5faa\u73af\u5229\u7528\u7a7a\u95f4 */\n    q[rear] = 4;\n    rear = (rear + 1) % 6;\n    size = size + 1;\n    q[rear] = 5;\n    rear = (rear + 1) % 6;\n    size = size + 1;\n    q[rear] = 6;\n    rear = (rear + 1) % 6;\n    size = size + 1;\n\n    return 0;\n}", renderMode: "circularqueue" });
 </script>
 
 </body>

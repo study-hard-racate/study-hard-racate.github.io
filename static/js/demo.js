@@ -30,8 +30,8 @@ function generateStepComment(step, renderMode) {
     return msg || "堆排序操作";
   }
   
-  /* 链表模式 */
-  if (step.list && renderMode === "list") {
+  /* 链表模式（含双向链表：prev 边青色虚线由渲染器绘制） */
+  if (step.list && (renderMode === "list" || renderMode === "doublylist")) {
     const snap = step.list;
     if (snap.markNode != null && snap.markField) {
       const val = snap.data ? snap.data[snap.markNode] : "";
@@ -144,6 +144,17 @@ function generateStepComment(step, renderMode) {
     return msg || "查找操作";
   }
   
+  /* 循环队列 */
+  if (renderMode === "circularqueue") {
+    const vars = step.vars || {};
+    const f = vars.front, r = vars.rear, s = vars.size;
+    if (f !== undefined && r !== undefined && s !== undefined) {
+      if (s === 0) return "空队列：front = rear = " + f;
+      return "front = " + f + "，rear = " + r + "，size = " + s + "（元素从 front 起 " + s + " 个，rear 为下一个写入位置）";
+    }
+    return msg || "循环队列";
+  }
+
   /* 栈/队列模式 */
   if (renderMode === "stack" || renderMode === "queue") {
     const vars = step.vars || {};
@@ -574,6 +585,11 @@ function setupDemo(opts) {
     /* Dijkstra 最短路径：数组模式驱动（dist/fin/w 在 vars） */
     if (renderMode === "dijkstra") {
       renderDijkstra(stage, step);
+      return;
+    }
+    /* 循环队列：环形布局 + front/rear 指针 */
+    if (renderMode === "circularqueue") {
+      renderCircularQueue(stage, step);
       return;
     }
     /* 2D DP 表（LCS/编辑距离）：无条件路由，入口步骤无 dp 快照时也渲染空表格 */

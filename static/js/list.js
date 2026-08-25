@@ -172,6 +172,7 @@ function listSpecs(snap) {
   const ptrs = (snap && snap.ptrs) ? snap.ptrs : [];
   const cur = snap ? snap.cur : null;
   const edges = (snap && snap.edges) ? snap.edges : null;
+  const prevEdges = (snap && snap.prevEdges) ? snap.prevEdges : null;
   const markNode = (snap && snap.markNode !== undefined && snap.markNode !== null) ? snap.markNode : null;
   const markField = (snap && snap.markField) ? snap.markField : null;
   const side = (snap && snap.side && snap.side.ids && snap.side.ids.length) ? snap.side : null;
@@ -292,6 +293,34 @@ function listSpecs(snap) {
     }
   }
 
+  /* prev 边（双向链表）：青色虚线曲线从节点下方绕行指向其前驱，与红色反向边区分 */
+  if (prevEdges && Object.keys(prevEdges).length) {
+    const prevY = L_TOP + L_NODE_H + 26;
+    const posOf = function (pid) {
+      const mi = ids.indexOf(pid);
+      if (mi >= 0) return { y: L_TOP, x: listNodeX(mi) };
+      const si = sideIds.indexOf(pid);
+      if (si >= 0) return { y: L_TOP + L_ROW_DY, x: listNodeX(si) };
+      if (layout.detInfo[pid] !== undefined) return { y: L_TOP, x: layout.detInfo[pid] };
+      return null;
+    };
+    for (const id in prevEdges) {
+      const to = prevEdges[id];
+      if (to === null || to === undefined) continue;
+      const src = posOf(Number(id));
+      const dst = posOf(Number(to));
+      if (!src || !dst) continue;
+      const sx = src.x + L_NODE_W / 2, sy = src.y + L_NODE_H;
+      const tx = dst.x + L_NODE_W / 2, ty = dst.y + L_NODE_H;
+      specs.push(path("lpe-" + id,
+        "M" + sx + "," + sy + " C" + sx + "," + prevY + " " + tx + "," + prevY + " " + tx + "," + ty,
+        { stroke: "#2dd4bf", "stroke-width": 1.5, fill: "none", "stroke-dasharray": "5 3" }));
+      specs.push(path("lpea-" + id,
+        "M" + (tx - 5) + "," + (ty - 7) + " L" + tx + "," + (ty - 1) + " L" + (tx + 5) + "," + (ty - 7) + " Z",
+        { fill: "#2dd4bf" }));
+    }
+  }
+
   /* 次链（side）：主链下方第二行，绿色描边，与主链蓝色区分；
      节点被并入主链后自动变蓝（合并动画一目了然） */
   if (side) {
@@ -389,7 +418,8 @@ function listViewBox(snap) {
   const tailW = Math.max(0, layout.detInTail - 2) * (L_NODE_W + 18);
   const w = Math.max(380, L_LEFT * 2 + span * (L_NODE_W + L_GAP) + 70 + 82 * 2 + tailW);
   const pad = Math.max(0, (layout.layers - 1) * 17 - 24);
-  return (pad ? "0 -" + pad + " " : "0 0 ") + w + " " + (L_H + pad);
+  const prevPad = (snap && snap.prevEdges && Object.keys(snap.prevEdges).length) ? 30 : 0;
+  return (pad ? "0 -" + pad + " " : "0 0 ") + w + " " + (L_H + pad + prevPad);
 }
 
 /* 在 stage 中渲染链表快照 */
