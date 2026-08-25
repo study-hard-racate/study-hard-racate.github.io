@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="C语言最长公共子序列LCS动态规划可视化：2D填表过程、依赖高亮、回溯路径动画演示。">
+<meta name="description" content="C语言Dijkstra最短路径可视化：dist数组更新、松弛操作、最短路径树、贪心选择过程动画演示。">
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-<title>LCS 最长公共子序列 - C语言数据结构与算法动画</title>
+<title>Dijkstra 最短路径 - C语言数据结构与算法动画</title>
 <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -73,14 +73,14 @@
 <main class="content">
 
 <div class="algo-header">
-  <h1>LCS 最长公共子序列（动态规划）</h1>
-  <p>经典DP问题：给定两个序列 A、B，求它们的最长公共子序列长度。子序列不要求连续，但顺序必须一致。</p>
+  <h1>Dijkstra 最短路径</h1>
+  <p>求带权图中从源点 0 到其余各顶点的最短距离。贪心思想：每次选出"未确定顶点中距离最小者"并标记，再用它去"松弛"邻居。要求边权非负。</p>
 </div>
 <div class="algo-layout">
   <div class="code-panel" id="code-panel">
   <div class="code-title">
     <button class="code-collapse-btn" id="code-collapse-btn" title="折叠/展开代码面板">◀</button>
-    <span>LCS：2D 填表（一维数组模拟二维）· C 语言代码</span>
+    <span>Dijkstra 最短路径 · C 语言代码</span>
     <label class="code-follow" title="播放时让当前高亮行保持在视野内（手动滚动代码会暂停跟随）">
       <input type="checkbox" id="code-follow" checked>跟随高亮
     </label>
@@ -88,10 +88,14 @@
   <div class="code-lines" id="code-lines"></div>
 </div>
 <div class="code-resize-handle" id="code-resize-handle" title="拖动调整代码面板宽度"></div>
+  
   <div class="anim-panel">
   <div class="demo-hint">
     <span>▶ 播放 · <span class="kbd">Space</span> 播放/暂停 · <span class="kbd">←</span><span class="kbd">→</span> 单步 · <span class="kbd">R</span> 重置</span>
     <span>右侧代码行与动画同步高亮</span>
+  </div>
+  
+  <div class="inputs">
   </div>
   
   <div class="anim-stage" id="stage"></div>
@@ -113,12 +117,10 @@
     </div>
   <div class="legend">
     
-    <span><span class="dot" style="background:#ffd166"></span>当前计算</span>
-    <span><span class="dot" style="background:#b98cff"></span>依赖格</span>
-    <span><span class="dot" style="background:#4da3ff"></span>已填好</span>
-    <span><span class="dot" style="background:#3ecf8e"></span>回溯路径</span>
-    <span><span class="dot" style="background:#f472b6"></span>初始化</span>
-    <span><span class="dot" style="background:#b98cff; border-left:2px dashed #b98cff; width:16px; height:0; display:inline-block; vertical-align:middle"></span>依赖方向</span>
+    <span><span class="dot" style="background:#ffd166"></span>当前选中</span>
+    <span><span class="dot" style="background:#b98cff"></span>正在松弛</span>
+    <span><span class="dot" style="background:#3ecf8e"></span>已确定最短距离</span>
+    <span><span class="dot" style="background:#3ecf8e"></span>最短路径树边</span>
     
   </div>
   <div class="status-line" id="status"></div>
@@ -139,14 +141,14 @@
     </thead>
     <tbody>
       <tr>
-        <td class="complexity-label">动态规划</td>
-        <td>O(m × n)</td>
-        <td>O(m × n)</td>
+        <td class="complexity-label">Dijkstra（邻接矩阵）</td>
+        <td>O(n²)</td>
+        <td>O(n²)</td>
       </tr>
     </tbody>
   </table>
   
-  <div class="complexity-note">m、n 为两个序列的长度；可滚动数组优化空间至 O(min(m,n))，但回溯需要完整表格</div>
+  <div class="complexity-note">用二叉堆/优先队列优化选最小顶点可降至 O((n+e)log n)；不适用于负权边</div>
   
 </div>
 
@@ -187,10 +189,10 @@
 <script src="/static/js/tree.js"></script>
 <script src="/static/js/stackqueue.js"></script>
 <script src="/static/js/graph.js"></script>
-<script src="/static/js/dp.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
-setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* LCS\u6700\u957f\u516c\u5171\u5b50\u5e8f\u5217\uff1a\u4e00\u7ef4\u6570\u7ec4\u6a21\u62df\u4e8c\u7ef4\u8868 dp[i*(n+1)+j] */\nint main() {\n    int a[] = { 2, 4, 1, 3 };   /* \u5e8f\u5217 A\uff0c\u957f\u5ea6 m=4 */\n    int b[] = { 4, 2, 3 };      /* \u5e8f\u5217 B\uff0c\u957f\u5ea6 n=3 */\n    int m = 4;\n    int n = 3;\n    int dp[20];                 /* \u8868\u5927\u5c0f (m+1)*(n+1) = 20 */\n    int path[20];               /* \u56de\u6eaf\u8def\u5f84\uff08\u4e00\u7ef4\u4e0b\u6807\uff09 */\n    int path_len = 0;\n    int i, j, k;\n    int phase = 0;\n    int prev_w = -1;            /* \u4f9d\u8d56\u683c\u4e0b\u6807 */\n    \n    /* \u521d\u59cb\u5316\u7b2c 0 \u884c\u4e0e\u7b2c 0 \u5217 */\n    phase = 1;\n    for (i = 0; i \u003c= m; i++) {\n        dp[i * (n + 1)] = 0;\n    }\n    for (j = 0; j \u003c= n; j++) {\n        dp[j] = 0;\n    }\n    \n    /* \u586b\u8868\uff1a\u9010\u683c\u8ba1\u7b97 */\n    phase = 2;\n    for (i = 1; i \u003c= m; i++) {\n        for (j = 1; j \u003c= n; j++) {\n            k = i * (n + 1) + j;\n            if (a[i - 1] == b[j - 1]) {\n                prev_w = k - (n + 1) - 1;   /* \u5de6\u4e0a dp[i-1][j-1] */\n                dp[k] = dp[prev_w] + 1;\n            } else {\n                prev_w = k - (n + 1);       /* \u4e0a dp[i-1][j] */\n                if (dp[k - 1] \u003e dp[prev_w]) {\n                    prev_w = k - 1;         /* \u5de6 dp[i][j-1] \u66f4\u5927 */\n                }\n                dp[k] = dp[prev_w];\n            }\n        }\n    }\n    \n    /* \u56de\u6eaf\uff1a\u4ece\u53f3\u4e0b\u89d2\u5f80\u56de\u8d70 */\n    phase = 3;\n    i = m;\n    j = n;\n    while (i \u003e 0 \u0026\u0026 j \u003e 0) {\n        k = i * (n + 1) + j;\n        if (a[i - 1] == b[j - 1]) {\n            path[path_len] = k;\n            path_len = path_len + 1;\n            i = i - 1;\n            j = j - 1;\n        } else if (dp[k - (n + 1)] \u003e= dp[k - 1]) {\n            path[path_len] = k;\n            path_len = path_len + 1;\n            i = i - 1;\n        } else {\n            path[path_len] = k;\n            path_len = path_len + 1;\n            j = j - 1;\n        }\n    }\n    \n    phase = 4;\n    k = m * (n + 1) + n;\n    dp[k] = dp[k];      /* \u89e6\u53d1\u5b8c\u6210\u6b65\u9aa4 */\n    return 0;\n}\n", renderMode: "lcs", withRandom: false });
+setupDemo({ sample: "/* Dijkstra \u6700\u77ed\u8def\u5f84\uff1a\u4ece\u6e90\u70b9 0 \u51fa\u53d1\uff0c\u6c42\u5230\u5404\u9876\u70b9\u7684\u6700\u77ed\u8ddd\u79bb */\nint main() {\n    int n = 6;            /* \u9876\u70b9\u6570 */\n    int dist[6];          /* \u6e90\u70b9\u5230\u5404\u9876\u70b9\u7684\u5f53\u524d\u6700\u77ed\u8ddd\u79bb */\n    int fin[6];           /* \u662f\u5426\u5df2\u786e\u5b9a\u6700\u77ed\u8ddd\u79bb */\n    int parent[6];        /* \u6700\u77ed\u8def\u5f84\u6811\u4e2d\u7684\u7236\u8282\u70b9 */\n    int w[36];            /* \u8fb9\u6743\u91cd\u77e9\u9635 w[u*6+v]\uff0c0 \u8868\u793a\u65e0\u8fb9 */\n    int phase = 0;        /* 1 \u521d\u59cb\u5316 / 2 \u4e3b\u5faa\u73af / 3 \u5b8c\u6210 */\n    int i, j, u, v;\n\n    /* \u521d\u59cb\u5316\uff1a\u6743\u91cd\u77e9\u9635\u6e05\u96f6\uff0cdist \u7f6e \u221e\uff0cfin \u7f6e 0 */\n    phase = 1;\n    for (i = 0; i \u003c 36; i++) w[i] = 0;\n    for (i = 0; i \u003c n; i++) {\n        dist[i] = 9999;\n        fin[i] = 0;\n        parent[i] = -1;\n    }\n\n    /* \u793a\u4f8b\u65e0\u5411\u5e26\u6743\u56fe\uff08\u9876\u70b9 0..5\uff09\uff0cw[u*6+v] = \u8fb9\u6743\u91cd */\n    w[0*6+1] = 4; w[0*6+2] = 2;\n    w[1*6+0] = 4; w[1*6+2] = 1; w[1*6+3] = 5;\n    w[2*6+0] = 2; w[2*6+1] = 1; w[2*6+3] = 8; w[2*6+4] = 10;\n    w[3*6+1] = 5; w[3*6+2] = 8; w[3*6+4] = 2; w[3*6+5] = 6;\n    w[4*6+2] = 10; w[4*6+3] = 2; w[4*6+5] = 3;\n    w[5*6+3] = 6; w[5*6+4] = 3;\n\n    /* \u6e90\u70b9 0 \u8ddd\u79bb\u4e3a 0 */\n    dist[0] = 0;\n\n    /* \u4e3b\u5faa\u73af\uff1a\u53cd\u590d\u9009\u51fa\u672a\u786e\u5b9a\u9876\u70b9\u4e2d\u8ddd\u79bb\u6700\u5c0f\u8005 */\n    phase = 2;\n    for (i = 0; i \u003c n; i++) {\n        /* \u627e\u672a\u786e\u5b9a\u9876\u70b9\u4e2d dist \u6700\u5c0f\u7684 u */\n        u = -1;\n        for (j = 0; j \u003c n; j++) {\n            if (fin[j] == 0 \u0026\u0026 (u == -1 || dist[j] \u003c dist[u])) {\n                u = j;\n            }\n        }\n        fin[u] = 1;      /* \u786e\u5b9a u \u7684\u6700\u77ed\u8ddd\u79bb */\n        /* \u677e\u5f1b\uff1a\u5c1d\u8bd5\u7ecf u \u66f4\u65b0\u90bb\u5c45 v \u7684\u8ddd\u79bb */\n        for (v = 0; v \u003c n; v++) {\n            if (w[u*6+v] \u003e 0 \u0026\u0026 fin[v] == 0 \u0026\u0026 dist[u] + w[u*6+v] \u003c dist[v]) {\n                dist[v] = dist[u] + w[u*6+v];\n                parent[v] = u;   /* \u8bb0\u5f55\u6700\u77ed\u8def\u5f84\u6811 */\n            }\n        }\n    }\n\n    /* \u5b8c\u6210 */\n    phase = 3;\n    return 0;\n}", renderMode: "dijkstra" });
 </script>
 
 </body>
+</html>

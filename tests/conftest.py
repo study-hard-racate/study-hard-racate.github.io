@@ -38,6 +38,7 @@ PAGES = {
     "/tree/union-find": "tree/union-find/index.html",
     "/graph/bfs-dfs": "graph/bfs-dfs/index.html",
     "/graph/topological": "graph/topological/index.html",
+    "/graph/dijkstra": "graph/dijkstra/index.html",
     "/dp/01-knapsack": "dp/01-knapsack/index.html",
     "/dp/complete-knapsack": "dp/complete-knapsack/index.html",
     "/dp/lcs": "dp/lcs/index.html",

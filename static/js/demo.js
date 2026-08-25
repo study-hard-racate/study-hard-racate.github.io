@@ -199,6 +199,34 @@ function generateStepComment(step, renderMode) {
     return "动态规划";
   }
   
+  /* Dijkstra 最短路径 */
+  if (renderMode === "dijkstra") {
+    const vars = step.vars || {};
+    const phase = vars.phase;
+    const n = vars.n || 0;
+    const u = vars.u, v = vars.v;
+    if (phase === 1) {
+      return "初始化：dist[0]=0，其余顶点 dist 置 ∞（9999），fin 全部置 0";
+    }
+    if (phase === 3) {
+      let parts = [];
+      for (let i = 0; i < n; i++) {
+        parts.push("0→" + i + "=" + (step.arr && step.arr[i] !== undefined && step.arr[i] < 9999 ? step.arr[i] : "∞"));
+      }
+      return "完成！各顶点最短距离：" + parts.join("，");
+    }
+    if (phase === 2 && u !== undefined && v !== undefined) {
+      return "松弛：经 " + u + " 更新顶点 " + v + " 的距离";
+    }
+    if (phase === 2 && u !== undefined) {
+      return "选择距离最小的未确定顶点 u=" + u + "，标记为已确定";
+    }
+    if (phase === 2) {
+      return "在未确定顶点中查找距离最小者";
+    }
+    return msg || "Dijkstra 最短路径";
+  }
+
   /* 爬楼梯：一维递推 dp[i] = dp[i-1] + dp[i-2] */
   if (step.dp && renderMode === "stairs") {
     const dp = step.dp;
@@ -449,6 +477,11 @@ function setupDemo(opts) {
       if (renderMode === "hash") { renderHash(stage, step.graph); return; }
       if (renderMode === "topological") { renderTopological(stage, step); return; }
       renderGraphCsim(stage, step.graph);
+      return;
+    }
+    /* Dijkstra 最短路径：数组模式驱动（dist/fin/w 在 vars） */
+    if (renderMode === "dijkstra") {
+      renderDijkstra(stage, step);
       return;
     }
     /* 2D DP 表（LCS/编辑距离）：无条件路由，入口步骤无 dp 快照时也渲染空表格 */
