@@ -42,6 +42,8 @@ PAGES = {
     "/dp/complete-knapsack": "dp/complete-knapsack/index.html",
     "/dp/lcs": "dp/lcs/index.html",
     "/dp/edit-distance": "dp/edit-distance/index.html",
+    "/dp/stairs": "dp/stairs/index.html",
+    "/dp/lis": "dp/lis/index.html",
 }
 
 # 所有算法/模块页（含播放器与舞台），列表页/首页不在此列

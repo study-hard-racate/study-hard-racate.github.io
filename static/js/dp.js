@@ -416,3 +416,281 @@ function renderDP2D(stage, step, mode) {
 
   renderSVG(stage, "0 0 " + Wtotal + " " + Htotal, specs);
 }
+
+/* ===== 爬楼梯渲染器（renderMode: "stairs"）=====
+   dp[i] = dp[i-1] + dp[i-2]，一维数组 + 两个依赖格高亮 + 递推公式 */
+function renderStairs(stage, step) {
+  const dp = step.dp || {};
+  const table = dp.table || [];
+  const n = dp.n !== undefined ? dp.n : (table.length ? table.length - 1 : 10);
+  const phase = dp.phase !== undefined ? dp.phase : 0;
+  const i = dp.i;
+  const prevW = dp.prevW !== undefined ? dp.prevW : -1;
+
+  if (!table.length) {
+    renderSVG(stage, "0 0 300 120",
+      [text("st-empty", 150, 60, "（空表格）",
+        { "text-anchor": "middle", "font-size": 15, fill: "#5c6a85" })]);
+    return;
+  }
+
+  const leftMargin = 40;
+  const topMargin = 72;
+  const specs = [];
+
+  /* 阶段标签 */
+  let phaseText = "", phaseColor = "#8b96a8";
+  if (phase === 1) { phaseText = "阶段：初始化 dp[0] = dp[1] = 1"; phaseColor = DP_COLORS.init; }
+  else if (phase === 2) { phaseText = "阶段：递推填表（每次走 1 或 2 阶）"; phaseColor = DP_COLORS.cur; }
+  else if (phase === 3) { phaseText = "阶段：完成 ✓"; phaseColor = DP_COLORS.processed; }
+  specs.push(text("st-phase", leftMargin, 24, phaseText,
+    { "font-size": 12, "font-weight": "bold", fill: phaseColor }));
+
+  /* 规则提示 */
+  specs.push(text("st-rule", leftMargin, 44, "dp[i] = dp[i-1] + dp[i-2]　（到第 i 阶 = 先到第 i-1 阶再走 1 步 + 先到第 i-2 阶再走 2 步）",
+    { "font-size": 11, fill: "#8b96a8" }));
+
+  /* 格子：0..n */
+  const inCur = (phase === 2 && i !== undefined && i >= 0 && i <= n);
+  const inDep = (c) => phase === 2 && prevW >= 0 && prevW === c;
+  const isInitCell = (c) => phase === 1 && (c === 0 || c === 1);
+
+  for (let c = 0; c <= n; c++) {
+    const x = leftMargin + c * (DP_CELL_W + DP_GAP);
+    const y = topMargin;
+    const isCur = inCur && c === i;
+    const isDep = inDep(c);
+    const isFilled = phase === 2 && !isCur && !isDep && c < i;
+    const isDone = phase === 3;
+
+    let fillColor = DP_COLORS.normal;
+    let strokeColor = DP_COLORS.border;
+    let strokeW = 1.5;
+    if (isCur) { fillColor = DP_COLORS.cur; strokeColor = DP_COLORS.cur; strokeW = 2.5; }
+    else if (isDep) { fillColor = DP_COLORS.dep; strokeColor = DP_COLORS.dep; strokeW = 2.5; }
+    else if (isInitCell(c)) { fillColor = DP_COLORS.init; strokeColor = DP_COLORS.init; strokeW = 1.5; }
+    else if (isFilled) { fillColor = DP_COLORS.filled; strokeColor = DP_COLORS.filled; strokeW = 1.5; }
+    else if (isDone) { fillColor = DP_COLORS.processed; strokeColor = DP_COLORS.processed; strokeW = 1.5; }
+
+    specs.push(rect("stc-" + c, x, y, DP_CELL_W, DP_CELL_H, {
+      rx: 4, fill: fillColor, stroke: strokeColor, "stroke-width": strokeW,
+    }));
+    const val = table[c];
+    specs.push(text("stt-" + c, x + DP_CELL_W / 2, y + DP_CELL_H / 2 + 5,
+      val !== undefined ? String(val) : "0",
+      { "text-anchor": "middle", "font-size": 13, "font-weight": "bold",
+        fill: (isCur || isDep || isInitCell(c)) ? DP_COLORS.textDark : DP_COLORS.text }));
+    /* 下标 */
+    specs.push(text("stl-" + c, x + DP_CELL_W / 2, y + DP_CELL_H + 15,
+      String(c), { "text-anchor": "middle", "font-size": 10, fill: "#8b96a8" }));
+  }
+
+  /* 依赖箭头：当前格 → prevW 依赖格 */
+  if (inCur && prevW >= 0 && prevW <= n) {
+    const cx = leftMargin + i * (DP_CELL_W + DP_GAP) + DP_CELL_W / 2;
+    const cy = topMargin;
+    const dx = leftMargin + prevW * (DP_CELL_W + DP_GAP) + DP_CELL_W / 2;
+    const dy = topMargin + DP_CELL_H;
+    specs.push(line("st-arrow", cx, cy + 2, dx, dy - 2,
+      { stroke: DP_COLORS.formula, "stroke-width": 2, "stroke-dasharray": "5 3",
+        "marker-end": "url(#st-arrowhead)" }));
+  }
+  specs.push(el("st-def-arrow", "defs", {}, ""));
+  specs.push(el("st-arrowhead", "marker", {
+    id: "st-arrowhead", viewBox: "0 0 10 10", refX: 9, refY: 5,
+    markerWidth: 6, markerHeight: 6, orient: "auto-start-reverse",
+  }, ""));
+  specs.push(el("st-arrowhead-path", "path", { d: "M 0 0 L 10 5 L 0 10 z", fill: DP_COLORS.formula }, ""));
+
+  /* 状态说明 */
+  const statusY = topMargin + DP_CELL_H + 38;
+  if (phase === 1) {
+    specs.push(text("st-status", leftMargin, statusY,
+      "0 阶不走为 1 种；1 阶只走 1 步为 1 种",
+      { "font-size": 12, fill: DP_COLORS.init }));
+  } else if (phase === 2 && inCur) {
+    const v1 = table[i - 1] !== undefined ? table[i - 1] : 0;
+    const v2 = table[i - 2] !== undefined ? table[i - 2] : 0;
+    const cur = table[i] !== undefined ? table[i] : 0;
+    specs.push(text("st-status", leftMargin, statusY,
+      "dp[" + i + "] = dp[" + (i - 1) + "] + dp[" + (i - 2) + "] = " + v1 + " + " + v2 + " = " + cur,
+      { "font-size": 12, "font-weight": "bold", fill: DP_COLORS.cur }));
+  } else if (phase === 3) {
+    const ans = table[n] !== undefined ? table[n] : 0;
+    specs.push(text("st-status", leftMargin, statusY,
+      "完成！爬到第 " + n + " 阶共有 " + ans + " 种走法",
+      { "font-size": 13, "font-weight": "bold", fill: DP_COLORS.processed }));
+  }
+
+  /* 图例 */
+  const legendY = statusY + 24;
+  specs.push(el("st-legend-bg", "rect", {
+    x: leftMargin - 5, y: legendY - 12, width: 430, height: 20, rx: 4,
+    fill: "#1a2332", opacity: 0.8 }));
+  specs.push(text("st-leg-1", leftMargin, legendY, "■ ", { "font-size": 11, fill: DP_COLORS.cur }));
+  specs.push(text("st-leg-1t", leftMargin + 16, legendY, "当前", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("st-leg-2", leftMargin + 50, legendY, "■ ", { "font-size": 11, fill: DP_COLORS.dep }));
+  specs.push(text("st-leg-2t", leftMargin + 66, legendY, "依赖", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("st-leg-3", leftMargin + 100, legendY, "■ ", { "font-size": 11, fill: DP_COLORS.filled }));
+  specs.push(text("st-leg-3t", leftMargin + 116, legendY, "已填好", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("st-leg-4", leftMargin + 155, legendY, "■ ", { "font-size": 11, fill: DP_COLORS.init }));
+  specs.push(text("st-leg-4t", leftMargin + 171, legendY, "初始化", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("st-leg-5", leftMargin + 215, legendY, "→ ", { "font-size": 11, fill: DP_COLORS.formula }));
+  specs.push(text("st-leg-5t", leftMargin + 231, legendY, "依赖方向", { "font-size": 10, fill: "#8b96a8" }));
+
+  const Wtotal = leftMargin + (n + 1) * (DP_CELL_W + DP_GAP) + 40;
+  const Htotal = legendY + 30;
+  renderSVG(stage, "0 0 " + Wtotal + " " + Htotal, specs);
+}
+
+/* ===== LIS 最长递增子序列渲染器（renderMode: "lis"）=====
+   上行 a[] 序列，下行 dp[]（dp[i] = 以 a[i] 结尾的 LIS 长度），
+   扫描 j < i 且 a[j] < a[i] 时高亮依赖并更新 dp[i] */
+function renderLIS(stage, step) {
+  const dp = step.dp || {};
+  const table = dp.table || [];
+  const seq = dp.weights || [];       /* a[]（main 数组） */
+  const n = dp.n !== undefined ? dp.n : seq.length;
+  const phase = dp.phase !== undefined ? dp.phase : 0;
+  const i = dp.i;
+  const j = dp.j;
+  const prevW = dp.prevW !== undefined ? dp.prevW : -1;
+
+  if (!table.length) {
+    renderSVG(stage, "0 0 300 120",
+      [text("lis-empty", 150, 60, "（空表格）",
+        { "text-anchor": "middle", "font-size": 15, fill: "#5c6a85" })]);
+    return;
+  }
+
+  const leftMargin = 40;
+  const rowAY = 74;                   /* 上行 a[] */
+  const rowBY = 74 + 34 + 30;         /* 下行 dp[] */
+  const specs = [];
+
+  /* 阶段标签 */
+  let phaseText = "", phaseColor = "#8b96a8";
+  if (phase === 1) { phaseText = "阶段：初始化 dp[i] = 1（每个元素自身构成长度 1 的子序列）"; phaseColor = DP_COLORS.init; }
+  else if (phase === 2) { phaseText = "阶段：递推填表（扫描 j < i 且 a[j] < a[i]）"; phaseColor = DP_COLORS.cur; }
+  else if (phase === 3) { phaseText = "阶段：完成 ✓"; phaseColor = DP_COLORS.processed; }
+  specs.push(text("lis-phase", leftMargin, 24, phaseText,
+    { "font-size": 12, "font-weight": "bold", fill: phaseColor }));
+
+  specs.push(text("lis-rule", leftMargin, 46, "dp[i] = 1 + max(dp[j])，其中 0 ≤ j < i 且 a[j] < a[i]",
+    { "font-size": 11, fill: "#8b96a8" }));
+
+  /* 行标签 */
+  specs.push(text("lis-labA", leftMargin - 4, rowAY + 21, "a", { "font-size": 12, "font-weight": "bold", fill: "#5eead4" }));
+  specs.push(text("lis-labB", leftMargin - 4, rowBY + 21, "dp", { "font-size": 12, "font-weight": "bold", fill: "#5eead4" }));
+
+  const inCur = phase === 2 && i !== undefined && i >= 0 && i < n;
+  const inJ = phase === 2 && j !== undefined && j >= 0 && j < i;
+
+  for (let c = 0; c < n; c++) {
+    /* ---- 上行：a[c] ---- */
+    const x = leftMargin + c * (DP_CELL_W + DP_GAP);
+    const aIsCur = inCur && c === i;
+    const aIsCmp = inJ && c === j;
+    let aFill = "#232c40", aStroke = "#2e3a52", aText = DP_COLORS.text;
+    if (aIsCur) { aFill = DP_COLORS.cur; aStroke = DP_COLORS.cur; aText = DP_COLORS.textDark; }
+    else if (aIsCmp) { aFill = DP_COLORS.dep; aStroke = DP_COLORS.dep; aText = DP_COLORS.textDark; }
+    specs.push(rect("lisa-" + c, x, rowAY, DP_CELL_W, DP_CELL_H, {
+      rx: 4, fill: aFill, stroke: aStroke, "stroke-width": (aIsCur || aIsCmp) ? 2.5 : 1.5,
+    }));
+    specs.push(text("lisat-" + c, x + DP_CELL_W / 2, rowAY + DP_CELL_H / 2 + 5,
+      seq[c] !== undefined ? String(seq[c]) : "·",
+      { "text-anchor": "middle", "font-size": 13, "font-weight": "bold", fill: aText }));
+    specs.push(text("lisai-" + c, x + DP_CELL_W / 2, rowAY - 6, String(c),
+      { "text-anchor": "middle", "font-size": 10, fill: "#8b96a8" }));
+
+    /* ---- 下行：dp[c] ---- */
+    const bIsCur = inCur && c === i;
+    const bIsDep = phase === 2 && prevW >= 0 && prevW === c;
+    const bIsFilled = phase === 2 && !bIsCur && !bIsDep && c < i;
+    const bIsInit = phase === 1;
+    const bIsDone = phase === 3;
+    let bFill = DP_COLORS.normal, bStroke = DP_COLORS.border, bW = 1.5, bText = DP_COLORS.text;
+    if (bIsCur) { bFill = DP_COLORS.cur; bStroke = DP_COLORS.cur; bW = 2.5; bText = DP_COLORS.textDark; }
+    else if (bIsDep) { bFill = DP_COLORS.dep; bStroke = DP_COLORS.dep; bW = 2.5; bText = DP_COLORS.textDark; }
+    else if (bIsInit) { bFill = DP_COLORS.init; bStroke = DP_COLORS.init; bText = DP_COLORS.textDark; }
+    else if (bIsFilled) { bFill = DP_COLORS.filled; bStroke = DP_COLORS.filled; }
+    else if (bIsDone) { bFill = DP_COLORS.processed; bStroke = DP_COLORS.processed; }
+    specs.push(rect("lisb-" + c, x, rowBY, DP_CELL_W, DP_CELL_H, {
+      rx: 4, fill: bFill, stroke: bStroke, "stroke-width": bW,
+    }));
+    const bval = table[c];
+    specs.push(text("lisbt-" + c, x + DP_CELL_W / 2, rowBY + DP_CELL_H / 2 + 5,
+      bval !== undefined ? String(bval) : "0",
+      { "text-anchor": "middle", "font-size": 13, "font-weight": "bold", fill: bText }));
+  }
+
+  /* 依赖箭头：当前 dp[i] → 依赖 dp[prevW] */
+  if (inCur && prevW >= 0 && prevW < n) {
+    const cx = leftMargin + i * (DP_CELL_W + DP_GAP) + DP_CELL_W / 2;
+    const cy = rowBY;
+    const dx = leftMargin + prevW * (DP_CELL_W + DP_GAP) + DP_CELL_W / 2;
+    const dy = rowBY + DP_CELL_H;
+    specs.push(line("lis-arrow", cx, cy + 2, dx, dy - 2,
+      { stroke: DP_COLORS.formula, "stroke-width": 2, "stroke-dasharray": "5 3",
+        "marker-end": "url(#lis-arrowhead)" }));
+  }
+  specs.push(el("lis-def-arrow", "defs", {}, ""));
+  specs.push(el("lis-arrowhead", "marker", {
+    id: "lis-arrowhead", viewBox: "0 0 10 10", refX: 9, refY: 5,
+    markerWidth: 6, markerHeight: 6, orient: "auto-start-reverse",
+  }, ""));
+  specs.push(el("lis-arrowhead-path", "path", { d: "M 0 0 L 10 5 L 0 10 z", fill: DP_COLORS.formula }, ""));
+
+  /* 状态说明 + 公式 */
+  const statusY = rowBY + DP_CELL_H + 38;
+  if (phase === 1) {
+    specs.push(text("lis-status", leftMargin, statusY,
+      "每个元素单独看都是长度为 1 的递增子序列",
+      { "font-size": 12, fill: DP_COLORS.init }));
+  } else if (phase === 2 && inCur) {
+    if (inJ) {
+      const ai = seq[i], aj = seq[j];
+      if (aj < ai) {
+        const oldV = table[i] !== undefined ? table[i] : 1;
+        const cand = (table[j] !== undefined ? table[j] : 1) + 1;
+        specs.push(text("lis-status", leftMargin, statusY,
+          "a[" + j + "]=" + aj + " < a[" + i + "]=" + ai + "　→　dp[" + i + "] = max(" + oldV + ", dp[" + j + "]+1=" + cand + ") = " + (cand > oldV ? cand : oldV),
+          { "font-size": 12, "font-weight": "bold", fill: DP_COLORS.cur }));
+      } else {
+        specs.push(text("lis-status", leftMargin, statusY,
+          "a[" + j + "]=" + aj + " ≥ a[" + i + "]=" + ai + "，不构成递增，跳过",
+          { "font-size": 12, fill: "#8b96a8" }));
+      }
+    } else {
+      specs.push(text("lis-status", leftMargin, statusY,
+        "处理元素 a[" + i + "]=" + seq[i] + "，扫描其左侧所有元素",
+        { "font-size": 12, fill: DP_COLORS.cur }));
+    }
+  } else if (phase === 3) {
+    let mx = 0;
+    for (let c = 0; c < n; c++) if ((table[c] || 0) > mx) mx = table[c];
+    specs.push(text("lis-status", leftMargin, statusY,
+      "完成！最长递增子序列长度 = " + mx,
+      { "font-size": 13, "font-weight": "bold", fill: DP_COLORS.processed }));
+  }
+
+  /* 图例 */
+  const legendY = statusY + 24;
+  specs.push(el("lis-legend-bg", "rect", {
+    x: leftMargin - 5, y: legendY - 12, width: 430, height: 20, rx: 4,
+    fill: "#1a2332", opacity: 0.8 }));
+  specs.push(text("lis-leg-1", leftMargin, legendY, "■ ", { "font-size": 11, fill: DP_COLORS.cur }));
+  specs.push(text("lis-leg-1t", leftMargin + 16, legendY, "当前", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("lis-leg-2", leftMargin + 50, legendY, "■ ", { "font-size": 11, fill: DP_COLORS.dep }));
+  specs.push(text("lis-leg-2t", leftMargin + 66, legendY, "依赖/比较", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("lis-leg-3", leftMargin + 115, legendY, "■ ", { "font-size": 11, fill: DP_COLORS.filled }));
+  specs.push(text("lis-leg-3t", leftMargin + 131, legendY, "已填好", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("lis-leg-4", leftMargin + 170, legendY, "■ ", { "font-size": 11, fill: DP_COLORS.init }));
+  specs.push(text("lis-leg-4t", leftMargin + 186, legendY, "初始化", { "font-size": 10, fill: "#8b96a8" }));
+  specs.push(text("lis-leg-5", leftMargin + 225, legendY, "→ ", { "font-size": 11, fill: DP_COLORS.formula }));
+  specs.push(text("lis-leg-5t", leftMargin + 241, legendY, "依赖方向", { "font-size": 10, fill: "#8b96a8" }));
+
+  const Wtotal = leftMargin + n * (DP_CELL_W + DP_GAP) + 40;
+  const Htotal = legendY + 30;
+  renderSVG(stage, "0 0 " + Wtotal + " " + Htotal, specs);
+}

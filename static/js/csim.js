@@ -855,7 +855,9 @@
         this.prevParent = st.arr.slice();
       }
       /* DP模式：检测是否有dp数组 */
-      if (st.vars && st.vars.dp && Array.isArray(st.vars.dp)) {
+      var hasDp = (st.vars && st.vars.dp && Array.isArray(st.vars.dp)) ||
+                  (this.main && this.main.name === "dp");
+      if (hasDp) {
         st.dp = this.dpSnapshot();
       }
     }
@@ -1275,6 +1277,11 @@
     }
     /* this.main 是第一个声明的数组（DP 中为 w[]），collectVars 不会收集它，需单独处理 */
     var mainArr = (this.main && this.main.arr) ? this.main.arr.slice() : [];
+    /* 若第一个声明的数组本身就叫 dp（如爬楼梯 int dp[11]），它被排除在 collectVars 之外，
+       需把它作为 dp 表收集，否则该场景没有 dp 快照 */
+    if (this.main && this.main.name === "dp" && out.dp === undefined) {
+      out.dp = mainArr;
+    }
     var phase = out.phase !== undefined ? out.phase : 0;
     var prevW = out.prev_w !== undefined ? out.prev_w : -1;
     /* 已处理物品：phase=2 时，i 之前的物品已处理完 */

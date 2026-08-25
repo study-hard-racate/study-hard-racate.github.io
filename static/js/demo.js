@@ -199,6 +199,56 @@ function generateStepComment(step, renderMode) {
     return "动态规划";
   }
   
+  /* 爬楼梯：一维递推 dp[i] = dp[i-1] + dp[i-2] */
+  if (step.dp && renderMode === "stairs") {
+    const dp = step.dp;
+    const i = dp.i;
+    const phase = dp.phase;
+    if (phase === 1) {
+      return "初始化：dp[0] = 1（不走），dp[1] = 1（跨 1 步）";
+    }
+    if (phase === 3) {
+      return "完成！爬到第 " + dp.n + " 阶共有 " + (dp.table[dp.n] || 0) + " 种走法";
+    }
+    if (phase === 2 && i !== undefined && i <= dp.n) {
+      const v1 = dp.table[i - 1] || 0;
+      const v2 = dp.table[i - 2] || 0;
+      return "dp[" + i + "] = dp[" + (i - 1) + "] + dp[" + (i - 2) + "] = " + v1 + " + " + v2 + " = " + (dp.table[i] || 0);
+    }
+    if (msg) return msg;
+    return "爬楼梯";
+  }
+
+  /* LIS 最长递增子序列 */
+  if (step.dp && renderMode === "lis") {
+    const dp = step.dp;
+    const vars = step.vars || {};
+    const i = dp.i, j = dp.j, phase = dp.phase;
+    const seq = dp.weights || [];
+    if (phase === 1) {
+      return "初始化：每个元素自身构成长度 1 的递增子序列";
+    }
+    if (phase === 3) {
+      let mx = 0;
+      for (let c = 0; c < dp.table.length; c++) if ((dp.table[c] || 0) > mx) mx = dp.table[c];
+      return "完成！最长递增子序列长度 = " + mx;
+    }
+    if (phase === 2 && i !== undefined && j !== undefined && j < i) {
+      const ai = seq[i], aj = seq[j];
+      if (aj < ai) {
+        const oldV = dp.table[i] || 1;
+        const cand = (dp.table[j] || 1) + 1;
+        return "a[" + j + "]=" + aj + " < a[" + i + "]=" + ai + " → dp[" + i + "] = max(" + oldV + ", dp[" + j + "]+1) = " + (cand > oldV ? cand : oldV);
+      }
+      return "a[" + j + "]=" + aj + " ≥ a[" + i + "]=" + ai + "，不构成递增，跳过";
+    }
+    if (phase === 2 && i !== undefined) {
+      return "处理元素 a[" + i + "]=" + seq[i] + "，扫描左侧元素找更小值";
+    }
+    if (msg) return msg;
+    return "最长递增子序列";
+  }
+
   /* LCS / 编辑距离（2D DP 表） */
   if (step.dp && (renderMode === "lcs" || renderMode === "editdistance")) {
     const dp = step.dp;
@@ -404,6 +454,16 @@ function setupDemo(opts) {
     /* 2D DP 表（LCS/编辑距离）：无条件路由，入口步骤无 dp 快照时也渲染空表格 */
     if (renderMode === "lcs" || renderMode === "editdistance") {
       renderDP2D(stage, step, renderMode);
+      return;
+    }
+    /* 爬楼梯：一维递推 dp[i] = dp[i-1] + dp[i-2] */
+    if (renderMode === "stairs") {
+      renderStairs(stage, step);
+      return;
+    }
+    /* LIS 最长递增子序列：序列行 + dp 行 */
+    if (renderMode === "lis") {
+      renderLIS(stage, step);
       return;
     }
     if (step.dp) {
