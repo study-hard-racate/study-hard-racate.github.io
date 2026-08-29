@@ -721,9 +721,8 @@ function setupDemo(opts) {
       [text("empty", 160, 60, "（暂无画面）", { "text-anchor": "middle", "font-size": 15, fill: "#5c6a85" })]);
   }
 
-  function run(forceRandom) {
-    const src = (forceRandom && opts.randomize) ? opts.randomize() : sample;
-    const res = CSim.run(src, { forceRandom: !!forceRandom && !opts.randomize });
+  function execute(src, forceRandom) {
+    const res = CSim.run(src, { forceRandom: !!forceRandom });
     if (!res.ok) {
       status.textContent = "演示代码无法执行：" + (res.error && res.error.msg ? res.error.msg : "未知错误");
       return;
@@ -773,10 +772,86 @@ function setupDemo(opts) {
     }
   }
 
+  function run(forceRandom) {
+    const src = (forceRandom && opts.randomize) ? opts.randomize() : sample;
+    execute(src, forceRandom && !opts.randomize);
+  }
+
+  /* 用自定义代码运行（改数据不改代码：页面 build 出新的 C 代码字符串） */
+  function runCustom(src) {
+    if (!src || !src.trim()) {
+      status.textContent = "请输入自定义数据";
+      return;
+    }
+    execute(src, false);
+  }
+
   run(false);
 
   const btnRandom = document.getElementById("btn-random");
   if (btnRandom && opts.withRandom) {
     btnRandom.addEventListener("click", function () { run(true); });
   }
+
+  /* ===== 自定义数据（改数据不改代码）=====
+     页面通过 opts.customData 声明输入字段与 build 函数：
+     { fields: [{ id, placeholder, kind: "intlist"|"int", min, max, invalid }],
+       build: function(sample, vals) -> 新代码字符串 }
+     demo.js 负责读取输入、校验、调用 build 并用 runCustom 执行。 */
+  if (opts.customData) {
+    const fields = opts.customData.fields || [];
+    function collectValues() {
+      const vals = [];
+      for (let fi = 0; fi < fields.length; fi++) {
+        const f = fields[fi];
+        const el = document.getElementById(f.id);
+        if (!el) return null;
+        let v;
+        if (f.kind === "int") v = parseSingleInt(el.value);
+        else v = parseCSVInts(el.value, f.min !== undefined ? f.min : 1, f.max !== undefined ? f.max : 15);
+        if (v === null) {
+          status.textContent = f.invalid || "输入格式不正确，请检查后重试";
+          return null;
+        }
+        vals.push(v);
+      }
+      return vals;
+    }
+    const btnCustom = document.getElementById("btn-custom");
+    if (btnCustom) {
+      btnCustom.addEventListener("click", function () {
+        const vals = collectValues();
+        if (!vals) return;
+        const code = opts.customData.build(sample, vals);
+        if (!code) { status.textContent = "无法生成演示代码，请检查输入"; return; }
+        runCustom(code);
+      });
+    }
+    /* 供测试与调试调用 */
+    window.__customData = opts.customData;
+    window.__runCustom = runCustom;
+  }
+}
+
+/* ===== 自定义数据解析器 =====
+   parseCSVInts：逗号/空格分隔的整数列表 → number[]（个数在 [min,max] 内），非法返回 null
+   parseSingleInt：单个整数 → number，非法返回 null */
+function parseCSVInts(raw, min, max) {
+  if (!raw || typeof raw !== "string") return null;
+  const parts = raw.split(/[,，\s]+/).filter(function (s) { return s.length > 0; });
+  if (parts.length < (min || 1) || parts.length > (max || 15)) return null;
+  const out = [];
+  for (let i = 0; i < parts.length; i++) {
+    const n = Number(parts[i]);
+    if (!isFinite(n) || Math.floor(n) !== n) return null;
+    out.push(n);
+  }
+  return out;
+}
+
+function parseSingleInt(raw) {
+  if (!raw || typeof raw !== "string") return null;
+  const n = Number(raw.trim());
+  if (!isFinite(n) || Math.floor(n) !== n) return null;
+  return n;
 }

@@ -113,6 +113,7 @@
   
   <div class="inputs">
     <button class="btn" id="btn-random">🎲 随机数据</button>
+    <span class="custom-data"><label class="custom-label">数组<input type="text" id="custom-data-input" class="custom-input" placeholder="如 3,7,2,9,5,1,8,4"></label><label class="custom-label">目标<input type="text" id="custom-target-input" class="custom-input" style="width:70px" placeholder="如 7"></label><button class="btn" id="btn-custom">应用</button></span>
   </div>
   
   <div class="anim-stage" id="stage"></div>
@@ -240,7 +241,10 @@ function randomizeBinary() {
     "    return 0;\n" +
     "}";
 }
-setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u4e8c\u5206\u67e5\u627e\uff1a\u6709\u5e8f\u6570\u7ec4\uff0c\u6298\u534a\u6392\u9664 */\nint main(void) {\n    int a[] = { 1, 3, 5, 7, 9, 11, 13, 15 };\n    int n = 8;\n    int x = 11;\n    int lo = 0, hi = n - 1;\n    int mid = -1;\n    int found = -1;\n    while (lo \u003c= hi) {\n        mid = (lo + hi) / 2;\n        if (a[mid] == x) {\n            found = mid;\n            break;\n        }\n        if (a[mid] \u003c x) lo = mid + 1;\n        else hi = mid - 1;\n    }\n    return 0;\n}\n", renderMode: "binary", withRandom: true, randomize: randomizeBinary });
+setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u4e8c\u5206\u67e5\u627e\uff1a\u6709\u5e8f\u6570\u7ec4\uff0c\u6298\u534a\u6392\u9664 */\nint main(void) {\n    int a[] = { 1, 3, 5, 7, 9, 11, 13, 15 };\n    int n = 8;\n    int x = 11;\n    int lo = 0, hi = n - 1;\n    int mid = -1;\n    int found = -1;\n    while (lo \u003c= hi) {\n        mid = (lo + hi) / 2;\n        if (a[mid] == x) {\n            found = mid;\n            break;\n        }\n        if (a[mid] \u003c x) lo = mid + 1;\n        else hi = mid - 1;\n    }\n    return 0;\n}\n", renderMode: "binary", withRandom: true, randomize: randomizeBinary, customData: {
+    fields: [ { id: "custom-data-input", placeholder: "如 3,7,2,9,5,1,8,4", kind: "intlist", min: 4, max: 15, invalid: "数组请输入 4~15 个整数" }, { id: "custom-target-input", placeholder: "如 7", kind: "int", invalid: "目标值请输入整数" } ],
+    build: function (sample, vals) { var arr = vals[0], x = vals[1]; return sample.replace(/int a\[\] = \{[^}]*\};/, "int a[] = { " + arr.join(", ") + " };").replace(/int x = -?\d+;/, "int x = " + x + ";"); }
+  } });
 </script>
 
 </body>

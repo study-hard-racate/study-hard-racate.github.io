@@ -113,6 +113,7 @@
   
   <div class="inputs">
     <button class="btn" id="btn-random">🎲 随机数据</button>
+    <span class="custom-data"><label class="custom-label">自定义数组<input type="text" id="custom-data-input" class="custom-input" placeholder="如 5,3,8,1,9"></label><button class="btn" id="btn-custom">应用</button></span>
   </div>
   
   <div class="anim-stage" id="stage"></div>
@@ -208,7 +209,10 @@
 <script src="/static/js/graph.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
-setupDemo({ sample: "void quick_sort(int a[], int lo, int hi) {\n    if (lo \u003e= hi) return;\n    int pivot = a[hi];            /* \u9009\u672b\u5c3e\u4e3a\u57fa\u51c6 */\n    int i = lo - 1;\n    for (int j = lo; j \u003c hi; j++) {\n        if (a[j] \u003c pivot) {\n            i++;                  /* \u4ea4\u6362 a[i] \u548c a[j] */\n            int t = a[i]; a[i] = a[j]; a[j] = t;\n        }\n    }\n    int t = a[i+1]; a[i+1] = a[hi]; a[hi] = t; /* \u57fa\u51c6\u5f52\u4f4d */\n    quick_sort(a, lo, i);         /* \u9012\u5f52\u5de6\u534a */\n    quick_sort(a, i+2, hi);       /* \u9012\u5f52\u53f3\u534a */\n}\nint main() {\n    int a[] = { 42, 17, 8, 91, 3, 56, 24, 71 };\n    quick_sort(a, 0, 7);\n    return 0;\n}\n", renderMode: "sort", withRandom: true });
+setupDemo({ sample: "void quick_sort(int a[], int lo, int hi) {\n    if (lo \u003e= hi) return;\n    int pivot = a[hi];            /* \u9009\u672b\u5c3e\u4e3a\u57fa\u51c6 */\n    int i = lo - 1;\n    for (int j = lo; j \u003c hi; j++) {\n        if (a[j] \u003c pivot) {\n            i++;                  /* \u4ea4\u6362 a[i] \u548c a[j] */\n            int t = a[i]; a[i] = a[j]; a[j] = t;\n        }\n    }\n    int t = a[i+1]; a[i+1] = a[hi]; a[hi] = t; /* \u57fa\u51c6\u5f52\u4f4d */\n    quick_sort(a, lo, i);         /* \u9012\u5f52\u5de6\u534a */\n    quick_sort(a, i+2, hi);       /* \u9012\u5f52\u53f3\u534a */\n}\nint main() {\n    int a[] = { 42, 17, 8, 91, 3, 56, 24, 71 };\n    quick_sort(a, 0, 7);\n    return 0;\n}\n", renderMode: "sort", withRandom: true, customData: {
+    fields: [ { id: "custom-data-input", placeholder: "如 5,3,8,1,9", kind: "intlist", min: 4, max: 15, invalid: "请输入 4~15 个逗号分隔的整数" } ],
+    build: function (sample, vals) { return sample.replace(/\nint main\(\) \{[\s\S]*\n\}$/, "\nint main() {\n    int a[] = { " + vals[0].join(", ") + " };\n    int n = sizeof(a) / sizeof(a[0]);\n    quick_sort(a, 0, n - 1);\n    return 0;\n}"); }
+  } });
 </script>
 
 </body>

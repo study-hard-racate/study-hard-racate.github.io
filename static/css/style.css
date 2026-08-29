@@ -554,6 +554,19 @@ body.light .code-line .cm { color: #6b7280; }
   padding: 6px 10px;
   font-size: 14px;
 }
+/* 自定义数据（改数据不改代码） */
+.custom-data { display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.custom-data .custom-label { color: var(--muted); font-size: 13px; }
+.custom-data .custom-input { width: 190px; }
+.custom-data .custom-input:focus {
+  border-color: #4da3ff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(77, 163, 255, 0.25);
+}
+body.light .custom-data .custom-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
 .btn {
   background: var(--panel2);
   border: 1px solid var(--border);

@@ -113,6 +113,7 @@
   
   <div class="inputs">
     <button class="btn" id="btn-random">🎲 随机数据</button>
+    <span class="custom-data"><label class="custom-label">数组<input type="text" id="custom-data-input" class="custom-input" placeholder="如 3,7,2,9,5,1,8,4"></label><label class="custom-label">目标<input type="text" id="custom-target-input" class="custom-input" style="width:70px" placeholder="如 7"></label><button class="btn" id="btn-custom">应用</button></span>
   </div>
   
   <div class="anim-stage" id="stage"></div>
@@ -231,7 +232,10 @@ function randomizeHash() {
     "    return 0;\n}\n";
   return code;
 }
-setupDemo({ sample: "#include \u003cstdio.h\u003e\n#include \u003cstdlib.h\u003e\n\n/* \u54c8\u5e0c\u8868\uff08\u94fe\u5730\u5740\u6cd5\uff09\uff1ah(v) = v % 7 */\ntypedef struct HNode {\n    int val;\n    struct HNode *next;\n} HNode;\n\nHNode* createNode(int v) {\n    HNode* n = (HNode*)malloc(sizeof(HNode));\n    n-\u003eval = v;\n    n-\u003enext = NULL;\n    return n;\n}\n\n/* \u63d2\u5165\uff1a\u5934\u63d2\u6cd5\u52a0\u5165\u5bf9\u5e94\u69fd\u7684\u94fe */\nvoid insert(HNode* table[], int v) {\n    int h = v % 7;\n    HNode* n = createNode(v);\n    n-\u003enext = table[h];\n    table[h] = n;\n}\n\nint main() {\n    HNode* table[7];\n    for (int i = 0; i \u003c 7; i++) table[i] = NULL;\n    insert(table, 15);\n    insert(table, 8);\n    insert(table, 22);\n    insert(table, 29);\n    insert(table, 5);\n    insert(table, 12);\n    insert(table, 19);\n    insert(table, 26);\n    /* \u67e5\u627e 10\uff1a10 % 7 = 3\uff0c\u904d\u5386 3 \u53f7\u69fd\u7684\u94fe\uff0c\u672a\u627e\u5230 */\n    int h = 10 % 7;\n    HNode* p = table[h];\n    int found = 0;\n    while (p) {\n        if (p-\u003eval == 10) found = 1;\n        p = p-\u003enext;\n    }\n    return 0;\n}\n", renderMode: "hash", withRandom: true, randomize: randomizeHash });
+setupDemo({ sample: "#include \u003cstdio.h\u003e\n#include \u003cstdlib.h\u003e\n\n/* \u54c8\u5e0c\u8868\uff08\u94fe\u5730\u5740\u6cd5\uff09\uff1ah(v) = v % 7 */\ntypedef struct HNode {\n    int val;\n    struct HNode *next;\n} HNode;\n\nHNode* createNode(int v) {\n    HNode* n = (HNode*)malloc(sizeof(HNode));\n    n-\u003eval = v;\n    n-\u003enext = NULL;\n    return n;\n}\n\n/* \u63d2\u5165\uff1a\u5934\u63d2\u6cd5\u52a0\u5165\u5bf9\u5e94\u69fd\u7684\u94fe */\nvoid insert(HNode* table[], int v) {\n    int h = v % 7;\n    HNode* n = createNode(v);\n    n-\u003enext = table[h];\n    table[h] = n;\n}\n\nint main() {\n    HNode* table[7];\n    for (int i = 0; i \u003c 7; i++) table[i] = NULL;\n    insert(table, 15);\n    insert(table, 8);\n    insert(table, 22);\n    insert(table, 29);\n    insert(table, 5);\n    insert(table, 12);\n    insert(table, 19);\n    insert(table, 26);\n    /* \u67e5\u627e 10\uff1a10 % 7 = 3\uff0c\u904d\u5386 3 \u53f7\u69fd\u7684\u94fe\uff0c\u672a\u627e\u5230 */\n    int h = 10 % 7;\n    HNode* p = table[h];\n    int found = 0;\n    while (p) {\n        if (p-\u003eval == 10) found = 1;\n        p = p-\u003enext;\n    }\n    return 0;\n}\n", renderMode: "hash", withRandom: true, randomize: randomizeHash, customData: {
+    fields: [ { id: "custom-data-input", placeholder: "如 3,7,2,9,5,1,8,4", kind: "intlist", min: 4, max: 15, invalid: "数组请输入 4~15 个整数" }, { id: "custom-target-input", placeholder: "如 7", kind: "int", invalid: "目标值请输入整数" } ],
+    build: function (sample, vals) { var arr = vals[0], x = vals[1], ins = ""; for (var k = 0; k < arr.length; k++) ins += "\n    insert(table, " + arr[k] + ");"; return sample.replace(/(\n    insert\(table, \d+\);)+/, ins).replace(/查找 -?\d+：-?\d+ % 7/, "查找 " + x + "：" + x + " % 7").replace(/int h = -?\d+ % 7;/, "int h = " + x + " % 7;").replace(/p->val == -?\d+/, "p->val == " + x); }
+  } });
 </script>
 
 </body>

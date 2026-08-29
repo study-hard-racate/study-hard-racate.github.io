@@ -113,6 +113,7 @@
   
   <div class="inputs">
     <button class="btn" id="btn-random">🎲 随机数据</button>
+    <span class="custom-data"><label class="custom-label">自定义数组<input type="text" id="custom-data-input" class="custom-input" placeholder="如 5,3,8,1,9"></label><button class="btn" id="btn-custom">应用</button></span>
   </div>
   
   <div class="anim-stage" id="stage"></div>
@@ -208,7 +209,10 @@
 <script src="/static/js/graph.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
-setupDemo({ sample: "void insertion_sort(int a[], int n) {\n    for (int i = 1; i \u003c n; i++) {\n        int key = a[i];           /* \u53d6\u51fa\u5f85\u63d2\u5165\u5143\u7d20 */\n        int j = i - 1;\n        while (j \u003e= 0 \u0026\u0026 a[j] \u003e key) {\n            a[j+1] = a[j];        /* \u6bd4 key \u5927\u7684\u540e\u79fb */\n            j--;\n        }\n        a[j+1] = key;             /* \u63d2\u5165\u6b63\u786e\u4f4d\u7f6e */\n    }\n}", renderMode: "sort", withRandom: true });
+setupDemo({ sample: "void insertion_sort(int a[], int n) {\n    for (int i = 1; i \u003c n; i++) {\n        int key = a[i];           /* \u53d6\u51fa\u5f85\u63d2\u5165\u5143\u7d20 */\n        int j = i - 1;\n        while (j \u003e= 0 \u0026\u0026 a[j] \u003e key) {\n            a[j+1] = a[j];        /* \u6bd4 key \u5927\u7684\u540e\u79fb */\n            j--;\n        }\n        a[j+1] = key;             /* \u63d2\u5165\u6b63\u786e\u4f4d\u7f6e */\n    }\n}", renderMode: "sort", withRandom: true, customData: {
+    fields: [ { id: "custom-data-input", placeholder: "如 5,3,8,1,9", kind: "intlist", min: 4, max: 15, invalid: "请输入 4~15 个逗号分隔的整数" } ],
+    build: function (sample, vals) { return sample + "\nint main() {\n    int a[] = { " + vals[0].join(", ") + " };\n    int n = sizeof(a) / sizeof(a[0]);\n    insertion_sort(a, n);\n    return 0;\n}"; }
+  } });
 </script>
 
 </body>

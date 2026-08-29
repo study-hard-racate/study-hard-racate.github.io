@@ -112,6 +112,7 @@
     <div class="anim-stage" id="stage"></div>
     <div class="player-controls">
       <button class="btn" id="btn-random">🎲 随机数据</button>
+    <span class="custom-data"><label class="custom-label">自定义数组<input type="text" id="custom-data-input" class="custom-input" placeholder="如 5,3,8,1,9"></label><button class="btn" id="btn-custom">应用</button></span>
       <button class="btn" id="btn-reset" title="重置 (R)">↺ 重置</button>
       <button class="btn" id="btn-prev" title="上一步 (←)">⏮</button>
       <button class="btn btn-primary" id="btn-play" title="播放/暂停 (Space)">▶ 播放</button>
@@ -202,7 +203,10 @@
 <script src="/static/js/graph.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
-setupDemo({ sample: "void heapify(int a[], int n, int i) {\n    int largest = i;\n    int left = 2 * i + 1;\n    int right = 2 * i + 2;\n    if (left \u003c n \u0026\u0026 a[left] \u003e a[largest])\n        largest = left;\n    if (right \u003c n \u0026\u0026 a[right] \u003e a[largest])\n        largest = right;\n    if (largest != i) {\n        int t = a[i]; a[i] = a[largest]; a[largest] = t;\n        heapify(a, n, largest);\n    }\n}\nvoid heap_sort(int a[], int n) {\n    /* \u5efa\u6700\u5927\u5806 */\n    for (int i = n / 2 - 1; i \u003e= 0; i--)\n        heapify(a, n, i);\n    /* \u9010\u4e2a\u63d0\u53d6\u5806\u9876\u5e76\u5806\u5316\u8c03\u6574 */\n    for (int i = n - 1; i \u003e 0; i--) {\n        int t = a[0]; a[0] = a[i]; a[i] = t;\n        heapify(a, i, 0);\n    }\n}\nint main() {\n    int a[] = { 42, 17, 8, 91, 3, 56, 24, 71 };\n    heap_sort(a, 8);\n    return 0;\n}\n", renderMode: "heap", withRandom: true });
+setupDemo({ sample: "void heapify(int a[], int n, int i) {\n    int largest = i;\n    int left = 2 * i + 1;\n    int right = 2 * i + 2;\n    if (left \u003c n \u0026\u0026 a[left] \u003e a[largest])\n        largest = left;\n    if (right \u003c n \u0026\u0026 a[right] \u003e a[largest])\n        largest = right;\n    if (largest != i) {\n        int t = a[i]; a[i] = a[largest]; a[largest] = t;\n        heapify(a, n, largest);\n    }\n}\nvoid heap_sort(int a[], int n) {\n    /* \u5efa\u6700\u5927\u5806 */\n    for (int i = n / 2 - 1; i \u003e= 0; i--)\n        heapify(a, n, i);\n    /* \u9010\u4e2a\u63d0\u53d6\u5806\u9876\u5e76\u5806\u5316\u8c03\u6574 */\n    for (int i = n - 1; i \u003e 0; i--) {\n        int t = a[0]; a[0] = a[i]; a[i] = t;\n        heapify(a, i, 0);\n    }\n}\nint main() {\n    int a[] = { 42, 17, 8, 91, 3, 56, 24, 71 };\n    heap_sort(a, 8);\n    return 0;\n}\n", renderMode: "heap", withRandom: true, customData: {
+    fields: [ { id: "custom-data-input", placeholder: "如 5,3,8,1,9", kind: "intlist", min: 4, max: 15, invalid: "请输入 4~15 个逗号分隔的整数" } ],
+    build: function (sample, vals) { return sample.replace(/\nint main\(\) \{[\s\S]*\n\}$/, "\nint main() {\n    int a[] = { " + vals[0].join(", ") + " };\n    int n = sizeof(a) / sizeof(a[0]);\n    heap_sort(a, n);\n    return 0;\n}"); }
+  } });
 </script>
 
 </body>

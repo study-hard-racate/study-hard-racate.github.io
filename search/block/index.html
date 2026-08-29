@@ -113,6 +113,7 @@
   
   <div class="inputs">
     <button class="btn" id="btn-random">🎲 随机数据</button>
+    <span class="custom-data"><label class="custom-label">目标值<input type="text" id="custom-target-input" class="custom-input" style="width:70px" placeholder="如 26"></label><button class="btn" id="btn-custom">应用</button></span>
   </div>
   
   <div class="anim-stage" id="stage"></div>
@@ -241,7 +242,10 @@ function randomizeBlock() {
     "    return 0;\n" +
     "}";
 }
-setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u5206\u5757\u67e5\u627e\uff1a\u7d22\u5f15\u8868\uff08\u6bcf\u5757\u6700\u5927\u503c\uff09\u2192 \u5b9a\u4f4d\u5757 \u2192 \u5757\u5185\u987a\u5e8f\u67e5\u627e */\nint main(void) {\n    int data[16] = { 3, 5, 8, 12, 15, 18, 21, 26, 30, 34, 39, 41, 45, 49, 52, 57 };\n    int block[4] = { 12, 26, 41, 57 };\n    int x = 26;\n\n    /* 1. \u5b9a\u4f4d\u5757\uff1a\u7b2c\u4e00\u4e2a block[b] \u003e= x */\n    int b = -1;\n    for (int i = 0; i \u003c 4; i++) {\n        if (block[i] \u003e= x) { b = i; break; }\n    }\n\n    /* 2. \u5757\u5185\u987a\u5e8f\u67e5\u627e\uff08\u672a\u5b9a\u4f4d\u5230\u5757\u8bf4\u660e\u76ee\u6807\u592a\u5927\uff0c\u76f4\u63a5\u672a\u627e\u5230\uff09 */\n    int found = -1;\n    if (b \u003e= 0) {\n        int start = b * 4;\n        for (int i = start; i \u003c start + 4; i++) {\n            if (data[i] == x) found = i;\n        }\n    }\n    return 0;\n}\n", renderMode: "block", withRandom: true, randomize: randomizeBlock });
+setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u5206\u5757\u67e5\u627e\uff1a\u7d22\u5f15\u8868\uff08\u6bcf\u5757\u6700\u5927\u503c\uff09\u2192 \u5b9a\u4f4d\u5757 \u2192 \u5757\u5185\u987a\u5e8f\u67e5\u627e */\nint main(void) {\n    int data[16] = { 3, 5, 8, 12, 15, 18, 21, 26, 30, 34, 39, 41, 45, 49, 52, 57 };\n    int block[4] = { 12, 26, 41, 57 };\n    int x = 26;\n\n    /* 1. \u5b9a\u4f4d\u5757\uff1a\u7b2c\u4e00\u4e2a block[b] \u003e= x */\n    int b = -1;\n    for (int i = 0; i \u003c 4; i++) {\n        if (block[i] \u003e= x) { b = i; break; }\n    }\n\n    /* 2. \u5757\u5185\u987a\u5e8f\u67e5\u627e\uff08\u672a\u5b9a\u4f4d\u5230\u5757\u8bf4\u660e\u76ee\u6807\u592a\u5927\uff0c\u76f4\u63a5\u672a\u627e\u5230\uff09 */\n    int found = -1;\n    if (b \u003e= 0) {\n        int start = b * 4;\n        for (int i = start; i \u003c start + 4; i++) {\n            if (data[i] == x) found = i;\n        }\n    }\n    return 0;\n}\n", renderMode: "block", withRandom: true, randomize: randomizeBlock, customData: {
+    fields: [ { id: "custom-target-input", placeholder: "如 26", kind: "int", invalid: "目标值请输入整数" } ],
+    build: function (sample, vals) { var x = vals[0]; return sample.replace(/int x = -?\d+;/, "int x = " + x + ";"); }
+  } });
 </script>
 
 </body>

@@ -113,6 +113,7 @@
   
   <div class="inputs">
     <button class="btn" id="btn-random">🎲 随机数据</button>
+    <span class="custom-data"><label class="custom-label">自定义数组<input type="text" id="custom-data-input" class="custom-input" placeholder="如 5,3,8,1,9"></label><button class="btn" id="btn-custom">应用</button></span>
   </div>
   
   <div class="anim-stage" id="stage"></div>
@@ -208,7 +209,10 @@
 <script src="/static/js/graph.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
-setupDemo({ sample: "void bubble_sort(int a[], int n) {\n    for (int i = 0; i \u003c n-1; i++) {\n        for (int j = 0; j \u003c n-1-i; j++) {\n            if (a[j] \u003e a[j+1]) {      /* \u76f8\u90bb\u6bd4\u8f83 */\n                int t = a[j];\n                a[j] = a[j+1];\n                a[j+1] = t;           /* \u4ea4\u6362 */\n            }\n        }\n    }\n}", renderMode: "sort", withRandom: true });
+setupDemo({ sample: "void bubble_sort(int a[], int n) {\n    for (int i = 0; i \u003c n-1; i++) {\n        for (int j = 0; j \u003c n-1-i; j++) {\n            if (a[j] \u003e a[j+1]) {      /* \u76f8\u90bb\u6bd4\u8f83 */\n                int t = a[j];\n                a[j] = a[j+1];\n                a[j+1] = t;           /* \u4ea4\u6362 */\n            }\n        }\n    }\n}", renderMode: "sort", withRandom: true, customData: {
+    fields: [ { id: "custom-data-input", placeholder: "如 5,3,8,1,9", kind: "intlist", min: 4, max: 15, invalid: "请输入 4~15 个逗号分隔的整数" } ],
+    build: function (sample, vals) { return sample + "\nint main() {\n    int a[] = { " + vals[0].join(", ") + " };\n    int n = sizeof(a) / sizeof(a[0]);\n    bubble_sort(a, n);\n    return 0;\n}"; }
+  } });
 </script>
 
 </body>

@@ -113,6 +113,7 @@
   
   <div class="inputs">
     <button class="btn" id="btn-random">🎲 随机数据</button>
+    <span class="custom-data"><label class="custom-label">自定义数组<input type="text" id="custom-data-input" class="custom-input" placeholder="如 5,3,8,1,9"></label><button class="btn" id="btn-custom">应用</button></span>
   </div>
   
   <div class="anim-stage" id="stage"></div>
@@ -208,7 +209,10 @@
 <script src="/static/js/graph.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
-setupDemo({ sample: "void merge(int a[], int l, int m, int r) {\n    int tmp[20];\n    int i = l, j = m + 1, k = 0;\n    while (i \u003c= m \u0026\u0026 j \u003c= r) {\n        if (a[i] \u003c= a[j]) {\n            tmp[k] = a[i];\n            k = k + 1;\n            i = i + 1;\n        } else {\n            tmp[k] = a[j];\n            k = k + 1;\n            j = j + 1;\n        }\n    }\n    while (i \u003c= m) {\n        tmp[k] = a[i];\n        k = k + 1;\n        i = i + 1;\n    }\n    while (j \u003c= r) {\n        tmp[k] = a[j];\n        k = k + 1;\n        j = j + 1;\n    }\n    i = l;\n    k = 0;\n    while (i \u003c= r) {\n        a[i] = tmp[k];\n        i = i + 1;\n        k = k + 1;\n    }\n}\n\nvoid merge_sort(int a[], int l, int r) {\n    if (l \u003e= r) return;\n    int m = (l + r) / 2;\n    merge_sort(a, l, m);\n    merge_sort(a, m + 1, r);\n    merge(a, l, m, r);\n}\n\nint main() {\n    int a[] = { 8, 3, 6, 1, 9, 2, 5, 7 };\n    merge_sort(a, 0, 7);\n    return 0;\n}\n", renderMode: "sort", withRandom: true });
+setupDemo({ sample: "void merge(int a[], int l, int m, int r) {\n    int tmp[20];\n    int i = l, j = m + 1, k = 0;\n    while (i \u003c= m \u0026\u0026 j \u003c= r) {\n        if (a[i] \u003c= a[j]) {\n            tmp[k] = a[i];\n            k = k + 1;\n            i = i + 1;\n        } else {\n            tmp[k] = a[j];\n            k = k + 1;\n            j = j + 1;\n        }\n    }\n    while (i \u003c= m) {\n        tmp[k] = a[i];\n        k = k + 1;\n        i = i + 1;\n    }\n    while (j \u003c= r) {\n        tmp[k] = a[j];\n        k = k + 1;\n        j = j + 1;\n    }\n    i = l;\n    k = 0;\n    while (i \u003c= r) {\n        a[i] = tmp[k];\n        i = i + 1;\n        k = k + 1;\n    }\n}\n\nvoid merge_sort(int a[], int l, int r) {\n    if (l \u003e= r) return;\n    int m = (l + r) / 2;\n    merge_sort(a, l, m);\n    merge_sort(a, m + 1, r);\n    merge(a, l, m, r);\n}\n\nint main() {\n    int a[] = { 8, 3, 6, 1, 9, 2, 5, 7 };\n    merge_sort(a, 0, 7);\n    return 0;\n}\n", renderMode: "sort", withRandom: true, customData: {
+    fields: [ { id: "custom-data-input", placeholder: "如 5,3,8,1,9", kind: "intlist", min: 4, max: 15, invalid: "请输入 4~15 个逗号分隔的整数" } ],
+    build: function (sample, vals) { return sample.replace(/\nint main\(\) \{[\s\S]*\n\}$/, "\nint main() {\n    int a[] = { " + vals[0].join(", ") + " };\n    int n = sizeof(a) / sizeof(a[0]);\n    merge_sort(a, 0, n - 1);\n    return 0;\n}"); }
+  } });
 </script>
 
 </body>

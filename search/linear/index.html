@@ -113,6 +113,7 @@
   
   <div class="inputs">
     <button class="btn" id="btn-random">🎲 随机数据</button>
+    <span class="custom-data"><label class="custom-label">数组<input type="text" id="custom-data-input" class="custom-input" placeholder="如 3,7,2,9,5,1,8,4"></label><label class="custom-label">目标<input type="text" id="custom-target-input" class="custom-input" style="width:70px" placeholder="如 7"></label><button class="btn" id="btn-custom">应用</button></span>
   </div>
   
   <div class="anim-stage" id="stage"></div>
@@ -229,7 +230,10 @@ function randomizeLinear() {
     "    return 0;\n" +
     "}";
 }
-setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u7ebf\u6027\u67e5\u627e\uff1a\u4ece\u5934\u5230\u5c3e\u9010\u4e2a\u6bd4\u8f83 */\nint main(void) {\n    int a[] = { 3, 7, 2, 9, 5, 1, 8, 4 };\n    int n = 8;\n    int x = 7;\n    int found = -1;\n    for (int i = 0; i \u003c n; i++) {\n        if (a[i] == x) found = i;\n    }\n    return 0;\n}\n", renderMode: "linear", withRandom: true, randomize: randomizeLinear });
+setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u7ebf\u6027\u67e5\u627e\uff1a\u4ece\u5934\u5230\u5c3e\u9010\u4e2a\u6bd4\u8f83 */\nint main(void) {\n    int a[] = { 3, 7, 2, 9, 5, 1, 8, 4 };\n    int n = 8;\n    int x = 7;\n    int found = -1;\n    for (int i = 0; i \u003c n; i++) {\n        if (a[i] == x) found = i;\n    }\n    return 0;\n}\n", renderMode: "linear", withRandom: true, randomize: randomizeLinear, customData: {
+    fields: [ { id: "custom-data-input", placeholder: "如 3,7,2,9,5,1,8,4", kind: "intlist", min: 4, max: 15, invalid: "数组请输入 4~15 个整数" }, { id: "custom-target-input", placeholder: "如 7", kind: "int", invalid: "目标值请输入整数" } ],
+    build: function (sample, vals) { var arr = vals[0], x = vals[1]; return sample.replace(/int a\[\] = \{[^}]*\};/, "int a[] = { " + arr.join(", ") + " };").replace(/int x = -?\d+;/, "int x = " + x + ";"); }
+  } });
 </script>
 
 </body>
