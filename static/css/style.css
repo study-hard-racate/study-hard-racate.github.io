@@ -567,6 +567,72 @@ body.light .custom-data .custom-input:focus {
   border-color: #2563eb;
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
+
+/* ===== 首页算法复杂度对比图表 ===== */
+.complexity-section { margin: 28px 0; }
+.complexity-section h2 { margin-bottom: 6px; }
+.cx-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.cx-tab {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.cx-tab.active { background: #4da3ff; border-color: #4da3ff; color: #fff; }
+.cx-chips { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.cx-chip {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.cx-chip.active { border-color: #4da3ff; color: #4da3ff; }
+.cx-note { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+.cx-body { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+.cx-bars { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; min-height: 230px; }
+.cx-bar-col { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 58px; }
+.cx-bar { width: 34px; border-radius: 5px 5px 0 0; transition: height .3s; }
+.cx-bar-val { font-size: 11px; color: var(--muted); height: 16px; white-space: nowrap; }
+.cx-bar-name { font-size: 12px; color: var(--text); text-decoration: none; }
+.cx-bar-name:hover { color: #4da3ff; text-decoration: underline; }
+.cx-radar-wrap { display: flex; justify-content: center; }
+.cx-radar { width: 100%; max-width: 460px; height: auto; }
+.cx-grid { fill: none; stroke: var(--border); stroke-width: 1; }
+.cx-axis { stroke: var(--border); stroke-width: 1; }
+.cx-axis-label { fill: var(--muted); font-size: 12px; }
+.cx-center { fill: var(--muted); }
+.cx-faint { fill: rgba(128, 148, 180, 0.10); stroke: rgba(128, 148, 180, 0.45); stroke-width: 1; cursor: pointer; }
+.cx-algo { fill: rgba(77, 163, 255, 0.25); stroke: #4da3ff; stroke-width: 2.5; cursor: pointer; }
+.cx-radar-info { text-align: center; color: var(--text); font-size: 14px; margin-top: 10px; min-height: 22px; }
+.cx-link { color: #4da3ff; text-decoration: none; }
+.cx-link:hover { text-decoration: underline; }
+.cx-select {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+.cx-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.cx-table th, .cx-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); text-align: left; }
+.cx-table th { color: var(--muted); font-weight: 600; }
+.cx-table td a { color: var(--text); text-decoration: none; }
+.cx-table td a:hover { color: #4da3ff; text-decoration: underline; }
+.cx-group td { background: rgba(77, 163, 255, 0.08); font-weight: 700; color: #4da3ff; }
+@media (max-width: 768px) {
+  .cx-bar-col { width: 46px; }
+  .cx-bar { width: 26px; }
+  .cx-table { font-size: 12px; }
+  .cx-table th, .cx-table td { padding: 6px 8px; }
+}
 .btn {
   background: var(--panel2);
   border: 1px solid var(--border);
