@@ -56,7 +56,7 @@ PAGES = {
     "/classic": "classic/index.html",
     "/classic/hanoi": "classic/hanoi/index.html",
     "/classic/kmp": "classic/kmp/index.html",
-    "/learning-path": "learning-path.html",
+    "/learning-path": "learning-path/index.html",
 }
 
 # 所有算法/模块页（含播放器与舞台），列表页/首页/独立页不在此列
