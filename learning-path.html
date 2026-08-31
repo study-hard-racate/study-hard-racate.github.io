@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="C语言树与图可视化合集：二叉树、BST、遍历、堆、红黑树、图BFS/DFS、拓扑排序动画演示。">
+<meta name="description" content="C语言数据结构与算法学习路径：拓扑排序推荐学习顺序，标记已学/未学，进度自动保存。">
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-<title>树与图 - C语言数据结构与算法动画</title>
+<title>学习路径 - C语言数据结构与算法动画</title>
 <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -75,7 +75,6 @@
         <a href="/dp/lis">LIS 最长递增子序列</a>
       </div>
     </div>
-
     <div class="nav-item">
       <a href="/classic">经典算法</a>
       <div class="dropdown">
@@ -83,7 +82,6 @@
         <a href="/classic/kmp">KMP 字符串匹配</a>
       </div>
     </div>
-
     <div class="nav-item">
       <a href="/learning-path">学习路径</a>
     </div>
@@ -93,88 +91,20 @@
 <main class="content">
 
 <div class="algo-header">
-  <h1>树与图</h1>
-  <p>树形结构与图遍历的可视化：二叉树、BST、堆、红黑树、图的 BFS/DFS、拓扑排序。</p>
+  <h1>🗺️ 学习路径</h1>
+  <p>按"前置依赖"用拓扑排序推荐学习顺序：先打基础、再学进阶。点"标记已学"记录进度（自动保存在浏览器），完成后可随时查看总进度。</p>
 </div>
-<section class="cards" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
-  <div class="card">
-    <h2><a href="/tree/binary-tree">二叉树</a></h2>
-    <ul>
-      <li>节点的创建与插入</li>
-      <li><a href="/tree/binary-tree">▶ 查看动画</a></li>
-    </ul>
+
+<div id="learning-path">
+  <div class="lp-progress" id="lp-progress"></div>
+
+  <div class="lp-actions">
+    <button class="btn" id="lp-reset">🗑 清除进度</button>
+    <span class="lp-tip">提示：进度保存在本机浏览器（localStorage），换设备/清缓存会丢失</span>
   </div>
-  <div class="card">
-    <h2><a href="/tree/bst">二叉搜索树</a></h2>
-    <ul>
-      <li>查找</li>
-      <li><a href="/tree/bst">▶ 查看动画</a></li>
-    </ul>
-  </div>
-  <div class="card">
-    <h2><a href="/tree/traversal">树的遍历</a></h2>
-    <ul>
-      <li>先序 / 中序 / 后序</li>
-      <li><a href="/tree/traversal">▶ 查看动画</a></li>
-    </ul>
-  </div>
-  <div class="card">
-    <h2><a href="/tree/heap">堆 / 优先队列</a></h2>
-    <ul>
-      <li>插入上浮 · 删除下沉</li>
-      <li><a href="/tree/heap">▶ 查看动画</a></li>
-    </ul>
-  </div>
-  <div class="card">
-    <h2><a href="/tree/rbtree">红黑树</a></h2>
-    <ul>
-      <li>自平衡 BST · 插入/旋转/变色</li>
-      <li><a href="/tree/rbtree">▶ 查看动画</a></li>
-    </ul>
-  </div>
-  <div class="card">
-    <h2><a href="/graph/bfs-dfs">图 BFS / DFS</a></h2>
-    <ul>
-      <li>邻接表遍历</li>
-      <li><a href="/graph/bfs-dfs">▶ 查看动画</a></li>
-    </ul>
-  </div>
-  <div class="card">
-    <h2><a href="/graph/topological">拓扑排序</a></h2>
-    <ul>
-      <li>Kahn 算法 · DAG 线性排序</li>
-      <li><a href="/graph/topological">▶ 查看动画</a></li>
-    </ul>
-  </div>
-  <div class="card">
-    <h2><a href="/graph/dijkstra">Dijkstra 最短路径</a></h2>
-    <ul>
-      <li>贪心选择 · 松弛操作 · 最短路径树</li>
-      <li><a href="/graph/dijkstra">▶ 查看动画</a></li>
-    </ul>
-  </div>
-  <div class="card">
-    <h2><a href="/graph/prim">Prim 最小生成树</a></h2>
-    <ul>
-      <li>贪心选边 · key 数组 · MST</li>
-      <li><a href="/graph/prim">▶ 查看动画</a></li>
-    </ul>
-  </div>
-  <div class="card">
-    <h2><a href="/graph/kruskal">Kruskal 最小生成树</a></h2>
-    <ul>
-      <li>边排序 · 并查集判环 · MST</li>
-      <li><a href="/graph/kruskal">▶ 查看动画</a></li>
-    </ul>
-  </div>
-  <div class="card">
-    <h2><a href="/graph/floyd">Floyd-Warshall 全源最短路</a></h2>
-    <ul>
-      <li>三重循环 · 距离矩阵 · O(n³)</li>
-      <li><a href="/graph/floyd">▶ 查看动画</a></li>
-    </ul>
-  </div>
-</section>
+
+  <div class="lp-stages" id="lp-stages"></div>
+</div>
 
 </main>
 <footer class="footer">基于原生 JavaScript + SVG 动画 · 部署于 GitHub Pages</footer>
@@ -204,6 +134,7 @@
   </div>
 </div>
 <script src="/static/js/common.js"></script>
+<script src="/static/js/learning-path.js"></script>
 
 </body>
 </html>

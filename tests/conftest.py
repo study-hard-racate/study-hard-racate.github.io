@@ -56,10 +56,11 @@ PAGES = {
     "/classic": "classic/index.html",
     "/classic/hanoi": "classic/hanoi/index.html",
     "/classic/kmp": "classic/kmp/index.html",
+    "/learning-path": "learning-path.html",
 }
 
-# 所有算法/模块页（含播放器与舞台），列表页/首页不在此列
-ALGO_PAGES = [p for p in PAGES if p not in ("/", "/sorting", "/search", "/data-structure", "/tree-graph", "/dp", "/classic")]
+# 所有算法/模块页（含播放器与舞台），列表页/首页/独立页不在此列
+ALGO_PAGES = [p for p in PAGES if p not in ("/", "/sorting", "/search", "/data-structure", "/tree-graph", "/dp", "/classic", "/learning-path")]
 
 # 所有页面（含列表页与首页）
 ALL_PAGES = list(PAGES.keys())

@@ -19,6 +19,7 @@
       ["/tree", "树与图"],
       ["/graph", "树与图"],
       ["/dp", "动态规划"],
+      ["/learning-path", "学习路径"],
     ];
     for (var i = 0; i < map.length; i++) {
       if (path.indexOf(map[i][0]) === 0) {

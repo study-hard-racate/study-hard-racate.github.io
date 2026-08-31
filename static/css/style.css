@@ -1111,3 +1111,74 @@ body.light .card-more:hover { background: rgba(37,99,235,.06); }
   .cards { grid-template-columns: 1fr; }
   .guide h2, .complexity-section h2 { font-size: 20px; }
 }
+
+/* ===================== 学习路径 ===================== */
+/* 首页入口横幅 */
+.lp-banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  background: linear-gradient(120deg, rgba(77,163,255,.12), rgba(94,234,212,.08));
+  border: 1px solid rgba(77,163,255,.35); border-radius: 14px;
+  padding: 14px 20px; margin: 0 0 20px;
+}
+.lp-banner b { color: var(--text); font-size: 15px; }
+.lp-banner span { color: var(--muted); font-size: 13px; margin-left: 8px; }
+.lp-banner a {
+  color: var(--accent); font-weight: 700; font-size: 14px; white-space: nowrap;
+  padding: 8px 18px; border: 1px solid var(--accent); border-radius: 999px;
+  transition: all .15s ease;
+}
+.lp-banner a:hover { background: rgba(77,163,255,.12); transform: translateY(-1px); }
+.lp-progress { margin: 8px 0 18px; }
+.lp-prog-label { color: var(--muted); font-size: 15px; margin-bottom: 8px; }
+.lp-prog-label b { color: var(--accent); font-size: 18px; }
+.lp-prog-bar {
+  height: 12px; background: var(--panel2); border: 1px solid var(--border);
+  border-radius: 999px; overflow: hidden;
+}
+.lp-prog-fill {
+  height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width .4s ease;
+}
+.lp-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 24px; }
+.lp-tip { color: var(--muted); font-size: 12px; }
+.lp-stages { display: flex; flex-direction: column; gap: 22px; }
+.lp-stage {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+  padding: 16px 18px;
+}
+.lp-stage-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.lp-stage-num {
+  font-size: 16px; font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.lp-stage-info { color: var(--muted); font-size: 12px; }
+.lp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.lp-module {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  background: var(--panel2); border: 1px solid var(--border); border-radius: 10px;
+  padding: 9px 12px; transition: border-color .15s ease, transform .15s ease;
+}
+.lp-module:hover { border-color: var(--border2); transform: translateY(-1px); }
+.lp-module.learned { border-color: rgba(62, 207, 142, .6); background: rgba(62, 207, 142, .06); }
+.lp-name { font-weight: 700; color: var(--text); text-decoration: none; }
+.lp-name:hover { color: var(--accent); text-decoration: underline; }
+.lp-cat {
+  font-size: 11px; color: var(--muted); background: var(--panel);
+  border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px;
+}
+.lp-prereq { font-size: 11px; color: var(--muted); }
+.lp-prereq.ready { color: var(--accent2); }
+.lp-prereq.ok { color: #3ecf8e; }
+.lp-toggle {
+  margin-left: auto; font-size: 12px; cursor: pointer;
+  background: transparent; border: 1px solid var(--border2); color: var(--muted);
+  border-radius: 999px; padding: 4px 12px; transition: all .15s ease; white-space: nowrap;
+}
+.lp-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.lp-toggle.learned { border-color: #3ecf8e; color: #3ecf8e; }
+body.light .lp-module.learned { background: rgba(16, 185, 129, .08); }
+@media (max-width: 768px) {
+  .lp-grid { grid-template-columns: 1fr; }
+}
