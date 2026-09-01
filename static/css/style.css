@@ -721,7 +721,6 @@ body.light .custom-data .custom-input:focus {
   flex-direction: column;
   gap: 16px;
 }
-.shortcut-group {}
 .shortcut-title {
   font-size: 12px;
   color: var(--muted);
