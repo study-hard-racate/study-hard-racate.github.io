@@ -1181,3 +1181,144 @@ body.light .lp-module.learned { background: rgba(16, 185, 129, .08); }
 @media (max-width: 768px) {
   .lp-grid { grid-template-columns: 1fr; }
 }
+
+/* ===================== 全站视觉精修 v3 ===================== */
+/* ---------- 顶栏：渐变底边 + 品牌微调 ---------- */
+.topbar { position: relative; }
+.topbar::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(77,163,255,.45), rgba(94,234,212,.35), transparent);
+  pointer-events: none;
+}
+.brand a { letter-spacing: .5px; }
+
+/* ---------- 下拉菜单：展开动效 ---------- */
+.dropdown {
+  transform-origin: top center;
+  animation: ddIn .14s ease;
+}
+@keyframes ddIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- 页脚：渐变顶边 ---------- */
+.footer { position: relative; padding: 18px 14px; letter-spacing: .3px; }
+.footer::before {
+  content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 420px; max-width: 80%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(77,163,255,.4), rgba(94,234,212,.3), transparent);
+}
+
+/* ---------- 模块页：页头 ---------- */
+.algo-header { position: relative; padding-left: 14px; border-left: 3px solid transparent; }
+.algo-header { border-left-color: var(--accent); }
+.algo-header h1 { letter-spacing: .5px; }
+
+/* ---------- 模块页：播放控制条 ---------- */
+.player-controls { position: relative; overflow: hidden; }
+.player-controls::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2), transparent 70%);
+  opacity: .8;
+}
+.player-controls .btn { transition: transform .12s ease, box-shadow .12s ease, background .15s ease, border-color .15s ease; }
+.player-controls .btn:not(.btn-primary):hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+.player-controls .btn-primary { position: relative; }
+.player-controls .btn-primary:active { transform: scale(.97); }
+
+/* ---------- 模块页：动画舞台（保留深度渐变 + 顶部微光） ---------- */
+.anim-stage {
+  background:
+    linear-gradient(180deg, rgba(77,163,255,.05), rgba(23,30,46,0) 30%),
+    linear-gradient(180deg, var(--panel), #141b2a);
+}
+body.light .anim-stage {
+  background:
+    linear-gradient(180deg, rgba(37,99,235,.05), rgba(255,255,255,0) 30%),
+    linear-gradient(180deg, var(--panel), #f0f4f8);
+}
+
+/* ---------- 模块页：统计面板卡片化 ---------- */
+.step-stats { gap: 8px; padding: 8px 10px; }
+.stat-chip {
+  display: inline-flex; align-items: baseline; gap: 6px;
+  background: var(--panel2); border: 1px solid var(--border);
+  border-radius: 999px; padding: 3px 12px; font-size: 12px;
+}
+.stat-chip i { font-style: normal; color: var(--muted); }
+.stat-chip b { color: var(--accent); font-size: 14px; }
+
+/* ---------- 模块页：步骤注释（药丸感） ---------- */
+.step-comment { padding: 6px 14px; border-radius: 999px; }
+
+/* ---------- 模块页：复杂度卡片 ---------- */
+.complexity-card { position: relative; overflow: hidden; }
+.complexity-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2), transparent 75%);
+  opacity: .75;
+}
+.complexity-title { display: flex; align-items: center; gap: 8px; }
+.complexity-title::before {
+  content: ""; width: 8px; height: 8px; border-radius: 2px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: inline-block;
+}
+
+/* ---------- 模块页：图例色点微光 ---------- */
+.legend .dot { box-shadow: 0 0 0 1px rgba(255,255,255,.06); }
+
+/* ---------- 首页：Hero 入场动效（尊重减少动画偏好） ---------- */
+@keyframes heroIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero .hero-tag, .hero h1, .hero .hero-sub, .hero .hero-cta, .hero .hero-stats {
+  animation: heroIn .5s ease both;
+}
+.hero .hero-tag { animation-delay: .05s; }
+.hero h1 { animation-delay: .12s; }
+.hero .hero-sub { animation-delay: .2s; }
+.hero .hero-cta { animation-delay: .3s; }
+.hero .hero-stats { animation-delay: .4s; }
+@media (prefers-reduced-motion: reduce) {
+  .hero .hero-tag, .hero h1, .hero .hero-sub, .hero .hero-cta, .hero .hero-stats,
+  .dropdown { animation: none; }
+}
+
+/* ---------- 浅色主题精修 ---------- */
+body.light .hero-glow {
+  background:
+    radial-gradient(620px 240px at 50% 0%, rgba(37,99,235,.13), transparent 70%),
+    radial-gradient(430px 190px at 16% 22%, rgba(8,145,178,.08), transparent 70%),
+    radial-gradient(430px 190px at 84% 22%, rgba(124,58,237,.08), transparent 70%);
+}
+body.light .hero-tag { border-color: rgba(37,99,235,.3); background: rgba(37,99,235,.05); }
+body.light .stat { background: var(--panel); }
+body.light .status-line { background: rgba(15,23,42,.04); }
+body.light .demo-hint { background: rgba(8,145,178,.06); border-color: rgba(8,145,178,.25); }
+body.light .demo-hint .kbd { border-color: rgba(8,145,178,.3); }
+body.light .lp-banner { border-color: rgba(37,99,235,.3); }
+body.light .stat-chip { background: var(--panel2); border-color: var(--border); }
+body.light .legend .dot { box-shadow: 0 0 0 1px rgba(0,0,0,.06); }
+body.light .player-controls::before { opacity: 1; }
+body.light .complexity-card::before { opacity: 1; }
+
+/* ---------- 移动端精修 ---------- */
+@media (max-width: 960px) {
+  .code-resize-handle { display: none; }
+}
+@media (max-width: 768px) {
+  .stat-chip { padding: 2px 10px; }
+  .stat-chip b { font-size: 13px; }
+  .algo-header { padding-left: 10px; }
+  .cx-body { overflow-x: auto; }
+  .cx-table { min-width: 540px; }
+  .lp-stage { padding: 12px 12px; }
+}
+@media (max-width: 480px) {
+  .player-controls::before { height: 2px; }
+  .hero h1 { letter-spacing: 0; }
+  .complexity-card { padding: 12px 14px; }
+}

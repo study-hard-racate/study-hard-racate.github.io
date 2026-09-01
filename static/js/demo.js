@@ -739,15 +739,15 @@ function setupDemo(opts) {
       if (s.graph && s.graph.curVertex != null && !visitedSet["g" + s.graph.curVertex]) { visitedSet["g" + s.graph.curVertex] = 1; stats.visited++; }
       if (s.markNode != null) stats.writes++;
     }
-    /* 渲染统计面板 */
+    /* 渲染统计面板（卡片式） */
     var statsEl = document.getElementById("step-stats");
     if (statsEl) {
       var parts = [];
-      if (stats.comparisons > 0) parts.push("比较: <b>" + stats.comparisons + "</b>");
-      if (stats.swaps > 0) parts.push("交换: <b>" + stats.swaps + "</b>");
-      if (stats.visited > 0) parts.push("访问: <b>" + stats.visited + "</b>");
-      if (stats.writes > 0) parts.push("写入: <b>" + stats.writes + "</b>");
-      statsEl.innerHTML = parts.join("　");
+      if (stats.comparisons > 0) parts.push('<span class="stat-chip"><i>比较</i><b>' + stats.comparisons + "</b></span>");
+      if (stats.swaps > 0) parts.push('<span class="stat-chip"><i>交换</i><b>' + stats.swaps + "</b></span>");
+      if (stats.visited > 0) parts.push('<span class="stat-chip"><i>访问</i><b>' + stats.visited + "</b></span>");
+      if (stats.writes > 0) parts.push('<span class="stat-chip"><i>写入</i><b>' + stats.writes + "</b></span>");
+      statsEl.innerHTML = parts.join("");
       statsEl.style.display = parts.length ? "" : "none";
     }
     if (!player) {
