@@ -177,4 +177,13 @@
     }
   })();
 
+  /* ===== PWA：Service Worker 注册（离线缓存） ===== */
+  (function () {
+    if ("serviceWorker" in navigator && location.protocol !== "file:") {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("/sw.js").catch(function () {});
+      });
+    }
+  })();
+
 })();

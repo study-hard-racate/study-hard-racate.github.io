@@ -1,0 +1,17 @@
+{
+  "name": "C 语言数据结构与算法可视化学习",
+  "short_name": "算法动画",
+  "description": "面向新手的 C 语言数据结构与算法可视化学习网站：代码逐步高亮 + 同步动画，40 个模块离线可看。",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d1220",
+  "theme_color": "#0d1220",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "/static/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/static/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/static/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
