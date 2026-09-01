@@ -1003,9 +1003,9 @@ body.light .complexity-label { background: var(--panel2); color: var(--accent) !
 section.hero, section.guide, section.cards, section.complexity-section { position: relative; }
 
 /* ---------- Hero ---------- */
-.hero { text-align: center; padding: 58px 0 24px; overflow: hidden; }
+.hero { text-align: center; padding: 28px 0 24px; overflow: hidden; }
 .hero-glow {
-  position: absolute; inset: -90px -10% auto; height: 340px; z-index: 0;
+  position: absolute; inset: -60px -10% auto; height: 340px; z-index: 0;
   background:
     radial-gradient(620px 240px at 50% 0%, rgba(77,163,255,.20), transparent 70%),
     radial-gradient(430px 190px at 16% 22%, rgba(94,234,212,.10), transparent 70%),
