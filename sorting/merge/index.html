@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -211,10 +212,6 @@
 <script src="/static/js/svg.js"></script>
 <script src="/static/js/sorter.js"></script>
 <script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
-<script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "void merge(int a[], int l, int m, int r) {\n    int tmp[20];\n    int i = l, j = m + 1, k = 0;\n    while (i \u003c= m \u0026\u0026 j \u003c= r) {\n        if (a[i] \u003c= a[j]) {\n            tmp[k] = a[i];\n            k = k + 1;\n            i = i + 1;\n        } else {\n            tmp[k] = a[j];\n            k = k + 1;\n            j = j + 1;\n        }\n    }\n    while (i \u003c= m) {\n        tmp[k] = a[i];\n        k = k + 1;\n        i = i + 1;\n    }\n    while (j \u003c= r) {\n        tmp[k] = a[j];\n        k = k + 1;\n        j = j + 1;\n    }\n    i = l;\n    k = 0;\n    while (i \u003c= r) {\n        a[i] = tmp[k];\n        i = i + 1;\n        k = k + 1;\n    }\n}\n\nvoid merge_sort(int a[], int l, int r) {\n    if (l \u003e= r) return;\n    int m = (l + r) / 2;\n    merge_sort(a, l, m);\n    merge_sort(a, m + 1, r);\n    merge(a, l, m, r);\n}\n\nint main() {\n    int a[] = { 8, 3, 6, 1, 9, 2, 5, 7 };\n    merge_sort(a, 0, 7);\n    return 0;\n}\n", renderMode: "sort", withRandom: true, customData: {

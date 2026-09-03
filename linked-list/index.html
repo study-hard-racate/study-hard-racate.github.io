@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -207,12 +208,8 @@
 
 <script src="/static/js/player.js"></script>
 <script src="/static/js/svg.js"></script>
-<script src="/static/js/sorter.js"></script>
-<script src="/static/js/csim.js"></script>
 <script src="/static/js/list.js"></script>
-<script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
+<script src="/static/js/csim.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "#include \u003cstdio.h\u003e\n#include \u003cstdlib.h\u003e\n\ntypedef struct Node {\n    int val;\n    struct Node *next;\n} Node;\n\nNode* createNode(int val) {\n    Node* node = (Node*)malloc(sizeof(Node));\n    node-\u003eval = val;\n    node-\u003enext = NULL;\n    return node;\n}\n\n/* \u5728\u94fe\u8868\u5c3e\u90e8\u63d2\u5165\uff08\u5efa\u94fe\uff09 */\nNode* append(Node* head, int val) {\n    Node* node = createNode(val);\n    if (head == NULL) return node;\n    Node* cur = head;\n    while (cur-\u003enext) {\n        cur = cur-\u003enext;\n    }\n    cur-\u003enext = node;\n    return head;\n}\n\n/* \u5220\u9664\u7b2c\u4e00\u4e2a\u503c\u4e3a val \u7684\u8282\u70b9 */\nNode* removeNode(Node* head, int val) {\n    if (head == NULL) return NULL;\n    if (head-\u003eval == val) return head-\u003enext;\n    Node* cur = head;\n    while (cur-\u003enext) {\n        if (cur-\u003enext-\u003eval == val) {\n            cur-\u003enext = cur-\u003enext-\u003enext;\n            break;\n        }\n        cur = cur-\u003enext;\n    }\n    return head;\n}\n\n/* \u53cd\u8f6c\u94fe\u8868 */\nNode* reverseList(Node* head) {\n    Node* prev = NULL;\n    Node* curr = head;\n    while (curr) {\n        Node* next = curr-\u003enext;\n        curr-\u003enext = prev;\n        prev = curr;\n        curr = next;\n    }\n    return prev;\n}\n\nint main() {\n    Node* head = NULL;\n    head = append(head, 1);\n    head = append(head, 2);\n    head = append(head, 3);\n    head = append(head, 4);\n    head = append(head, 5);\n    head = removeNode(head, 3);\n    head = reverseList(head);\n    return 0;\n}\n", renderMode: "list", withRandom: false });

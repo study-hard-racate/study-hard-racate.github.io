@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -205,10 +206,6 @@
 <script src="/static/js/svg.js"></script>
 <script src="/static/js/sorter.js"></script>
 <script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
-<script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "void heapify(int a[], int n, int i) {\n    int largest = i;\n    int left = 2 * i + 1;\n    int right = 2 * i + 2;\n    if (left \u003c n \u0026\u0026 a[left] \u003e a[largest])\n        largest = left;\n    if (right \u003c n \u0026\u0026 a[right] \u003e a[largest])\n        largest = right;\n    if (largest != i) {\n        int t = a[i]; a[i] = a[largest]; a[largest] = t;\n        heapify(a, n, largest);\n    }\n}\nvoid heap_sort(int a[], int n) {\n    /* \u5efa\u6700\u5927\u5806 */\n    for (int i = n / 2 - 1; i \u003e= 0; i--)\n        heapify(a, n, i);\n    /* \u9010\u4e2a\u63d0\u53d6\u5806\u9876\u5e76\u5806\u5316\u8c03\u6574 */\n    for (int i = n - 1; i \u003e 0; i--) {\n        int t = a[0]; a[0] = a[i]; a[i] = t;\n        heapify(a, i, 0);\n    }\n}\nint main() {\n    int a[] = { 42, 17, 8, 91, 3, 56, 24, 71 };\n    heap_sort(a, 8);\n    return 0;\n}\n", renderMode: "heap", withRandom: true, customData: {

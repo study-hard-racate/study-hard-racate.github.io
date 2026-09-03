@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -205,13 +206,8 @@
 
 <script src="/static/js/player.js"></script>
 <script src="/static/js/svg.js"></script>
-<script src="/static/js/sorter.js"></script>
-<script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
-<script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
 <script src="/static/js/dp.js"></script>
+<script src="/static/js/csim.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u7f16\u8f91\u8ddd\u79bb\uff1a\u63d2\u5165/\u5220\u9664/\u66ff\u6362\u4e09\u79cd\u64cd\u4f5c\uff0c\u4e00\u7ef4\u6570\u7ec4\u6a21\u62df\u4e8c\u7ef4\u8868 */\nint main() {\n    int s[] = { 1, 2, 3 };     /* \u5e8f\u5217 S\uff0c\u957f\u5ea6 m=3 */\n    int t[] = { 1, 3, 2 };     /* \u5e8f\u5217 T\uff0c\u957f\u5ea6 n=3 */\n    int m = 3;\n    int n = 3;\n    int dp[16];                 /* \u8868\u5927\u5c0f (m+1)*(n+1) = 16 */\n    int path[16];               /* \u56de\u6eaf\u8def\u5f84\uff08\u4e00\u7ef4\u4e0b\u6807\uff09 */\n    int path_len = 0;\n    int i, j, k;\n    int phase = 0;\n    int prev_w = -1;            /* \u4f9d\u8d56\u683c\u4e0b\u6807 */\n    \n    /* \u521d\u59cb\u5316\u7b2c 0 \u884c\u4e0e\u7b2c 0 \u5217 */\n    phase = 1;\n    for (i = 0; i \u003c= m; i++) {\n        dp[i * (n + 1)] = i;\n    }\n    for (j = 0; j \u003c= n; j++) {\n        dp[j] = j;\n    }\n    \n    /* \u586b\u8868\uff1a\u9010\u683c\u8ba1\u7b97 */\n    phase = 2;\n    for (i = 1; i \u003c= m; i++) {\n        for (j = 1; j \u003c= n; j++) {\n            k = i * (n + 1) + j;\n            if (s[i - 1] == t[j - 1]) {\n                prev_w = k - (n + 1) - 1;   /* \u5de6\u4e0a\uff1a\u4e0d\u9700\u64cd\u4f5c */\n                dp[k] = dp[prev_w];\n            } else {\n                prev_w = k - (n + 1);       /* \u4e0a\uff1a\u5220\u9664 */\n                if (dp[k - 1] \u003c dp[prev_w]) prev_w = k - 1;           /* \u5de6\uff1a\u63d2\u5165 */\n                if (dp[k - (n + 1) - 1] \u003c dp[prev_w]) prev_w = k - (n + 1) - 1;  /* \u5de6\u4e0a\uff1a\u66ff\u6362 */\n                dp[k] = dp[prev_w] + 1;\n            }\n        }\n    }\n    \n    /* \u56de\u6eaf\uff1a\u4ece\u53f3\u4e0b\u89d2\u5f80\u56de\u8d70 */\n    phase = 3;\n    i = m;\n    j = n;\n    while (i \u003e 0 \u0026\u0026 j \u003e 0) {\n        k = i * (n + 1) + j;\n        path[path_len] = k;\n        path_len = path_len + 1;\n        if (s[i - 1] == t[j - 1]) {\n            i = i - 1;\n            j = j - 1;\n        } else {\n            prev_w = k - (n + 1);           /* \u4e0a\uff1a\u5220\u9664 */\n            if (dp[k - 1] \u003c dp[prev_w]) prev_w = k - 1;              /* \u5de6\uff1a\u63d2\u5165 */\n            if (dp[k - (n + 1) - 1] \u003c dp[prev_w]) prev_w = k - (n + 1) - 1;  /* \u5de6\u4e0a\uff1a\u66ff\u6362 */\n            if (prev_w == k - (n + 1)) {\n                i = i - 1;\n            } else if (prev_w == k - 1) {\n                j = j - 1;\n            } else {\n                i = i - 1;\n                j = j - 1;\n            }\n        }\n    }\n    \n    phase = 4;\n    k = m * (n + 1) + n;\n    dp[k] = dp[k];      /* \u89e6\u53d1\u5b8c\u6210\u6b65\u9aa4 */\n    return 0;\n}\n", renderMode: "editdistance", withRandom: false });

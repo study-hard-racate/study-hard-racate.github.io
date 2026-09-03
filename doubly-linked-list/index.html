@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -208,12 +209,8 @@
 
 <script src="/static/js/player.js"></script>
 <script src="/static/js/svg.js"></script>
-<script src="/static/js/sorter.js"></script>
-<script src="/static/js/csim.js"></script>
 <script src="/static/js/list.js"></script>
-<script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
+<script src="/static/js/csim.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "/* \u53cc\u5411\u94fe\u8868\uff1a\u6bcf\u4e2a\u8282\u70b9\u6709 prev \u548c next \u4e24\u4e2a\u6307\u9488 */\ntypedef struct Node {\n    int data;\n    struct Node *prev;\n    struct Node *next;\n} Node;\n\nNode* createNode(int v) {\n    Node* n = (Node*)malloc(sizeof(Node));\n    n->data = v;\n    n->prev = NULL;\n    n->next = NULL;\n    return n;\n}\n\n/* \u5c3e\u63d2\u5efa\u94fe\uff08\u540c\u65f6\u7ef4\u62a4 prev \u6307\u9488\uff09 */\nNode* append(Node* head, int v) {\n    Node* n = createNode(v);\n    if (head == NULL) return n;\n    Node* p = head;\n    while (p->next != NULL) p = p->next;\n    p->next = n;\n    n->prev = p;           /* \u53cc\u5411\uff1a\u65b0\u8282\u70b9\u7684 prev \u6307\u5411\u524d\u9a71 */\n    return head;\n}\n\n/* \u5220\u9664\u7b2c\u4e00\u4e2a\u503c\u4e3a v \u7684\u8282\u70b9\uff08\u501f\u52a9 prev \u4e0d\u9700\u627e\u524d\u9a71\uff09 */\nNode* removeNode(Node* head, int v) {\n    Node* p = head;\n    while (p != NULL) {\n        if (p->data == v) {\n            if (p->prev == NULL) {\n                head = p->next;      /* \u5220\u9664\u5934\u8282\u70b9 */\n            } else {\n                p->prev->next = p->next;   /* \u524d\u9a70\u7684 next \u8df3\u8fc7 p */\n            }\n            if (p->next != NULL) {\n                p->next->prev = p->prev;   /* \u540e\u7ee7\u7684 prev \u8df3\u8fc7 p */\n            }\n            break;\n        }\n        p = p->next;\n    }\n    return head;\n}\n\nint main() {\n    Node* head = NULL;\n    head = append(head, 1);\n    head = append(head, 2);\n    head = append(head, 3);\n    head = append(head, 4);\n    head = append(head, 5);\n    head = removeNode(head, 3);\n    head = removeNode(head, 1);\n    return 0;\n}", renderMode: "doublylist" });

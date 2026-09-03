@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -211,10 +212,6 @@
 <script src="/static/js/svg.js"></script>
 <script src="/static/js/sorter.js"></script>
 <script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
-<script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "void insertion_sort(int a[], int n) {\n    for (int i = 1; i \u003c n; i++) {\n        int key = a[i];           /* \u53d6\u51fa\u5f85\u63d2\u5165\u5143\u7d20 */\n        int j = i - 1;\n        while (j \u003e= 0 \u0026\u0026 a[j] \u003e key) {\n            a[j+1] = a[j];        /* \u6bd4 key \u5927\u7684\u540e\u79fb */\n            j--;\n        }\n        a[j+1] = key;             /* \u63d2\u5165\u6b63\u786e\u4f4d\u7f6e */\n    }\n}", renderMode: "sort", withRandom: true, customData: {

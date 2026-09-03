@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -211,10 +212,6 @@
 <script src="/static/js/svg.js"></script>
 <script src="/static/js/sorter.js"></script>
 <script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
-<script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u6570\u7ec4\u57fa\u672c\u64cd\u4f5c\uff1a\u67e5\u627e \u2192 \u5220\u9664 \u2192 \u63d2\u5165 */\nint main(void) {\n    int a[] = { 3, 7, 2, 9, 5 };\n    int n = 5;\n\n    /* 1. \u67e5\u627e\u503c\u4e3a 9 \u7684\u4f4d\u7f6e */\n    int x = 9;\n    int idx = -1;\n    for (int i = 0; i \u003c n; i++) {\n        if (a[i] == x) idx = i;\n    }\n\n    /* 2. \u5220\u9664\u4e0b\u6807 idx \u7684\u5143\u7d20\uff1a\u540e\u9762\u7684\u5143\u7d20\u9010\u4e2a\u524d\u79fb */\n    for (int i = idx; i \u003c n - 1; i++) {\n        a[i] = a[i + 1];\n    }\n    n = n - 1;\n\n    /* 3. \u5728\u4e0b\u6807 2 \u5904\u63d2\u5165 6\uff1a\u540e\u9762\u7684\u5143\u7d20\u9010\u4e2a\u540e\u79fb */\n    for (int i = n; i \u003e 2; i--) {\n        a[i] = a[i - 1];\n    }\n    a[2] = 6;\n    n = n + 1;\n    return 0;\n}\n", renderMode: "sort", withRandom: true });

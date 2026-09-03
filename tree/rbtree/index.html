@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -213,12 +214,8 @@
 
 <script src="/static/js/player.js"></script>
 <script src="/static/js/svg.js"></script>
-<script src="/static/js/sorter.js"></script>
-<script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
 <script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
+<script src="/static/js/csim.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "typedef struct Node {\n    int val;\n    struct Node *left;\n    struct Node *right;\n    int color;\n} Node;\n\nNode* createNode(int v, int c) {\n    Node* n = (Node*)malloc(sizeof(Node));\n    n->val = v;\n    n->left = NULL;\n    n->right = NULL;\n    n->color = c;\n    return n;\n}\n\nint main() {\n    /* \u7ea2\u9ed1\u6811\u6f14\u793a\uff1a\u9010\u6b65\u63d2\u5165\u5e76\u8c03\u6574 */\n    /* \u6b65\u9aa4 1: \u63d2\u5165 10 \u4f5c\u4e3a\u6839\u8282\u70b9\uff08\u9ed1\u8272\uff09 */\n    Node* root = createNode(10, 0);\n    /* \u6b65\u9aa4 2: \u63d2\u5165 20\uff08\u7ea2\u8272\uff09\u4f5c\u4e3a\u53f3\u5b50 */\n    root->right = createNode(20, 1);\n    /* \u6b65\u9aa4 3: \u63d2\u5165 5\uff08\u7ea2\u8272\uff09\u4f5c\u4e3a\u5de6\u5b50 */\n    root->left = createNode(5, 1);\n    /* \u6b65\u9aa4 4: \u63d2\u5165 15\uff08\u7ea2\u8272\uff09\u4f5c\u4e3a20\u7684\u5de6\u5b50 */\n    root->right->left = createNode(15, 1);\n    /* \u6b65\u9aa4 5: \u63d2\u5165 25\uff08\u7ea2\u8272\uff09\u4f5c\u4e3a20\u7684\u53f3\u5b50 */\n    root->right->right = createNode(25, 1);\n    /* \u6b65\u9aa4 6: \u63d2\u5165 3\uff08\u7ea2\u8272\uff09\u4f5c\u4e3a5\u7684\u5de6\u5b50 */\n    root->left->left = createNode(3, 1);\n    /* \u6b65\u9aa4 7: \u63d2\u5165 7\uff08\u7ea2\u8272\uff09\u4f5c\u4e3a5\u7684\u53f3\u5b50 */\n    root->left->right = createNode(7, 1);\n    /* \u6b65\u9aa4 8: \u53d8\u8272 - \u6839\u4fdd\u6301\u9ed1\u8272\uff0c\u6240\u6709\u5b50\u8282\u70b9\u7ea2\u8272 */\n    root->color = 0;\n    root->left->color = 1;\n    root->right->color = 1;\n    return 0;\n}\n", renderMode: "rbtree" });

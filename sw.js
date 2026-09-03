@@ -1,5 +1,5 @@
 /* Service Worker：离线缓存
-   安装时预缓存全站（73 项：所有页面 + 静态资源）；
+   安装时预缓存全站（75 项：所有页面 + 静态资源）；
    页面请求走"网络优先 → 失败回退缓存"（在线自动更新，离线可看）；
    静态资源走"缓存优先 → 未命中再请求"。
    注意：新增/删除页面后需重新生成本文件（node scripts/gen-sw.js）并递增版本号。 */
@@ -13,6 +13,7 @@ const PRECACHE = [
   "/classic",
   "/classic/hanoi",
   "/classic/kmp",
+  "/compare",
   "/data-structure",
   "/doubly-linked-list",
   "/dp",
@@ -53,6 +54,7 @@ const PRECACHE = [
   "/static/icons/icon-192.png",
   "/static/icons/icon-512.png",
   "/static/js/common.js",
+  "/static/js/compare.js",
   "/static/js/complexity-chart.js",
   "/static/js/csim.js",
   "/static/js/demo.js",

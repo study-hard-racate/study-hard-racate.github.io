@@ -713,8 +713,14 @@ function setupDemo(opts) {
       if (renderMode === "binary") { renderBinarySearch(stage, step); return; }
       if (renderMode === "block") { renderBlockSearch(stage, step); return; }
       if (renderMode === "heap") { renderHeapSort(stage, step); return; }
-      const specs = buildSortSpecs(step);
-      renderSVG(stage, "0 0 " + SVG_W + " " + SVG_H, specs);
+      /* 通用柱状图兜底（DP 等页面早期步骤无专用快照时）：sorter.js 按需加载后可能不存在 */
+      if (typeof buildSortSpecs === "function") {
+        const specs = buildSortSpecs(step);
+        renderSVG(stage, "0 0 " + SVG_W + " " + SVG_H, specs);
+      } else {
+        renderSVG(stage, "0 0 320 120",
+          [text("empty-arr", 160, 60, "（等待动画数据…）", { "text-anchor": "middle", "font-size": 15, fill: "#5c6a85" })]);
+      }
       return;
     }
     renderSVG(stage, "0 0 320 120",

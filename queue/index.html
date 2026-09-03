@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -203,12 +204,8 @@
 
 <script src="/static/js/player.js"></script>
 <script src="/static/js/svg.js"></script>
-<script src="/static/js/sorter.js"></script>
-<script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
-<script src="/static/js/tree.js"></script>
 <script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
+<script src="/static/js/csim.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u6570\u7ec4\u961f\u5217\uff1aenqueue\uff08\u961f\u5c3e\u5165\u961f\uff09/ dequeue\uff08\u961f\u5934\u51fa\u961f\uff09 */\nvoid enqueue(int q[], int *rear, int v) {\n    *rear = *rear + 1;\n    q[*rear] = v;\n}\n\nint dequeue(int q[], int *front) {\n    *front = *front + 1;\n    return q[*front];\n}\n\nint main() {\n    int q[10];\n    int front = -1;\n    int rear = -1;\n    enqueue(q, \u0026rear, 1);\n    enqueue(q, \u0026rear, 2);\n    enqueue(q, \u0026rear, 3);\n    dequeue(q, \u0026front);\n    return 0;\n}\n", renderMode: "queue", withRandom: false });

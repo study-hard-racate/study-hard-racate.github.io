@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -207,10 +208,6 @@
 <script src="/static/js/svg.js"></script>
 <script src="/static/js/sorter.js"></script>
 <script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
-<script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "/* \u57fa\u6570\u6392\u5e8f\uff08LSD\uff09\uff1a\u4ece\u4f4e\u4f4d\u5230\u9ad8\u4f4d\u9010\u4f4d\u7528\u8ba1\u6570\u6392\u5e8f */\nint main() {\n    int a[] = { 170, 45, 75, 90, 802, 24, 2, 66 };   /* \u5f85\u6392\u5e8f\u6570\u7ec4 */\n    int n = 8;\n    int out[8];             /* \u6bcf\u8f6e\u8f93\u51fa */\n    int count[10];          /* \u6bcf\u4e2a\u6570\u5b57(0-9)\u7684\u8ba1\u6570 */\n    int exp = 1;            /* \u4f4d\u6743\uff1a1 \u4e2a\u4f4d / 10 \u5341\u4f4d / 100 \u767e\u4f4d */\n    int i, d;\n    while (exp \u003c= 100) {\n        for (i = 0; i \u003c 10; i++) count[i] = 0;\n        for (i = 0; i \u003c n; i++) {\n            d = (a[i] / exp) % 10;       /* \u5f53\u524d\u4f4d\u6570\u5b57 */\n            count[d] = count[d] + 1;\n        }\n        for (i = 1; i \u003c 10; i++) count[i] = count[i] + count[i - 1];\n        for (i = n - 1; i \u003e= 0; i--) {\n            d = (a[i] / exp) % 10;\n            out[count[d] - 1] = a[i];\n            count[d] = count[d] - 1;\n        }\n        for (i = 0; i \u003c n; i++) a[i] = out[i];\n        exp = exp * 10;\n    }\n    return 0;\n}", renderMode: "radix" });

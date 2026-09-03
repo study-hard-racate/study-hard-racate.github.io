@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -211,10 +212,6 @@
 <script src="/static/js/svg.js"></script>
 <script src="/static/js/sorter.js"></script>
 <script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
-<script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "void quick_sort(int a[], int lo, int hi) {\n    if (lo \u003e= hi) return;\n    int pivot = a[hi];            /* \u9009\u672b\u5c3e\u4e3a\u57fa\u51c6 */\n    int i = lo - 1;\n    for (int j = lo; j \u003c hi; j++) {\n        if (a[j] \u003c pivot) {\n            i++;                  /* \u4ea4\u6362 a[i] \u548c a[j] */\n            int t = a[i]; a[i] = a[j]; a[j] = t;\n        }\n    }\n    int t = a[i+1]; a[i+1] = a[hi]; a[hi] = t; /* \u57fa\u51c6\u5f52\u4f4d */\n    quick_sort(a, lo, i);         /* \u9012\u5f52\u5de6\u534a */\n    quick_sort(a, i+2, hi);       /* \u9012\u5f52\u53f3\u534a */\n}\nint main() {\n    int a[] = { 42, 17, 8, 91, 3, 56, 24, 71 };\n    quick_sort(a, 0, 7);\n    return 0;\n}\n", renderMode: "sort", withRandom: true, customData: {

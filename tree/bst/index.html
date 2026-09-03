@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -205,12 +206,8 @@
 
 <script src="/static/js/player.js"></script>
 <script src="/static/js/svg.js"></script>
-<script src="/static/js/sorter.js"></script>
-<script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
 <script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
+<script src="/static/js/csim.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "#include \u003cstdio.h\u003e\n#include \u003cstdlib.h\u003e\n\ntypedef struct BSTNode {\n    int val;\n    struct BSTNode *left;\n    struct BSTNode *right;\n} BSTNode;\n\nBSTNode* createNode(int val) {\n    BSTNode* node = (BSTNode*)malloc(sizeof(BSTNode));\n    node-\u003eval = val;\n    node-\u003eleft = NULL;\n    node-\u003eright = NULL;\n    return node;\n}\n\n/* \u67e5\u627e\uff1a\u5c0f \u2192 \u5de6\uff0c\u5927 \u2192 \u53f3 */\nBSTNode* search(BSTNode* root, int val) {\n    if (root == NULL || root-\u003eval == val) return root;\n    if (val \u003c root-\u003eval) return search(root-\u003eleft, val);\n    return search(root-\u003eright, val);\n}\n\nint main() {\n    BSTNode* root = createNode(5);\n    root-\u003eleft = createNode(3);\n    root-\u003eright = createNode(8);\n    root-\u003eleft-\u003eleft = createNode(2);\n    root-\u003eright-\u003eleft = createNode(7);\n    BSTNode* found = search(root, 7);\n    return 0;\n}\n", renderMode: "tree", withRandom: false });

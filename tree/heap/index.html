@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -204,12 +205,8 @@
 
 <script src="/static/js/player.js"></script>
 <script src="/static/js/svg.js"></script>
-<script src="/static/js/sorter.js"></script>
-<script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
 <script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
+<script src="/static/js/csim.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "#include \u003cstdio.h\u003e\n#include \u003cstdlib.h\u003e\n\ntypedef struct TreeNode {\n    int val;\n    struct TreeNode *left;\n    struct TreeNode *right;\n} TreeNode;\n\nTreeNode* createNode(int val) {\n    TreeNode* node = (TreeNode*)malloc(sizeof(TreeNode));\n    node-\u003eval = val;\n    node-\u003eleft = NULL;\n    node-\u003eright = NULL;\n    return node;\n}\n\n/* \u6700\u5927\u5806\uff1a\u63d2\u5165\u540e\u4e0a\u6d6e\u8c03\u6574 */\nTreeNode* insertHeap(TreeNode* root, int val) {\n    if (root == NULL) return createNode(val);\n    if (val \u003e root-\u003eval) {\n        int temp = root-\u003eval;\n        root-\u003eval = val;\n        val = temp;\n    }\n    if (root-\u003eleft == NULL) {\n        root-\u003eleft = createNode(val);\n    } else if (root-\u003eright == NULL) {\n        root-\u003eright = createNode(val);\n    } else if (root-\u003eleft-\u003eval \u003c= root-\u003eright-\u003eval) {\n        root-\u003eleft = insertHeap(root-\u003eleft, val);\n    } else {\n        root-\u003eright = insertHeap(root-\u003eright, val);\n    }\n    return root;\n}\n\n/* \u5220\u9664\u6839\u8282\u70b9\uff08\u6700\u5927\u503c\uff09\uff0c\u7528\u6700\u53f3\u4e0b\u53f6\u5b50\u66ff\u6362\u540e\u4e0b\u6c89 */\nTreeNode* deleteMax(TreeNode* root) {\n    if (root == NULL) return NULL;\n    if (root-\u003eleft == NULL \u0026\u0026 root-\u003eright == NULL) {\n        free(root);\n        return NULL;\n    }\n    /* \u627e\u6700\u53f3\u4e0b\u53f6\u5b50 */\n    TreeNode* parent = root;\n    TreeNode* target = root;\n    while (target-\u003eright) {\n        parent = target;\n        target = target-\u003eright;\n    }\n    if (parent-\u003eright == target) parent-\u003eright = NULL;\n    else parent-\u003eleft = NULL;\n    root-\u003eval = target-\u003eval;\n    free(target);\n    /* \u4e0b\u6c89 */\n    TreeNode* larger = NULL;\n    if (root-\u003eleft \u0026\u0026 root-\u003eright) {\n        larger = (root-\u003eleft-\u003eval \u003e root-\u003eright-\u003eval) ? root-\u003eleft : root-\u003eright;\n    } else {\n        larger = root-\u003eleft ? root-\u003eleft : root-\u003eright;\n    }\n    if (larger \u0026\u0026 larger-\u003eval \u003e root-\u003eval) {\n        int temp = root-\u003eval;\n        root-\u003eval = larger-\u003eval;\n        larger-\u003eval = temp;\n        if (larger == root-\u003eleft) root-\u003eleft = deleteMax(root-\u003eleft);\n        else root-\u003eright = deleteMax(root-\u003eright);\n    }\n    return root;\n}\n\nint main() {\n    TreeNode* root = NULL;\n    /* \u63d2\u5165\u6784\u5efa\u6700\u5927\u5806 */\n    root = insertHeap(root, 4);\n    root = insertHeap(root, 1);\n    root = insertHeap(root, 7);\n    root = insertHeap(root, 3);\n    root = insertHeap(root, 9);\n    root = insertHeap(root, 2);\n    root = insertHeap(root, 6);\n    /* \u5220\u9664\u6700\u5927\u503c */\n    root = deleteMax(root);\n    return 0;\n}\n", renderMode: "tree", withRandom: false });

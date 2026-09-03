@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -205,12 +206,8 @@
 
 <script src="/static/js/player.js"></script>
 <script src="/static/js/svg.js"></script>
-<script src="/static/js/sorter.js"></script>
-<script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
 <script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
+<script src="/static/js/csim.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "#include \u003cstdio.h\u003e\n#include \u003cstdlib.h\u003e\n\ntypedef struct TreeNode {\n    int val;\n    struct TreeNode *left;\n    struct TreeNode *right;\n} TreeNode;\n\nTreeNode* createNode(int val) {\n    TreeNode* node = (TreeNode*)malloc(sizeof(TreeNode));\n    node-\u003eval = val;\n    node-\u003eleft = NULL;\n    node-\u003eright = NULL;\n    return node;\n}\n\n/* \u4e8c\u53c9\u641c\u7d22\u6811\u63d2\u5165\uff1a\u5c0f \u2192 \u5de6\uff0c\u5927 \u2192 \u53f3 */\nTreeNode* insert(TreeNode* root, int val) {\n    if (root == NULL) return createNode(val);\n    if (val \u003c root-\u003eval)\n        root-\u003eleft = insert(root-\u003eleft, val);\n    else\n        root-\u003eright = insert(root-\u003eright, val);\n    return root;\n}\n\nint main() {\n    TreeNode* root = NULL;\n    int arr[] = { 5, 3, 8, 2, 4, 7, 9 };\n    for (int i = 0; i \u003c 7; i++) {\n        root = insert(root, arr[i]);\n    }\n    return 0;\n}\n", renderMode: "tree", withRandom: false });

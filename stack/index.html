@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -203,12 +204,8 @@
 
 <script src="/static/js/player.js"></script>
 <script src="/static/js/svg.js"></script>
-<script src="/static/js/sorter.js"></script>
-<script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
-<script src="/static/js/tree.js"></script>
 <script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
+<script src="/static/js/csim.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "#include \u003cstdio.h\u003e\n\n/* \u6570\u7ec4\u6808\uff1apush / pop\uff08top \u6307\u5411\u6808\u9876\u5143\u7d20\u4e0b\u6807\uff0c\u7a7a\u6808 top = -1\uff09 */\nvoid push(int stack[], int *top, int v) {\n    *top = *top + 1;\n    stack[*top] = v;\n}\n\nint pop(int stack[], int *top) {\n    int v = stack[*top];\n    *top = *top - 1;\n    return v;\n}\n\nint main() {\n    int stack[10];\n    int top = -1;\n    push(stack, \u0026top, 1);\n    push(stack, \u0026top, 2);\n    push(stack, \u0026top, 3);\n    pop(stack, \u0026top);\n    return 0;\n}\n", renderMode: "stack", withRandom: false });

@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -205,13 +206,8 @@
 
 <script src="/static/js/player.js"></script>
 <script src="/static/js/svg.js"></script>
-<script src="/static/js/sorter.js"></script>
-<script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
-<script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
 <script src="/static/js/hanoi.js"></script>
+<script src="/static/js/csim.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "/* \u6c49\u8bfa\u5854\uff1a\u628a n \u4e2a\u76d8\u4ece A \u79fb\u5230 C\uff08\u501f\u52a9 B\uff09\uff0c\u5927\u76d8\u4e0d\u80fd\u538b\u5c0f\u76d8 */\nvoid moveDisk(int from[], int to[], int n, int disk) {\n    int ft = -1, tt = -1;\n    int i;\n    int cur = disk;       /* \u4f9b\u6e32\u67d3\u5668\u9ad8\u4eae\u5f53\u524d\u79fb\u52a8\u7684\u76d8 */\n    for (i = 0; i \u003c n; i++) {\n        if (from[i] \u003e 0) ft = i;   /* \u627e\u5230 from \u7684\u6808\u9876 */\n    }\n    for (i = 0; i \u003c n; i++) {\n        if (to[i] \u003e 0) tt = i;     /* \u627e\u5230 to \u7684\u6808\u9876 */\n    }\n    from[ft] = 0;\n    to[tt + 1] = disk;             /* \u653e\u5230 to \u7684\u6808\u9876 */\n}\n\nvoid hanoi(int n, int A[], int B[], int C[], int size) {\n    if (n == 1) {\n        moveDisk(A, C, size, 1);   /* \u6700\u5c0f\u7684\u76d8\u76f4\u63a5\u79fb\u8fc7\u53bb */\n        return;\n    }\n    hanoi(n - 1, A, C, B, size);   /* \u5148\u628a n-1 \u4e2a\u76d8\u79fb\u5230 B */\n    moveDisk(A, C, size, n);       /* \u628a\u6700\u5927\u7684\u76d8\u79fb\u5230 C */\n    hanoi(n - 1, B, A, C, size);   /* \u518d\u628a n-1 \u4e2a\u76d8\u4ece B \u79fb\u5230 C */\n}\n\nint main() {\n    int n = 4;             /* \u76d8\u6570 */\n    int size = 4;\n    int A[4], B[4], C[4];  /* \u4e09\u67f1\uff1a\u4e0b\u6807 0 \u4e3a\u5e95\u90e8 */\n    int i;\n    for (i = 0; i \u003c n; i++) {\n        A[i] = n - i;      /* A \u81ea\u5e95\u5411\u4e0a 4,3,2,1 */\n        B[i] = 0;\n        C[i] = 0;\n    }\n    hanoi(n, A, B, C, size);\n    return 0;\n}", renderMode: "hanoi" });

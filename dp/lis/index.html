@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -208,13 +209,8 @@
 
 <script src="/static/js/player.js"></script>
 <script src="/static/js/svg.js"></script>
-<script src="/static/js/sorter.js"></script>
-<script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
-<script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
 <script src="/static/js/dp.js"></script>
+<script src="/static/js/csim.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "/* LIS \u6700\u957f\u9012\u589e\u5b50\u5e8f\u5217\uff1a\u6c42 a \u4e2d\u6700\u957f\u4e25\u683c\u9012\u589e\u5b50\u5e8f\u5217\u7684\u957f\u5ea6 */\nint main() {\n    int a[] = { 3, 1, 4, 1, 5, 9, 2, 6 };   /* \u8f93\u5165\u5e8f\u5217 */\n    int n = 8;\n    int dp[8];                 /* dp[i] = \u4ee5 a[i] \u7ed3\u5c3e\u7684 LIS \u957f\u5ea6 */\n    int phase = 0;             /* 1 \u521d\u59cb\u5316 / 2 \u9012\u63a8\u586b\u8868 / 3 \u5b8c\u6210 */\n    int prev_w = -1;           /* \u4f9d\u8d56\u683c\uff08\u5f53\u524d\u6700\u4f18\u7684 dp[j]\uff09 */\n    int i, j;\n\n    /* \u521d\u59cb\u5316\uff1a\u6bcf\u4e2a\u5143\u7d20\u81ea\u8eab\u6784\u6210\u957f\u5ea6 1 \u7684\u9012\u589e\u5b50\u5e8f\u5217 */\n    phase = 1;\n    for (i = 0; i \u003c n; i++) {\n        dp[i] = 1;\n    }\n\n    /* \u9012\u63a8\uff1a\u626b\u63cf j \u003c i \u4e14 a[j] \u003c a[i]\uff0c\u66f4\u65b0 dp[i] */\n    phase = 2;\n    for (i = 0; i \u003c n; i++) {\n        for (j = 0; j \u003c i; j++) {\n            if (a[j] \u003c a[i]) {\n                prev_w = j;\n                if (dp[j] + 1 \u003e dp[i]) {\n                    dp[i] = dp[j] + 1;\n                }\n            }\n        }\n    }\n\n    /* \u5b8c\u6210\uff1adp \u4e2d\u7684\u6700\u5927\u503c\u5373 LIS \u957f\u5ea6 */\n    phase = 3;\n    return 0;\n}", renderMode: "lis" });

@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -207,12 +208,8 @@
 
 <script src="/static/js/player.js"></script>
 <script src="/static/js/svg.js"></script>
-<script src="/static/js/sorter.js"></script>
-<script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
-<script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
 <script src="/static/js/graph.js"></script>
+<script src="/static/js/csim.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "/* Dijkstra \u6700\u77ed\u8def\u5f84\uff1a\u4ece\u6e90\u70b9 0 \u51fa\u53d1\uff0c\u6c42\u5230\u5404\u9876\u70b9\u7684\u6700\u77ed\u8ddd\u79bb */\nint main() {\n    int n = 6;            /* \u9876\u70b9\u6570 */\n    int dist[6];          /* \u6e90\u70b9\u5230\u5404\u9876\u70b9\u7684\u5f53\u524d\u6700\u77ed\u8ddd\u79bb */\n    int fin[6];           /* \u662f\u5426\u5df2\u786e\u5b9a\u6700\u77ed\u8ddd\u79bb */\n    int parent[6];        /* \u6700\u77ed\u8def\u5f84\u6811\u4e2d\u7684\u7236\u8282\u70b9 */\n    int w[36];            /* \u8fb9\u6743\u91cd\u77e9\u9635 w[u*6+v]\uff0c0 \u8868\u793a\u65e0\u8fb9 */\n    int phase = 0;        /* 1 \u521d\u59cb\u5316 / 2 \u4e3b\u5faa\u73af / 3 \u5b8c\u6210 */\n    int i, j, u, v;\n\n    /* \u521d\u59cb\u5316\uff1a\u6743\u91cd\u77e9\u9635\u6e05\u96f6\uff0cdist \u7f6e \u221e\uff0cfin \u7f6e 0 */\n    phase = 1;\n    for (i = 0; i \u003c 36; i++) w[i] = 0;\n    for (i = 0; i \u003c n; i++) {\n        dist[i] = 9999;\n        fin[i] = 0;\n        parent[i] = -1;\n    }\n\n    /* \u793a\u4f8b\u65e0\u5411\u5e26\u6743\u56fe\uff08\u9876\u70b9 0..5\uff09\uff0cw[u*6+v] = \u8fb9\u6743\u91cd */\n    w[0*6+1] = 4; w[0*6+2] = 2;\n    w[1*6+0] = 4; w[1*6+2] = 1; w[1*6+3] = 5;\n    w[2*6+0] = 2; w[2*6+1] = 1; w[2*6+3] = 8; w[2*6+4] = 10;\n    w[3*6+1] = 5; w[3*6+2] = 8; w[3*6+4] = 2; w[3*6+5] = 6;\n    w[4*6+2] = 10; w[4*6+3] = 2; w[4*6+5] = 3;\n    w[5*6+3] = 6; w[5*6+4] = 3;\n\n    /* \u6e90\u70b9 0 \u8ddd\u79bb\u4e3a 0 */\n    dist[0] = 0;\n\n    /* \u4e3b\u5faa\u73af\uff1a\u53cd\u590d\u9009\u51fa\u672a\u786e\u5b9a\u9876\u70b9\u4e2d\u8ddd\u79bb\u6700\u5c0f\u8005 */\n    phase = 2;\n    for (i = 0; i \u003c n; i++) {\n        /* \u627e\u672a\u786e\u5b9a\u9876\u70b9\u4e2d dist \u6700\u5c0f\u7684 u */\n        u = -1;\n        for (j = 0; j \u003c n; j++) {\n            if (fin[j] == 0 \u0026\u0026 (u == -1 || dist[j] \u003c dist[u])) {\n                u = j;\n            }\n        }\n        fin[u] = 1;      /* \u786e\u5b9a u \u7684\u6700\u77ed\u8ddd\u79bb */\n        /* \u677e\u5f1b\uff1a\u5c1d\u8bd5\u7ecf u \u66f4\u65b0\u90bb\u5c45 v \u7684\u8ddd\u79bb */\n        for (v = 0; v \u003c n; v++) {\n            if (w[u*6+v] \u003e 0 \u0026\u0026 fin[v] == 0 \u0026\u0026 dist[u] + w[u*6+v] \u003c dist[v]) {\n                dist[v] = dist[u] + w[u*6+v];\n                parent[v] = u;   /* \u8bb0\u5f55\u6700\u77ed\u8def\u5f84\u6811 */\n            }\n        }\n    }\n\n    /* \u5b8c\u6210 */\n    phase = 3;\n    return 0;\n}", renderMode: "dijkstra" });

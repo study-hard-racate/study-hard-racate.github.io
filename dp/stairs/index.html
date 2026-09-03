@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -208,13 +209,8 @@
 
 <script src="/static/js/player.js"></script>
 <script src="/static/js/svg.js"></script>
-<script src="/static/js/sorter.js"></script>
-<script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
-<script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
-<script src="/static/js/graph.js"></script>
 <script src="/static/js/dp.js"></script>
+<script src="/static/js/csim.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "/* \u722c\u697c\u68af\uff1a\u6bcf\u6b21\u53ef\u8d70 1 \u9636\u6216 2 \u9636\uff0c\u6c42\u5230\u7b2c n \u9636\u6709\u591a\u5c11\u79cd\u8d70\u6cd5 */\nint main() {\n    int n = 10;              /* \u697c\u68af\u603b\u9636\u6570 */\n    int dp[11];              /* dp[i] = \u5230\u7b2c i \u9636\u7684\u8d70\u6cd5\u6570 */\n    int phase = 0;           /* 1 \u521d\u59cb\u5316 / 2 \u9012\u63a8\u586b\u8868 / 3 \u5b8c\u6210 */\n    int prev_w = -1;         /* \u4f9d\u8d56\u683c\uff08dp[i-2]\uff09 */\n    int i;\n\n    /* \u521d\u59cb\u5316\uff1a0 \u9636\u4e0e 1 \u9636\u90fd\u53ea\u6709 1 \u79cd\u8d70\u6cd5 */\n    phase = 1;\n    dp[0] = 1;\n    dp[1] = 1;\n\n    /* \u9012\u63a8\uff1adp[i] = dp[i-1] + dp[i-2] */\n    phase = 2;\n    for (i = 2; i \u003c= n; i++) {\n        prev_w = i - 2;      /* \u8bb0\u4e0b\u4f9d\u8d56\u683c dp[i-2] */\n        dp[i] = dp[i - 1] + dp[i - 2];\n    }\n\n    /* \u5b8c\u6210 */\n    phase = 3;\n    return 0;\n}", renderMode: "stairs" });

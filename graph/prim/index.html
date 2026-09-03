@@ -28,6 +28,7 @@
         <a href="/sorting/heap">堆排序</a>
         <a href="/sorting/counting">计数排序</a>
         <a href="/sorting/radix">基数排序</a>
+        <a href="/compare">算法对比</a>
       </div>
     </div>
     <div class="nav-item">
@@ -206,12 +207,8 @@
 
 <script src="/static/js/player.js"></script>
 <script src="/static/js/svg.js"></script>
-<script src="/static/js/sorter.js"></script>
-<script src="/static/js/csim.js"></script>
-<script src="/static/js/list.js"></script>
-<script src="/static/js/tree.js"></script>
-<script src="/static/js/stackqueue.js"></script>
 <script src="/static/js/graph.js"></script>
+<script src="/static/js/csim.js"></script>
 <script src="/static/js/demo.js"></script>
 <script>
 setupDemo({ sample: "/* Prim \u6700\u5c0f\u751f\u6210\u6811\uff1a\u6bcf\u6b21\u9009 key \u6700\u5c0f\u7684\u672a\u52a0\u5165\u9876\u70b9\u52a0\u5165 MST */\nint main() {\n    int n = 6;\n    int key[6];          /* key[i] = \u9876\u70b9 i \u5230\u5f53\u524d\u6811\u7684\u6700\u5c0f\u8fb9\u6743 */\n    int w[36];           /* \u8fb9\u6743\u91cd\u77e9\u9635 w[u*6+v] */\n    int inMST[6];        /* \u662f\u5426\u5df2\u52a0\u5165 MST */\n    int parent[6];       /* MST \u4e2d\u7684\u7236\u8282\u70b9 */\n    int phase = 0;       /* 1 \u521d\u59cb\u5316 / 2 \u4e3b\u5faa\u73af / 3 \u5b8c\u6210 */\n    int i, j, u, v;\n\n    phase = 1;\n    for (i = 0; i \u003c 36; i++) w[i] = 0;\n    for (i = 0; i \u003c n; i++) {\n        key[i] = 9999;\n        inMST[i] = 0;\n        parent[i] = -1;\n    }\n\n    /* \u65e0\u5411\u5e26\u6743\u56fe\uff08\u540c Dijkstra \u9875\uff09 */\n    w[0*6+1] = 4; w[0*6+2] = 2;\n    w[1*6+0] = 4; w[1*6+2] = 1; w[1*6+3] = 5;\n    w[2*6+0] = 2; w[2*6+1] = 1; w[2*6+3] = 8; w[2*6+4] = 10;\n    w[3*6+1] = 5; w[3*6+2] = 8; w[3*6+4] = 2; w[3*6+5] = 6;\n    w[4*6+2] = 10; w[4*6+3] = 2; w[4*6+5] = 3;\n    w[5*6+3] = 6; w[5*6+4] = 3;\n\n    key[0] = 0;          /* \u4ece\u9876\u70b9 0 \u5f00\u59cb */\n\n    phase = 2;\n    for (i = 0; i \u003c n; i++) {\n        /* \u9009\u672a\u52a0\u5165\u4e14 key \u6700\u5c0f\u7684 u */\n        u = -1;\n        for (j = 0; j \u003c n; j++) {\n            if (inMST[j] == 0 \u0026\u0026 (u == -1 || key[j] \u003c key[u])) {\n                u = j;\n            }\n        }\n        inMST[u] = 1;      /* \u52a0\u5165 MST */\n        /* \u66f4\u65b0\u90bb\u5c45\u7684 key */\n        for (v = 0; v \u003c n; v++) {\n            if (w[u*6+v] \u003e 0 \u0026\u0026 inMST[v] == 0 \u0026\u0026 w[u*6+v] \u003c key[v]) {\n                key[v] = w[u*6+v];\n                parent[v] = u;\n            }\n        }\n    }\n\n    phase = 3;\n    return 0;\n}", renderMode: "prim" });
